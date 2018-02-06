@@ -9,6 +9,8 @@
  ***********************************************
  */
 
+#ifndef LOGGER_H
+#define LOGGER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,31 +18,18 @@
 #include <string.h>
 #include <errno.h>
 
-#ifndef LOGGER_H
-#define LOGGER_H
-
 #define NAMESIZ 256
 
 static char __logName[NAMESIZ];
 static FILE *__logFile = NULL;
 extern const char key[];
 
-/* -------------- function prototypes --------------- */
-
-
-static int open_log(const char*, const char*);	/* initialize log buffer */
-static int append_log(const char*, const char*, ...);  /* append to log file */
-static int write_log(const char*, const char*, ...);   /* write to log file */
-static int read_log(const char*);		/* reads the log file */
-static int crypt_log(const char*);		/* encrypt/decrypt log file */
-static int close_log(void);			/* close log file */
-
 
 /* -------------- functions below here -------------- */
 
 
 /* start_log:  initialize the buf and log file */
-int open_log(const char *filename, const char *open_mode)
+static int open_log(const char *filename, const char *open_mode)
 {
 	if (filename != NULL) {
 		memset(__logName, 0, sizeof __logName);
@@ -55,7 +44,7 @@ int open_log(const char *filename, const char *open_mode)
 }
 
 /* append_log:  append to the end of log file; string with args */
-int append_log(const char *filename, const char *s, ...)
+static int append_log(const char *filename, const char *s, ...)
 {
 	va_list args;
 	va_start(args, s);
@@ -70,7 +59,7 @@ int append_log(const char *filename, const char *s, ...)
 }
 
 /* write_log:  write out to log file; given string */
-int write_log(const char *filename, const char *s, ...)
+static int write_log(const char *filename, const char *s, ...)
 {
 	va_list args;
 	va_start(args, s);
@@ -85,7 +74,7 @@ int write_log(const char *filename, const char *s, ...)
 }
 
 /* read_log:  reads an entire log file displaying contents in stdout */
-int read_log(const char *filename)
+static int read_log(const char *filename)
 {
 	char buf[BUFSIZ];
 
@@ -101,7 +90,7 @@ int read_log(const char *filename)
 }
 
 /* crypt_log:  encrypts/decrypts log file */
-int crypt_log(const char *filename)
+static int crypt_log(const char *filename)
 {
 	FILE *tmp = NULL;
 	char buf[BUFSIZ];
@@ -135,7 +124,7 @@ int crypt_log(const char *filename)
 }
 
 /* close_log:  closes the log file stream */
-int close_log(void)
+static int close_log(void)
 {
 	if (fclose(__logFile))
 		return -1;

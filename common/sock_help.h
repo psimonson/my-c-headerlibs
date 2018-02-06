@@ -4,6 +4,8 @@
  *****************************************************
  */
 
+#ifndef SOCK_HELP_H
+#define SOCK_HELP_H
 
 #ifdef WINDOWS
 #include <winsock2.h>
@@ -35,27 +37,8 @@
 #define MAX_LINE	16384
 #define MAX_CLIENTS	10
 
-static int set_nonblocking(int);	/* sets a socket nonblocking */
-static int create_server(int, int, const char *);/* create a server socket */
-static int create_client(int, int, const char *);/* create a client socket */
-static int send_msg(int, const char *);		 /* send a full message */
-static int check_conn(const char*, int);	 /* check connection status */
-static void close_conn(int);		/* close socket connection */
-static int getln_remote(int, char[],
-		int);			/* gets a line from remote socket */
-static void strip_cmd(char[], int*);	/* strips off newline characters */
-static void get_cmd(int, char[], int);	/* gets a command from remote socket */
-static int pstrcmp(const char *, const char *);	/* compare strings */
-static int pstricmp(const char *,
-		const char *);		/* compare strings; ignoring case */
-static int transfer(int, const char *, const char *, int*,
-		unsigned char);		/* transfer files from/to */
-
-#ifndef SOCK_HELP
-#define SOCK_HELP
-
 /* set_nonblocking: set a socket to non-blocking IO */
-int set_nonblocking(int sock)
+static int set_nonblocking(int sock)
 {
 #ifdef WINDOWS
 	unsigned long mode = 1;
@@ -66,7 +49,7 @@ int set_nonblocking(int sock)
 }
 
 /* create_server:  creates a server; return socket fd */
-int create_server(int nonblocking, int port, const char *address)
+static int create_server(int nonblocking, int port, const char *address)
 {
 	struct sockaddr_in server;
 #ifdef WINDOWS
@@ -125,7 +108,7 @@ int create_server(int nonblocking, int port, const char *address)
 }
 
 /* create_client:  creates a client socket to connect to a server */
-int create_client(int nonblocking, int port, const char *address)
+static int create_client(int nonblocking, int port, const char *address)
 {
 	struct sockaddr_in server;
 #ifdef WINDOWS
@@ -169,7 +152,7 @@ int create_client(int nonblocking, int port, const char *address)
 }
 
 /* send_msg:  send message to remote socket */
-int send_msg(int sock, const char *msg)
+static int send_msg(int sock, const char *msg)
 {
 	int bytes;
 	if ((bytes = send(sock, msg, strlen(msg), 0)) != strlen(msg)) {
@@ -180,7 +163,7 @@ int send_msg(int sock, const char *msg)
 }
 
 /* check_conn:  checks remote connection; if can successfully connect */
-int check_conn(const char *addr, int port)
+static int check_conn(const char *addr, int port)
 {
 	int sock;
 	sock = create_client(0, port, addr);
@@ -191,7 +174,7 @@ int check_conn(const char *addr, int port)
 }
 
 /* close_conn:  closes remote connection */
-void close_conn(int sock)
+static void close_conn(int sock)
 {
 #ifdef WINDOWS
 	closesocket(sock);
@@ -202,7 +185,7 @@ void close_conn(int sock)
 }
 
 /* getln_remote:  gets a remote string */
-int getln_remote(int sock, char s[], int size)
+static int getln_remote(int sock, char s[], int size)
 {
 	char ch;
 	int chars_remain;
@@ -222,9 +205,8 @@ int getln_remote(int sock, char s[], int size)
 	return i;
 }
 
-
 /* strip_cmd:  strips off newlines */
-void strip_cmd(char buf[], int *len)
+static void strip_cmd(char buf[], int *len)
 {
 	int i = *len;
 
@@ -238,7 +220,7 @@ void strip_cmd(char buf[], int *len)
 }
 
 /* get_cmd:  gets a remote string; removing newlines */
-void get_cmd(int sock, char buf[], int size)
+static void get_cmd(int sock, char buf[], int size)
 {
 	int i;
 
@@ -248,7 +230,7 @@ void get_cmd(int sock, char buf[], int size)
 }
 
 /* pstrcmp:  compare string s1 with s2 */
-int pstrcmp(const char *p1, const char *p2)
+static int pstrcmp(const char *p1, const char *p2)
 {
 	register const unsigned char *s1 = (const unsigned char *)p1;
 	register const unsigned char *s2 = (const unsigned char *)p2;
@@ -265,7 +247,7 @@ int pstrcmp(const char *p1, const char *p2)
 }
 
 /* pstricmp:  *nix doesn't have stricmp like windows */
-int pstricmp(const char *p1, const char *p2)
+static int pstricmp(const char *p1, const char *p2)
 {
 	register const unsigned char *s1 = (const unsigned char *)p1;
 	register const unsigned char *s2 = (const unsigned char *)p2;
@@ -282,7 +264,7 @@ int pstricmp(const char *p1, const char *p2)
 }
 
 /* transfer:  upload/download files from remote machine */
-int transfer(int sock, const char *address, const char *fname,
+static int transfer(int sock, const char *address, const char *fname,
 		int *bytes, unsigned char sending)
 {
 	FILE *fp = NULL;

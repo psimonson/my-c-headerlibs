@@ -5,17 +5,11 @@
  ************************************************
  */
 
+#ifndef TEMPFILE_H
+#define TEMPFILE_H
+
 #include <stdio.h>
 #include <errno.h>
-
-#ifndef TEMPFILE_FUNCTIONS
-#define TEMPFILE_FUNCTIONS
-
-/* ------------- Function Prototypes --------------- */
-
-/* file functions */
-static FILE *tempfile(void);
-static void exit_func(void);
 
 /* ---------------- File Functions ----------------- */
 
@@ -23,7 +17,7 @@ static void exit_func(void);
 
 static FILE *__tmp_file = NULL;
 
-FILE *tempfile(void)
+static FILE *tempfile(void)
 {
 	FILE *fp = fopen(TMPFILE_NAME, "w+b");
 	__tmp_file = fp;
@@ -31,7 +25,7 @@ FILE *tempfile(void)
 	return fp;
 }
 
-void exit_func(void)
+static void exit_func(void)
 {
 	if (__tmp_file != NULL) {
 		fclose(__tmp_file);
