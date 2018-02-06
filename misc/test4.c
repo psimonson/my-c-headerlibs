@@ -1,5 +1,7 @@
 #include "../common/prs_string.h"
 
+#define MAXLINE 512
+
 int main(int argc, char *argv[])
 {
 	char* last;

@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#define MAXLINE 512
-
 static int readln(char s[], int limit)
 {
 	char c;
@@ -71,7 +69,7 @@ static int str_length(const char s[])
 	return i;
 }
 
-static int str_copy(char s1[], char s2[])
+static int str_copy(char s1[], const char s2[])
 {
 	int i;
 	for (i = 0; (s1[i] = s2[i]) != 0; i++);
@@ -79,7 +77,7 @@ static int str_copy(char s1[], char s2[])
 	return i;
 }
 
-static int str_cmp(char s1[], char s2[])
+static int str_cmp(const char s1[], const char s2[])
 {
 	int retval;
 	int i;
@@ -101,7 +99,7 @@ static int trim_string(char s[])
 	return i;
 }
 
-static char* str_dup(char s[])
+static char* str_dup(const char s[])
 {
 	char* retstr;
 	int size;
