@@ -1,4 +1,4 @@
-#include "common/prs_string.h"
+#include "../common/prs_string.h"
 
 int main(int argc, char *argv[])
 {

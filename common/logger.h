@@ -43,6 +43,15 @@ static int open_log(const char *filename, const char *open_mode)
 	return 0;
 }
 
+/* close_log:  closes the log file stream */
+static int close_log(void)
+{
+	if (fclose(__logFile))
+		return -1;
+	__logFile = NULL;
+	return 0;
+}
+
 /* append_log:  append to the end of log file; string with args */
 static int append_log(const char *filename, const char *s, ...)
 {
@@ -120,15 +129,6 @@ static int crypt_log(const char *filename)
 	}
 	fclose(tmp);
 	close_log();
-	return 0;
-}
-
-/* close_log:  closes the log file stream */
-static int close_log(void)
-{
-	if (fclose(__logFile))
-		return -1;
-	__logFile = NULL;
 	return 0;
 }
 

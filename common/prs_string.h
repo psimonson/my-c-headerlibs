@@ -92,6 +92,15 @@ static int str_cmp(char s1[], char s2[])
 	return retval;
 }
 
+static int trim_string(char s[])
+{
+	int i;
+	for (i = str_length(s)-1; i >= 0; i--)
+		if (s[i] == '\n' || s[i] == '\r')
+			s[i] = '\0';
+	return i;
+}
+
 static char* str_dup(char s[])
 {
 	char* retstr;

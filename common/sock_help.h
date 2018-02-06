@@ -162,17 +162,6 @@ static int send_msg(int sock, const char *msg)
 	return bytes;
 }
 
-/* check_conn:  checks remote connection; if can successfully connect */
-static int check_conn(const char *addr, int port)
-{
-	int sock;
-	sock = create_client(0, port, addr);
-	if (sock < 0)
-		return -1;
-	close_conn(sock);
-	return 0;
-}
-
 /* close_conn:  closes remote connection */
 static void close_conn(int sock)
 {
@@ -182,6 +171,17 @@ static void close_conn(int sock)
 #else
 	close(sock);
 #endif
+}
+
+/* check_conn:  checks remote connection; if can successfully connect */
+static int check_conn(const char *addr, int port)
+{
+	int sock;
+	sock = create_client(0, port, addr);
+	if (sock < 0)
+		return -1;
+	close_conn(sock);
+	return 0;
 }
 
 /* getln_remote:  gets a remote string */

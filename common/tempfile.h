@@ -17,14 +17,6 @@
 
 static FILE *__tmp_file = NULL;
 
-static FILE *tempfile(void)
-{
-	FILE *fp = fopen(TMPFILE_NAME, "w+b");
-	__tmp_file = fp;
-	atexit(&exit_func);
-	return fp;
-}
-
 static void exit_func(void)
 {
 	if (__tmp_file != NULL) {
@@ -32,6 +24,14 @@ static void exit_func(void)
 		remove(TMPFILE_NAME);
 		__tmp_file = NULL;
 	}
+}
+
+static FILE *tempfile(void)
+{
+	FILE *fp = fopen(TMPFILE_NAME, "w+b");
+	__tmp_file = fp;
+	atexit(&exit_func);
+	return fp;
 }
 
 #endif
