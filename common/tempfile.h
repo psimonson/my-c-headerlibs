@@ -9,27 +9,76 @@
 #define TEMPFILE_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <errno.h>
+
+/* ---------------- Temp File Vars ----------------- */
+
+
+static FILE *__tempfile = NULL;
+static char *__tempfile_name = NULL;
+
+static const char UPPER[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static const char LOWER[] = "abcdefghijklmnopqrstuvwxyz";
+static const char NUMBER[] = "0123456789";
+
 
 /* ---------------- File Functions ----------------- */
 
-#define TMPFILE_NAME "file.tmp"
-
-static FILE *__tmp_file = NULL;
 
 static void exit_func(void)
 {
-	if (__tmp_file != NULL) {
-		fclose(__tmp_file);
-		remove(TMPFILE_NAME);
-		__tmp_file = NULL;
+	if (__tempfile != NULL) {
+		fclose(__tempfile);
+		remove(__tempfile_name);
+		free(__tempfile_name);
+		__tempfile_name = NULL;
+		__tempfile = NULL;
 	}
+}
+
+static char *generate_tempname(void)
+{
+	char *name;
+	int i, j, k;
+	srand(time(NULL));
+	name = malloc(18);
+	if (name == NULL)
+		return NULL;
+	for (i = j = 0; i < 8; i++) {
+		k = rand() % 3;
+		switch (k) {
+			case 0:
+				j = rand() % 26;
+				name[i] = UPPER[j];
+			break;
+			case 1:
+				j = rand() % 26;
+				name[i] = LOWER[j];
+			break;
+			case 2:
+				j = rand() % 10;
+				name[i] = NUMBER[j];
+			break;
+			default:
+			break;
+		}
+	}
+	name[i++] = '.';
+	name[i++] = 't';
+	name[i++] = 'm';
+	name[i++] = 'p';
+	name[i] = '\0';
+	return name;
 }
 
 static FILE *tempfile(void)
 {
-	FILE *fp = fopen(TMPFILE_NAME, "w+b");
-	__tmp_file = fp;
+	FILE *fp;
+	__tempfile_name = generate_tempname();
+	fp = fopen(__tempfile_name, "w+b");
+	__tempfile = fp;
 	atexit(&exit_func);
 	return fp;
 }

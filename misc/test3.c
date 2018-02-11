@@ -26,10 +26,10 @@ int main(int argc, char *argv[])
 	int passed;
 
 	if (argc == 1) {
-		write_log(LOG_NAME, "Running File Operation Tests...\n");
+		do_log(write_log, LOG_NAME, "Running File Operation Tests...\n");
 		passed = run_tests(tests);
 		printf("Tests passed: %d/%lu\n", passed, TOTAL_TESTS);
-		append_log(NULL, "Tests passed: %d/%lu\n", passed, TOTAL_TESTS);
+		do_log(append_log, LOG_NAME, "Tests passed: %d/%lu\n", passed, TOTAL_TESTS);
 		if (passed == 0) {
 			printf("All tests failed!\n");
 		} else {
@@ -39,14 +39,11 @@ int main(int argc, char *argv[])
 				printf("Some tests passed!\n");
 			}
 		}
-		crypt_log(NULL);
+		do_log2(crypt_log, LOG_NAME);
 	} else if (argc == 2 && (argv[1][0] == '-' && argv[1][1] == 'r')) {
-		if (crypt_log(LOG_NAME) < 0) {
-			fprintf(stderr, "Log file doesn't exist.\n");
-			return 2;
-		}
-		read_log(NULL);
-		crypt_log(NULL);
+		do_log2(crypt_log, LOG_NAME);
+		do_log2(read_log, LOG_NAME);
+		do_log2(crypt_log, LOG_NAME);
 	} else {
 		fprintf(stderr, "Usage: %s [-r]\n", argv[0]);
 		return 1;
@@ -70,15 +67,15 @@ int test1(void)
 	if (fp == NULL)
 		return 0;
 
-	append_log(NULL, "Test 1 : Succeeded!\n");
+	do_log(append_log, LOG_NAME, "Test 1 : Succeeded!\n");
 	return 1;
 }
 
 int test2(void)
 {
-	if (fclose(__tmp_file) == 0) {
-		__tmp_file = NULL;
-		append_log(NULL, "Test 2 : Succeeded!\n");
+	if (fclose(__tempfile) == 0) {
+		__tempfile = NULL;
+		do_log(append_log, LOG_NAME, "Test 2 : Succeeded!\n");
 		return 1;
 	}
 	return 0;
@@ -89,10 +86,10 @@ int test3(void)
 {
 	FILE *fp;
 	if ((fp = tempfile()) == NULL) {
-		append_log(NULL, "Test 3 : Failed!\n");
+		do_log(append_log, LOG_NAME, "Test 3 : Failed!\n");
 		return 0;
 	}
-	append_log(NULL, "Test 3 : Succeeded!\n");
+	do_log(append_log, LOG_NAME, "Test 3 : Succeeded!\n");
 	return 1;
 }
 

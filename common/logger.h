@@ -12,6 +12,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include "tempfile.h"
+#include "prs_string.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -20,8 +23,8 @@
 
 #define NAMESIZ 256
 
-static char __logName[NAMESIZ];
-static FILE *__logFile = NULL;
+static char *__logname = NULL;
+static FILE *__logfile = NULL;
 extern const char key[];
 
 
@@ -31,75 +34,66 @@ extern const char key[];
 /* start_log:  initialize the buf and log file */
 static int open_log(const char *filename, const char *open_mode)
 {
-	if (filename != NULL) {
-		memset(__logName, 0, sizeof __logName);
-		strncpy(__logName, filename, NAMESIZ);
-	}
-	if ((__logFile = fopen((filename == NULL) ? __logName : filename,
-			open_mode)) == NULL) {
+	if (filename == NULL || open_mode == NULL)
+		return -1;
+	if ((__logfile = fopen(filename, open_mode)) == NULL) {
 		fprintf(stderr, "Error: Cannot open log file.\n");
 		return -1;
 	}
+	if (__logname != NULL)
+		free(__logname);
+	__logname = str_dup(filename);
 	return 0;
 }
 
 /* close_log:  closes the log file stream */
-static int close_log(void)
+static void close_log(void)
 {
-	if (fclose(__logFile))
-		return -1;
-	__logFile = NULL;
-	return 0;
+	if (__logfile != NULL)
+		fclose(__logfile);
+	if (__logname != NULL)
+		free(__logname);
+	__logfile = NULL;
+	__logname = NULL;
 }
 
 /* append_log:  append to the end of log file; string with args */
-static int append_log(const char *filename, const char *s, ...)
+static int append_log(const char *s, ...)
 {
 	va_list args;
 	va_start(args, s);
-	if (open_log(filename, "at") < 0) {
-		va_end(args);
-		return -1;
-	}
-	vfprintf(__logFile, s, args);
+	vfprintf(__logfile, s, args);
 	va_end(args);
 	close_log();
 	return 0;
 }
 
 /* write_log:  write out to log file; given string */
-static int write_log(const char *filename, const char *s, ...)
+static int write_log(const char *s, ...)
 {
 	va_list args;
 	va_start(args, s);
-	if (open_log(filename, "wt") < 0) {
-		va_end(args);
-		return -1;
-	}
-	vfprintf(__logFile, s, args);
+	vfprintf(__logfile, s, args);
 	va_end(args);
 	close_log();
 	return 0;
 }
 
 /* read_log:  reads an entire log file displaying contents in stdout */
-static int read_log(const char *filename)
+static int read_log(void)
 {
 	char buf[BUFSIZ];
 
-	if (open_log(filename, "rt") < 0)
-		return -1;
 	memset(buf, 0, sizeof buf);
-	while (fgets(buf, sizeof(buf)-1, __logFile) != NULL) {
+	while (fgets(buf, sizeof(buf)-1, __logfile) != NULL) {
 		fputs(buf, stdout);
 		memset(buf, 0, sizeof buf);
 	}
-	close_log();
 	return 0;
 }
 
 /* crypt_log:  encrypts/decrypts log file */
-static int crypt_log(const char *filename)
+static int crypt_log(void)
 {
 	FILE *tmp = NULL;
 	char buf[BUFSIZ];
@@ -107,27 +101,66 @@ static int crypt_log(const char *filename)
 	int total;
 	int c, i;
 
-	if ((tmp = tmpfile()) == NULL)
+	if ((tmp = tempfile()) == NULL)
 		return -1;
-	if (open_log(filename, "r+t") < 0)
-		return -1;
-	rewind(__logFile);
+	rewind(__logfile);
 	i = 0;
-	while ((c = fgetc(__logFile)) != EOF) {
+	while ((c = fgetc(__logfile)) != EOF) {
 		c ^= key[i%strlen(key)] & 0xf0;
 		fputc(c, tmp);
 		i++;
 	}
 	rewind(tmp);
-	close_log();
-	if (open_log(NULL, "wt") < 0)
+	rewind(__logfile);
+	if (open_log(__logname, "wb") < 0)
 		return -1;
 	total = 0;
 	while ((bytes = fread(buf, 1, sizeof(buf), tmp)) > 0) {
-		bytes_wrote = fwrite(buf+total, 1, bytes, __logFile);
+		bytes_wrote = fwrite(buf+total, 1, bytes, __logfile);
 		total += bytes_wrote;
 	}
-	fclose(tmp);
+	return 0;
+}
+
+static int do_log(int (*func)(const char *, ...),
+		char *log_name, const char *log_text, ...)
+{
+	va_list args;
+	if (func == NULL)
+		return -1;
+	if (log_name == NULL) {
+		va_start(args, log_text);
+		__logfile = tempfile();
+		__logname = __tempfile_name;
+		if ((*func)(log_text, args) < 0)
+			return -1;
+		va_end(args);
+	} else {
+		va_start(args, log_text);
+		if (open_log(log_name, "w+b") < 0) {
+			va_end(args);
+			return -1;
+		}
+		__logname = str_dup(log_name);
+		if ((*func)(log_text, args) < 0) {
+			va_end(args);
+			return -1;
+		}
+		va_end(args);
+	}
+	return 0;
+}
+
+static int do_log2(int (*func)(void),
+		char *log_name)
+{
+	if (func == NULL || log_name == NULL)
+		return -1;
+	if (open_log(log_name, "a+b") < 0)
+		return -1;
+	__logname = str_dup(log_name);
+	if ((*func)() < 0)
+		return -1;
 	close_log();
 	return 0;
 }

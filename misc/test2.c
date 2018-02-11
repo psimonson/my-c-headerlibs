@@ -21,32 +21,30 @@ int main(int argc, char *argv[])
 			printf("INPUT >> ");
 			readln2(buf, sizeof buf);
 			trim_string(buf);
-			if (write_log(LOG_NAME, "%s\n", buf) < 0)
+			if (do_log(write_log, LOG_NAME, "%s\n", buf) < 0)
 				return -1;
-			crypt_log(NULL);
+			do_log2(crypt_log, LOG_NAME);
 		break;
 		case 'a':
-			if (crypt_log(LOG_NAME) < 0) {
+			if (do_log2(crypt_log, LOG_NAME) < 0) {
 				printf("Use 'w' option first.\n");
 				return -1;
 			}
 			printf("INPUT >> ");
 			readln2(buf, sizeof buf);
 			trim_string(buf);
-			if (append_log(NULL, "%s\n", buf) < 0)
+			if (do_log(append_log, LOG_NAME, "%s\n", buf) < 0)
 				return -1;
-			if (crypt_log(NULL) < 0)
+			if (do_log2(crypt_log, LOG_NAME) < 0)
 				return -1;
 		break;
 		case 'r':
-			if (crypt_log(LOG_NAME) < 0) {
-				printf("Use 'w' option first!\n");
+			if (do_log2(crypt_log, LOG_NAME) < 0) {
+				printf("Use 'w' option first.\n");
 				return -1;
 			}
-			if (read_log(NULL) < 0)
-				return -1;
-			if (crypt_log(NULL) < 0)
-				return -1;
+			do_log2(read_log, LOG_NAME);
+			do_log2(crypt_log, LOG_NAME);
 		break;
 		default:
 			printf("Unknown option '%c'\n", argv[1][1]);
