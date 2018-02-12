@@ -1,4 +1,3 @@
-#include "../common/prs_string.h"
 #include "../common/logger.h"
 
 #define LOG_NAME "log2.txt"
@@ -21,28 +20,19 @@ int main(int argc, char *argv[])
 			printf("INPUT >> ");
 			readln2(buf, sizeof buf);
 			trim_string(buf);
-			if (do_log(write_log, LOG_NAME, "%s\n", buf) < 0)
-				return -1;
+			do_log(write_log, LOG_NAME, "%s\n", buf);
 			do_log2(crypt_log, LOG_NAME);
 		break;
 		case 'a':
-			if (do_log2(crypt_log, LOG_NAME) < 0) {
-				printf("Use 'w' option first.\n");
-				return -1;
-			}
+			do_log2(crypt_log, LOG_NAME);
 			printf("INPUT >> ");
 			readln2(buf, sizeof buf);
 			trim_string(buf);
-			if (do_log(append_log, LOG_NAME, "%s\n", buf) < 0)
-				return -1;
-			if (do_log2(crypt_log, LOG_NAME) < 0)
-				return -1;
+			do_log(append_log, LOG_NAME, "%s\n", buf);
+			do_log2(crypt_log, LOG_NAME);
 		break;
 		case 'r':
-			if (do_log2(crypt_log, LOG_NAME) < 0) {
-				printf("Use 'w' option first.\n");
-				return -1;
-			}
+			do_log2(crypt_log, LOG_NAME);
 			do_log2(read_log, LOG_NAME);
 			do_log2(crypt_log, LOG_NAME);
 		break;

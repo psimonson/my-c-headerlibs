@@ -57,23 +57,17 @@ static void close_log(void)
 }
 
 /* append_log:  append to the end of log file; string with args */
-static int append_log(const char *s, ...)
+static int append_log(const char *s, va_list args)
 {
-	va_list args;
-	va_start(args, s);
 	vfprintf(__logfile, s, args);
-	va_end(args);
 	close_log();
 	return 0;
 }
 
 /* write_log:  write out to log file; given string */
-static int write_log(const char *s, ...)
+static int write_log(const char *s, va_list args)
 {
-	va_list args;
-	va_start(args, s);
 	vfprintf(__logfile, s, args);
-	va_end(args);
 	close_log();
 	return 0;
 }
@@ -121,13 +115,12 @@ static int crypt_log(void)
 	return 0;
 }
 
-static int do_log(int (*func)(const char *, ...),
+static int do_log(int (*func)(const char *, va_list args),
 		const char *log_name, const char *log_text, ...)
 {
 	va_list args;
 	if (func == NULL)
 		return -1;
-	va_start(args, log_text);
 	if (log_name != NULL)
 		__logname = str_dup(log_name);
 	if (func == &append_log) {
@@ -140,8 +133,8 @@ static int do_log(int (*func)(const char *, ...),
 		fprintf(stderr, "Error: Unknown operation function.\n");
 		return -2;
 	}
+	va_start(args, log_text);
 	if ((*func)(log_text, args) < 0) {
-		va_end(args);
 		return -1;
 	}
 	va_end(args);

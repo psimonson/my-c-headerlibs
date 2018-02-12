@@ -22,7 +22,7 @@ static int readln(char s[], int limit)
 		c = getchar();
 		if (c == '\n' || c == EOF) {
 			remain = 0;
-		} else if (i < limit) {
+		} else if (i < limit-1) {
 			if (c == '\b') {
 				s[i] = 0;
 				--i;
@@ -46,9 +46,9 @@ static int readln2(char s[], int limit)
 	while (remain) {
 		c = getchar();
 		if (c == '\n' || c == EOF) {
-			s[i++] = c;
+			s[i++] = '\n';
 			remain = 0;
-		} else if (i < limit) {
+		} else if (i < limit-2) {
 			if (c == '\b') {
 				s[i] = 0;
 				--i;

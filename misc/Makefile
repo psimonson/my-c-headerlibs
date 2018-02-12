@@ -38,6 +38,6 @@ test5: test5.c.o
 
 clean:
 	@echo Cleaning...
-	@rm -f *.txt *.c.o $(TARGETS)
+	@rm -f *.tmp *.txt *.c.o $(TARGETS)
 	@echo Done!
 
