@@ -77,7 +77,7 @@ static FILE *tempfile(void)
 {
 	FILE *fp;
 	__tempfile_name = generate_tempname();
-	fp = fopen(__tempfile_name, "w+b");
+	fp = fopen(__tempfile_name, "a+b");
 	__tempfile = fp;
 	atexit(&exit_func);
 	return fp;

@@ -34,15 +34,18 @@ extern const char key[];
 /* start_log:  initialize the buf and log file */
 static int open_log(const char *filename, const char *open_mode)
 {
-	if (filename == NULL || open_mode == NULL)
-		return -1;
-	if ((__logfile = fopen(filename, open_mode)) == NULL) {
-		fprintf(stderr, "Error: Cannot open log file.\n");
-		return -1;
+	if (filename == NULL || open_mode == NULL) {
+		__logfile = tempfile();
+		__logname = __tempfile_name;
+	} else {
+		if ((__logfile = fopen(filename, open_mode)) == NULL) {
+			fprintf(stderr, "Error: Cannot open log file.\n");
+			return -1;
+		}
+		if (__logname != NULL)
+			free(__logname);
+		__logname = str_dup(filename);
 	}
-	if (__logname != NULL)
-		free(__logname);
-	__logname = str_dup(filename);
 	return 0;
 }
 
