@@ -30,11 +30,8 @@ static const char NUMBER[] = "0123456789";
 static void __tempfile_exit_func(void)
 {
 	if (__tempfile != NULL) {
-		fclose(__tempfile);
-		remove(__tempfile_name);
 		free(__tempfile_name);
 		__tempfile_name = NULL;
-		__tempfile = NULL;
 	}
 }
 
