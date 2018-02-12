@@ -27,7 +27,7 @@ static const char NUMBER[] = "0123456789";
 /* ---------------- File Functions ----------------- */
 
 
-static void exit_func(void)
+static void __tempfile_exit_func(void)
 {
 	if (__tempfile != NULL) {
 		fclose(__tempfile);
@@ -79,7 +79,7 @@ static FILE *tempfile(void)
 	__tempfile_name = generate_tempname();
 	fp = fopen(__tempfile_name, "a+b");
 	__tempfile = fp;
-	atexit(&exit_func);
+	atexit(&__tempfile_exit_func);
 	return fp;
 }
 
