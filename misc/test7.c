@@ -15,9 +15,9 @@ enum {
 
 int is_match(int left, int right)
 {
-	return ((left == '}' && right == '{') ||
-			(left == ')' && right == '(') ||
-			(left == ']' && right == '['));
+	return ((left == ')' && right == '(') ||
+			(left == ']' && right == '[') ||
+			(left == '}' && right == '{'));
 }
 
 /* program to test c source files for minor syntax errors */
@@ -62,8 +62,8 @@ int main(int argc, char *argv[])
 				}
 			} else if (c == '(' || c == '[' || c == '{') {
 				stack_pushback(stack, c, -1);
-			} else if (c == '}' || c == ']' || c == ')') {
-				char open = stack_popback(stack);
+			} else if (c == ')' || c == ']' || c == '}') {
+				int open = stack_popback(stack);
 				if (!is_match(c, open)) {
 					printf("Line %lu: Closing '%c' missing opening '%c'.\n",
 						(unsigned long)linenum, c, open);
