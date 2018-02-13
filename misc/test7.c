@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 	stack_t *stack;
 	stack_t *stack_ln;
 	FILE *file;
+	int syntax_errors;
 	int linenum;
 	int c;
 
@@ -37,7 +38,7 @@ int main(int argc, char *argv[])
 		stack_destroy(stack);
 		return -1;
 	}
-	linenum = 0;
+	syntax_errors = linenum = 0;
 	while ((c = fgetc(file)) != EOF) {
 		switch (c) {
 		case '\n':
@@ -53,8 +54,8 @@ int main(int argc, char *argv[])
 		break;
 		}
 		if (c == '>' || c == ']' || c == ')' || c == '}') {
-			int left;
 			int left_linenum;
+			int left;
 			left = stack_popback(stack);
 			left_linenum = stack_popback(stack_ln);
 			if (!is_match(left, c)) {
@@ -62,15 +63,22 @@ int main(int argc, char *argv[])
 					" %c : line %d\n", left, c, left_linenum);
 				fprintf(stderr, "Syntax error : %c doesn't match %c : line %d\n",
 					left, c, left_linenum);
-				break;
+				syntax_errors += 1;
 			}
 		}
 	}
 	fclose(file);
 	stack_destroy(stack);
 	stack_destroy(stack_ln);
-	do_log(append_log, LOG_NAME, "File processed... no syntax errors.\n");
-	fprintf(stderr, "File processed... no syntax errors.\n");
+	if (syntax_errors > 0) {
+		do_log(append_log, LOG_NAME, "File processed..."
+			" syntax errors: %d\n", syntax_errors);
+		fprintf(stderr, "File processed..."
+			" syntax errors: %d\n", syntax_errors);
+	} else {
+		do_log(append_log, LOG_NAME, "File processed... no syntax errors.\n");
+		fprintf(stderr, "File processed... no syntax errors.\n");
+	}
 	do_log(append_log, LOG_NAME, "Stack destroyed.\n");
 	return 0;
 }
