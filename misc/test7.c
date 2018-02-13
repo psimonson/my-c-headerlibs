@@ -2,7 +2,6 @@
 #include "../common/sstack.h"
 
 #define LOG_NAME "log7.txt"
-#define TEST_FILE "test1.c"
 
 const char key[] = "298374dkfjlsdjfsdkjf893uFKJDFJF";
 
@@ -23,15 +22,19 @@ int main(int argc, char *argv[])
 	size_t line;
 	int c;
 
+	if (argc != 2) {
+		printf("Usage: %s <source.c>\n", argv[0]);
+		return 1;
+	}
+
+
+	if ((file = fopen(argv[1], "rt")) == NULL)
+		return -1;
 	stack = stack_create(8);
 	if (stack == NULL)
 		return -1;
-
 	do_log(write_log, LOG_NAME, "Stack created... checking source.\n");
-	if ((file = fopen(TEST_FILE, "rt")) == NULL) {
-		stack_destroy(stack);
-		return -1;
-	}
+
 	state = CODE;
 	error = 0;
 	line = 1;
