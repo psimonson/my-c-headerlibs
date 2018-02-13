@@ -32,8 +32,6 @@ static void __tempfile_exit_func(void)
 	if (__tempfile != NULL) {
 		free(__tempfile);
 		__tempfile = NULL;
-		free(__tempfile_name);
-		__tempfile_name = NULL;
 	}
 }
 
