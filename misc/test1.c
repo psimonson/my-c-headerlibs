@@ -2,7 +2,7 @@
 
 #define LOG_NAME "log1.txt"
 
-const char key[] = "N*(JdjOSIDU*U(*&#$(JFL";
+const char key[] = "NJdjOSIDUUJFL";
 
 int main(int argc, char *argv[])
 {
