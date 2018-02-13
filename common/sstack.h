@@ -12,8 +12,6 @@
 #include <stdarg.h>
 #include <errno.h>
 
-#define STACK_SIZE 8
-
 struct STACK {
 	int top;
 	unsigned capacity;
@@ -61,10 +59,16 @@ static void stack_pushback(stack_t *stack, int arg1, ...)
 	int arg;
 	if (stack == NULL)
 		return;
-	if (stack_is_full(stack))
-		return;
+
 	va_start(arg_list, arg1);
 	for (arg = arg1; arg != -1; arg = (int)va_arg(arg_list, int)) {
+		if (stack_is_full(stack)) {
+			int *p;
+			p = (int*)realloc(stack->array, (stack->capacity*2)*sizeof(int));
+			if (p == NULL)
+				return;
+			stack->array = p;
+		}
 		stack->array[++stack->top] = arg;
 	}
 	va_end(arg_list);
