@@ -53,6 +53,8 @@ static void close_log(void)
 	if (__logfile != NULL) {
 		fclose(__logfile);
 		__logfile = NULL;
+		free(__logname);
+		__logname = NULL;
 	}
 }
 
