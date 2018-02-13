@@ -112,6 +112,7 @@ static int crypt_log(void)
 		bytes_wrote = fwrite(buf+total, 1, bytes, __logfile);
 		total += bytes_wrote;
 	}
+	fclose(tmp);
 	return 0;
 }
 
