@@ -1,4 +1,4 @@
-#include "../common/cgi-helper.h"
+#include "../common/cgi_helper.h"
 
 int main(int argc, char **argv, char **envp)
 {

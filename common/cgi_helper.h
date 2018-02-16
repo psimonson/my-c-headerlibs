@@ -18,14 +18,14 @@ static void header_default(const char* title, const char* bgcolor, const char* f
 			fgcolor);
 }
 
-static void setup(void (*header)(void), void (*body)(void), void (*footer)(void))
+static void setup(void (*header)(), void (*body)(void), void (*footer)())
 {
 	if (header)
-		header();
+		header("Simple Page", "#000000", "#00FF00");
 	if (body)
 		body();
 	if (footer)
-		footer();
+		footer("Created by Philip \"5n4k3\" Simonson");
 }
 
 static void setup_args1(const char* title, const char* backcolor, const char* fgcolor,
