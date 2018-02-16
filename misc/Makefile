@@ -7,7 +7,7 @@ CFLAGS=-std=c89 -g -Wall -Wno-unused-function
 LDFLAGS=
 LIBS=
 
-TARGETS=test1 test2 test3 test4 test5 test6 test7 test8 test9
+TARGETS=test1 test2 test3 test4 test5 test6 test7 test8 test9 test10
 
 .PHONY: all clean
 all: $(TARGETS)
@@ -45,6 +45,10 @@ test8: test8.c.o
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test9: test9.c.o
+	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+
+test10: test10.c.o
 	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
