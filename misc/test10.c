@@ -23,7 +23,7 @@ int getln(FILE *file);
 int check_source(FILE *file);
 
 /* program to check the source code for errors */
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	FILE *file;
 
