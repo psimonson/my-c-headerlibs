@@ -1,5 +1,6 @@
-#include "../common/queue.h"
+#include "../common/stack.h"
 
+#define MAXVAL	1024
 #define MAXLINE	1024
 
 enum STATE {
@@ -11,29 +12,57 @@ typedef enum STATE state_t;
 
 /* global variables */
 char line[MAXLINE];			/* global line variable */
-queue_t queue;				/* global queue */
+stack_t stack;				/* stack variable */
 state_t state;				/* state variable */
 int comments;				/* comment count */
 int quotes;					/* quotes count */
 int error;					/* error flag */
 
 /* program functions */
-int getln(void);
-int check_source(void);
+int getln(FILE *file);
+int check_source(FILE *file);
 
 /* program to check the source code for errors */
-int main(int argc, char **argv)
+main(int argc, char **argv)
 {
-	check_source();
+	FILE *file;
+
+	if (argc == 2 || argc > 3) {
+		printf("Usage: %s [-f filename.ext]\n", argv[0]);
+		return 1;
+	}
+
+	if (argc == 1)
+		check_source(stdin);
+	else if (argc == 3) {
+		if (*argv[1] == '-') {
+			while (*++argv[1]) {
+				switch (*argv[1]) {
+				case 'f':
+					if ((file = fopen(argv[2], "rt")) == NULL) {
+						printf("Cannot open file for reading.\n");
+						return 2;
+					}
+					check_source(file);
+					fclose(file);
+					printf("File processed!\n");
+				break;
+				default:
+					printf("Unknown option '%c'\n", *argv[1]);
+				break;
+				}
+			}
+		}
+	}
 	return 0;
 }
 
 /* getln:  get line of input from stdin */
-int getln(void)
+int getln(FILE *file)
 {
 	extern char line[];
 	int c, i;
-	for (i = 0; i < MAXLINE-2 && (c = getchar()) != EOF && c != '\n'; i++)
+	for (i = 0; i < MAXLINE-2 && (c = fgetc(file)) != EOF && c != '\n'; i++)
 		line[i] = c;
 	if (c == '\n')
 		line[i++] = '\n';
@@ -52,7 +81,7 @@ int is_match(int c1, int c2)
 /* special_body:  prints output for syntax checker */
 void report(void)
 {
-	extern queue_t queue;
+	extern stack_t stack;
 	extern state_t state;
 	extern int comments;
 	extern int quotes;
@@ -66,24 +95,24 @@ void report(void)
 	} else if (state == QUOTES) {
 		printf("Code ends inside of quotes.\n");
 		error = 1;
-	} else if (queue_is_empty(&queue) && error == 0) {
+	} else if (stack_is_empty(&stack) && error == 0) {
 		printf("Code seems to be okay.\n");
 	} else {
-		while (!queue_is_empty(&queue)) {
+		while (!stack_is_empty(&stack)) {
 			int val, pos;
-			queue_get(&queue, &val, &pos);
-			printf("Syntax error: line %d : '%c' missing"
-				" counterpart.\n", pos, val);
+			stack_pop(&stack, &val, &pos);
+			printf("Syntax error: line %d : '%c' missing counterpart\n",
+				pos, val);
 		}
 		printf("There were errors in the code.\n");
 	}
 }
 
 /* check_source:  checks source code for syntax errors */
-int check_source(void)
+int check_source(FILE *file)
 {
 	extern char line[];
-	extern queue_t queue;
+	extern stack_t stack;
 	extern state_t state;
 	extern int comments;
 	extern int quotes;
@@ -94,7 +123,7 @@ int check_source(void)
 	error = 0;
 	ln = 0;
 	comments = quotes = 0;
-	while ((len = getln()) > 0) {
+	while ((len = getln(file)) > 0) {
 		++ln;
 		i = 0;
 		while (i < len && (c = line[i++]) != EOF) {
@@ -112,18 +141,18 @@ int check_source(void)
 					}
 				}
 				if (c == '(' || c == '[' || c == '{') {
-					queue_add(&queue, c, ln);
+					stack_push(&stack, c, ln);
 				} else if (c == ')' || c == ']' || c == '}') {
-					if (queue_is_empty(&queue)) {
-						printf("Syntax error: line %d : '%c' missing "
-							"counterpart.\n", ln, c);
+					if (stack_is_empty(&stack)) {
+						printf("Syntax error: '%c' on line %d missing"
+							" counterpart.\n", c, ln);
 						error = 1;
 					} else {
 						int val, pos;
-						queue_get(&queue, &val, &pos);
+						stack_pop(&stack, &val, &pos);
 						if (is_match(c, val)) {
-							printf("Syntax error: line %d: '%c' missing "
-								"'%c'\n", ln, val, c);
+							printf("Syntax error: '%c' on line %d missing"
+								" '%c'.\n", val, pos, c);
 							error = 1;
 						}
 					}
