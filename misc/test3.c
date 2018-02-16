@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
 	if (argc == 1) {
 		do_log(write_log, LOG_NAME, "Running File Operation Tests...\n");
 		passed = run_tests(tests);
-		printf("Tests passed: %d/%lu\n", passed, TOTAL_TESTS);
-		do_log(append_log, LOG_NAME, "Tests passed: %d/%lu\n", passed, TOTAL_TESTS);
+		printf("Tests passed: %d/%u\n", passed, TOTAL_TESTS);
+		do_log(append_log, LOG_NAME, "Tests passed: %d/%u\n", passed, TOTAL_TESTS);
 		if (passed == 0) {
 			printf("All tests failed!\n");
 		} else {
