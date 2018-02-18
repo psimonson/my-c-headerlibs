@@ -17,7 +17,7 @@
 
 /* global dynamic array variable */
 static int __dyn_array_count;
-char **__dyn_array;
+static char **__dyn_array;
 
 /* dyn_free:  frees all allocated memory for dyn_array */
 static void dyn_free(void)
