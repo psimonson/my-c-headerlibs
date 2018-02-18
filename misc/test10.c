@@ -1,4 +1,5 @@
 #include "../common/queue.h"
+#include "../common/stack.h"
 
 #define MAXLINE	1024
 
@@ -11,8 +12,10 @@ typedef enum STATE state_t;
 
 /* global variables */
 char line[MAXLINE];			/* global line variable */
-queue_t queue;				/* queue variable */
+stack_t stack;				/* stack for <, (, [, { */
+queue_t queue;				/* queue for >, ), ], } */
 state_t state;				/* state variable */
+int err_count;				/* how many errors occurred */
 int comments;				/* comment count */
 int quotes;					/* quotes count */
 int error;					/* error flag */
@@ -86,6 +89,8 @@ void report(void)
 	extern int comments;
 	extern int quotes;
 	extern int error;
+	extern int err_count;
+
 
 	if (state == COMMENT) {
 		printf("Code ends inside of comment.\n");
@@ -93,16 +98,19 @@ void report(void)
 	} else if (state == QUOTES) {
 		printf("Code ends inside of quotes.\n");
 		error = 1;
-	} else if (queue_is_empty(&queue) && error == 0) {
+	} else if (stack_is_empty(&stack) && queue_is_empty(&queue) && error == 0) {
 		printf("Code seems to be okay.\n");
 		printf("Comments: %d\nQuotes: %d\n", comments, quotes);
-	} else {
+	} else if (error == 1) {
 		while (!queue_is_empty(&queue)) {
 			int val, pos;
 			queue_get(&queue, &val, &pos);
 			printf("Syntax error line %d : '%c' missing counterpart.\n",
 				pos, val);
+			error = 1;
+			++err_count;
 		}
+		printf("Syntax errors in file: %d\n", err_count);
 		printf("There were errors in the code.\n");
 	}
 }
@@ -116,6 +124,7 @@ int check_source(FILE *file)
 	extern int comments;
 	extern int quotes;
 	extern int error;
+	extern int err_count;
 	int c, d, i;
 	int ln, len;
 
@@ -131,28 +140,28 @@ int check_source(FILE *file)
 				if (c == '\'' || c == '"') {
 					state = QUOTES;
 					break;
-				}
-				if (c == '/') {
+				} else if (c == '/') {
 					d = line[i++];
 					if (d == '*') {
 						state = COMMENT;
 						break;
 					}
-				}
-				if (c == '<' || c == '(' || c == '[' || c == '{') {
+				} else if (c == '<' || c == '(' || c == '[' || c == '{') {
 					queue_add(&queue, c, ln);
 				} else if (c == '>' || c == ')' || c == ']' || c == '}') {
 					if (queue_is_empty(&queue)) {
-						printf("Syntax error line %d : '%c' missing"
+						printf("Syntax error on line %d : '%c' missing"
 							" counterpart.\n", ln, c);
 						error = 1;
+						err_count++;
 					} else {
 						int val, pos;
 						queue_get(&queue, &val, &pos);
 						if (is_match(c, val)) {
-							printf("Syntax error line %d : '%c' missing"
-								" '%c'.\n", pos, val, c);
+							printf("Syntax error on line %d : '%c' missing"
+								" '%c'.\n", ln, val, c);
 							error = 1;
+							err_count++;
 						}
 					}
 				}
