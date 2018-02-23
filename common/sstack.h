@@ -12,12 +12,12 @@
 #include <stdarg.h>
 #include <errno.h>
 
-struct STACK {
+struct stack {
 	int top;
 	unsigned capacity;
 	int *array;
 };
-typedef struct STACK stack_t;
+typedef struct stack stack_t;
 
 static stack_t *stack_create(int capacity)
 {

@@ -13,13 +13,13 @@
 static int id;
 
 /* data structure for list */
-struct DLIST {
+struct dlist {
 	int id;
 	char *data;
-	struct DLIST *next;
+	struct dlist *next;
 };
 /* typedef for DLIST structure */
-typedef struct DLIST dlist_t;
+typedef struct dlist dlist_t;
 
 /* dlist_create:  create the dynamic linked list */
 static dlist_t *dlist_create(const char *data)

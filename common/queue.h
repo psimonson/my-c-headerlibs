@@ -13,13 +13,13 @@
 #define QUEUE_MAXVAL 1024
 
 /* simple queue structure data type */
-struct QUEUE {
+struct queue {
 	int beg;
 	int end;
 	int val[QUEUE_MAXVAL];
 	int pos[QUEUE_MAXVAL];
 };
-typedef struct QUEUE queue_t;
+typedef struct queue queue_t;
 
 /* queue_is_full:  check if queue is full */
 static int queue_is_full(queue_t *queue)

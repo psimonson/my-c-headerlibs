@@ -6,12 +6,12 @@
 #define STACK_MAXVAL 1024			/* MAX stack size */
 
 /* stack data structure */
-struct STACK {
+struct stack {
 	int top;
 	int val[STACK_MAXVAL];
 	int pos[STACK_MAXVAL];
 };
-typedef struct STACK stack_t;
+typedef struct stack stack_t;
 
 /* stack_is_empty:  check to see if stack is empty */
 static int stack_is_empty(stack_t *stack)

@@ -196,10 +196,15 @@ static int getln_remote(int sock, char s[], int size)
 		recv(sock, &ch, 1, 0);
 		if (ch == '\n' || ch == EOF)
 			chars_remain = 0;
-		else if (ch == '\b')
-			s[i--] = '\0';
-		else if (i < size-1)
-			s[i++] = ch;
+		else if (i < size-1) {
+			if (ch == '\b') {
+				s[i] = '\0';
+				i--;
+			} else {
+				s[i] = ch;
+				i++;
+			}
+		}
 	}
 	s[i] = '\0';
 	return i;
