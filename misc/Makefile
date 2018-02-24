@@ -13,51 +13,51 @@ TARGETS=test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test
 all: $(TARGETS)
 
 test1: test1.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test2: test2.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test3: test3.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test4: test4.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test5: test5.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test6: test6.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test7: test7.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test8: test8.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test9: test9.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test10: test10.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test11: test11.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 test12: test12.c.o
-	@echo CC $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo CCLD $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 	@$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 %.c.o: %.c
@@ -66,6 +66,5 @@ test12: test12.c.o
 
 clean:
 	@echo Cleaning...
-	@rm -f *.tmp *.txt *.c.o $(TARGETS)
-	@echo Done!
+	@rm -f *.tmp *.txt *.c.o $(TARGETS) && echo "Done." || echo "Failed."
 
