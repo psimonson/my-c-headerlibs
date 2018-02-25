@@ -72,12 +72,18 @@ int find_file(void)
 		buf, dir);
 #ifdef _WIN32
 	if (_access(dir, 0) < 0) {
-		printf("File doesn't exist.\n");
+		if (errno == EEXIST)
+			printf("File doesn't exist.\n");
+		else
+			printf("Error occurred trying to access file.\n");
 		return 1;
 	}
 #else
 	if (access(dir, 0) < 0) {
-		printf("File doesn't exist.\n");
+		if (errno == EEXIST)
+			printf("File doesn't exist.\n");
+		else
+			printf("Error occurred trying to access file.\n");
 		return 1;
 	}
 #endif
