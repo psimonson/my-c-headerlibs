@@ -38,16 +38,8 @@ typedef enum boolean bool_t;
 #define true TRUE
 #define false FALSE
 
-#define MAXLINES 80
-#define MAXLINE 512
 #define UP 1
 #define DOWN -1
-
-
-/* ------------------------ Global Variables ------------------------- */
-
-
-char buf[MAXLINE];
 
 
 /* ------------------------ String Functions ------------------------- */
@@ -168,14 +160,14 @@ static void expand(char s1[], char s2[])
 {
 	int i, j, k, count;
 
-	for (i = j = 0; s1[i] != '\0' && i < MAXLINE && j < MAXLINE; i++) {
+	for (i = j = 0; s1[i] != '\0'; i++) {
 		if (s1[i+1] == '-' && s1[i+2] != '\0') {
 			if (s1[i] < s1[i + 2]) {
 				count = UP;
 			} else {
 				count = DOWN;
 			}
-			for (k = 0; s1[i] + k != s1[i + 2] && k < MAXLINE; k += count, j++)
+			for (k = 0; s1[i] + k != s1[i + 2]; k += count, j++)
 				s2[j] = s1[i] + k;
 			i++;
 		} else {
@@ -330,7 +322,7 @@ static int strcompare(char s1[], char s2[])
 {
 	int i, j;
 
-	for (i = j = 0; i < strlength(s1) && j < strlength(s2); i++, j++)
+	for (i = j = 0; i < strlength(s1) || j < strlength(s2); i++, j++)
 		if (s1[i] != s2[j])
 			return s2[j] - s1[i];
 	return 0;
