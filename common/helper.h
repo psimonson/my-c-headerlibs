@@ -378,15 +378,13 @@ static int chtolt(int c)
 {
 	switch (c) {
 		case 'a': case 'A':
+		case 'h': case 'H':
 			c = '4';
 			break;
 		case 'e': case 'E':
 			c = '3';
 			break;
 		case 'i': case 'I':
-			c = '!';
-			break;
-		case 'l': case 'L':
 			c = '1';
 			break;
 		case 'o': case 'O':
@@ -395,8 +393,20 @@ static int chtolt(int c)
 		case 's': case 'S':
 			c = '5';
 			break;
+		case 'g': case 'G':
+			c = '6';
+			break;
 		case 't': case 'T':
 			c = '7';
+			break;
+		case 'b': case 'B':
+			c = '8';
+			break;
+		case 'p': case 'P':
+			c = '9';
+			break;
+		case 'z': case 'Z':
+			c = '2';
 			break;
 		default:
 			break;
