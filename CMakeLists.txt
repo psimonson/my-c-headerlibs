@@ -98,6 +98,8 @@ add_executable(misc/t4 misc/t4.c)
 add_dependencies(misc/t4 makedirs)
 add_executable(misc/t5 misc/t5.c)
 add_dependencies(misc/t5 makedirs)
+add_executable(misc/calc misc/calc.c)
+add_dependencies(misc/calc makedirs)
 
 # add cgi example targets
 add_executable(cgi/test1 cgi/test1.c)
