@@ -378,7 +378,6 @@ static int chtolt(int c)
 {
 	switch (c) {
 		case 'a': case 'A':
-		case 'h': case 'H':
 			c = '4';
 			break;
 		case 'e': case 'E':
