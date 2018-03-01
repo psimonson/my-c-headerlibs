@@ -10,12 +10,13 @@ extern double pop(void);
 /* reverse Polish calculator */
 int main()
 {
-	int type;
+	int type, i;
 	double op2;
+	double op3;
 	char s[MAXOP];
 
 	printf("Polish Calculator v0.1\nExpression: 2 1 - 3 5 + *\n"
-		"Turns into: (2 - 1) * (3 + 5) = 7\n\n");
+		"Turns into: (2 - 1) * (3 + 5) = 8\n\n");
 	printf("Expression >> ");
 	while ((type = getop(s)) != EOF) {
 		switch (type) {
@@ -26,7 +27,7 @@ int main()
 			push(pop() + pop());
 			break;
 		case '*':
-			push(pop() - pop());
+			push(pop() * pop());
 			break;
 		case '-':
 			op2 = pop();
@@ -39,6 +40,19 @@ int main()
 			else
 				printf("Error: zero divisor\n");
 			break;
+		case '^':
+		{
+			double res = 1;
+			op2 = pop();
+			op3 = pop();
+			if (op2 == 0)
+				push(res);
+			else {
+				for (i = 0; i < op2; i++)
+					res *= op3;
+				push(res);
+			}
+		} break;
 		case '\n':
 			printf("\t%.8g\n", pop());
 			printf("Expression >> ");
@@ -48,5 +62,6 @@ int main()
 			break;
 		}
 	}
+	putchar('\n');
 	return 0;
 }

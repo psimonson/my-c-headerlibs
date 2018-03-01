@@ -11,7 +11,7 @@ void push(double f)
 	if (sp < MAXVAL)
 		val[sp++] = f;
 	else
-		printf("Error: stack full, can't push %g\n", f);
+		printf("\nError: stack full, can't push %g\n", f);
 }
 
 /* pop:  pop and return top value from stack */
@@ -20,7 +20,7 @@ double pop(void)
 	if (sp > 0)
 		return val[--sp];
 	else {
-		printf("Error: stack empty\n");
+		printf("\nError: stack empty\n");
 		return 0.0;
 	}
 }
