@@ -14,6 +14,9 @@ int main()
 	double op2;
 	char s[MAXOP];
 
+	printf("Polish Calculator v0.1\nExpression: 2 1 - 3 5 + *\n"
+		"Turns into: (2 - 1) * (3 + 5) = 7\n\n");
+	printf("Expression >> ");
 	while ((type = getop(s)) != EOF) {
 		switch (type) {
 		case NUMBER:
@@ -38,6 +41,7 @@ int main()
 			break;
 		case '\n':
 			printf("\t%.8g\n", pop());
+			printf("Expression >> ");
 			break;
 		default:
 			printf("Error: unknown command %s\n", s);
