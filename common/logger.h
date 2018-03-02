@@ -107,8 +107,6 @@ static int crypt_log(void)
 	}
 	rewind(tmp);
 	rewind(__logfile);
-	if (open_log(__logname, "wb") < 0)
-		return -1;
 	total = 0;
 	while ((bytes = fread(buf, 1, sizeof(buf), tmp)) > 0) {
 		bytes_wrote = fwrite(buf+total, 1, bytes, __logfile);
@@ -126,6 +124,8 @@ static int do_log(int (*func)(const char *, va_list args),
 		return -1;
 	if (log_name != NULL)
 		__logname = str_dup(log_name);
+	else
+		__logname = generate_tempname();
 	if (func == &append_log) {
 		if (open_log(__logname, "a+b") < 0)
 			return -1;
@@ -152,6 +152,8 @@ static int do_log2(int (*func)(void),
 		return -1;
 	if (log_name != NULL)
 		__logname = str_dup(log_name);
+	else
+		__logname = generate_tempname();
 	if (func == &crypt_log) {
 		if (open_log(__logname, "a+b") < 0)
 			return -1;

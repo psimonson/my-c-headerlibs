@@ -68,6 +68,7 @@ static void dlist_destroy(dlist_t *list)
 		tmp = tmp->next;
 	}
 	free(list);
+	list = NULL;
 	id = 0;
 }
 
@@ -119,7 +120,7 @@ static int dlist_get_count(dlist_t *list)
 /* dlist_is_empty:  checks for elements; returns 0 if empty */
 static int dlist_is_empty(dlist_t *list)
 {
-	return (dlist_get_count(list) == 0);
+	return (list == NULL) ? 0 : dlist_get_count(list) > 0;
 }
 
 #endif
