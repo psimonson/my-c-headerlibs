@@ -40,6 +40,13 @@ int main()
 			else
 				printf("Error: zero divisor\n");
 			break;
+		case '%':
+			op2 = pop();
+			if (op2 != 0.0)
+				push((int)pop() % (int)op2);
+			else
+				printf("Error: zero divisor\n");
+			break;
 		case '^':
 		{
 			double res = 1;
