@@ -16,7 +16,10 @@ int main()
 	char s[MAXOP];
 
 	printf("Polish Calculator v0.1\nExpression: 2 1 - 3 5 + *\n"
-		"Turns into: (2 - 1) * (3 + 5) = 8\n\n");
+		"Turns into: (2 - 1) * (3 + 5) = 8\n"
+		"Complicated Expression: 15 1 * 16 14 * 16 2 ^ 1 * + +\n"
+		"Turns into: (15 * 1) + (16 * 14) + ((16 ^ 2) * 1) = 495"
+		" or 0x01EF\n");
 	printf("Expression >> ");
 	while ((type = getop(s)) != EOF) {
 		switch (type) {
