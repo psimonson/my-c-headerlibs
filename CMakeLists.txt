@@ -110,3 +110,6 @@ add_dependencies(cgi/test1 makedirs)
 # add network example targets
 add_executable(network/test1 network/test1.c)
 add_dependencies(network/test1 makedirs)
+if (WIN32)
+	target_link_libraries(network/test1 ws2_32 kernel32 user32)
+endif (WIN32)

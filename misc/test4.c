@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 	char buf[MAXLINE];
 	int running;
 
+	last = NULL;
 	running = 1;
 	while (running) {
 		if (last) free(last);

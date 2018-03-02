@@ -27,14 +27,6 @@ static const char NUMBER[] = "0123456789";
 /* ---------------- File Functions ----------------- */
 
 
-static void __tempfile_exit_func(void)
-{
-	if (__tempfile != NULL) {
-		free(__tempfile);
-		__tempfile = NULL;
-	}
-}
-
 static char *generate_tempname(void)
 {
 	char *name;
@@ -70,13 +62,21 @@ static char *generate_tempname(void)
 	return name;
 }
 
+static void _tempfile_exit(void)
+{
+	if (__tempfile != NULL) {
+		fclose(__tempfile);
+		__tempfile = NULL;
+	}
+}
+
 static FILE *tempfile(void)
 {
 	FILE *fp;
 	__tempfile_name = generate_tempname();
 	fp = fopen(__tempfile_name, "a+b");
 	__tempfile = fp;
-	atexit(&__tempfile_exit_func);
+	atexit(&_tempfile_exit);
 	return fp;
 }
 

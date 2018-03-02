@@ -32,7 +32,12 @@ int main(int argc, char *argv[])
 			do_log2(crypt_log, LOG_NAME);
 		break;
 		case 'r':
-			do_log2(crypt_log, LOG_NAME);
+			if (do_log2(crypt_log, LOG_NAME) < 0) {
+				printf("Run 'w' or 'a' options first.\n"
+					"Cannot read log, it doesn't"
+					" exist.\n");
+				return 1;
+			}
 			do_log2(read_log, LOG_NAME);
 			do_log2(crypt_log, LOG_NAME);
 		break;

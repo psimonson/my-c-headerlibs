@@ -5,6 +5,8 @@
  **************************************************
  */
 
+/* uncomment for windows build... */
+/* #define WINDOWS */
 #include "../common/sock_help.h"
 
 #define MAXLINE		1024
