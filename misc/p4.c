@@ -10,7 +10,7 @@ int main()
 	char s[128];
 
 	getw_file(stdin, s, 128);
-	printf(s);
+	printf("%s", s);
 
 	return 0;
 }

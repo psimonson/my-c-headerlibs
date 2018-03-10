@@ -46,7 +46,7 @@ int main(void) {
 }
 
 int die(const char *msg) {
-	fprintf(stderr, msg);
+	fprintf(stderr, "Error: %s\n", msg);
 	exit(0);
 	return 0;
 }
