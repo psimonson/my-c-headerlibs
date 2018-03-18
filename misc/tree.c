@@ -55,11 +55,8 @@ struct tree *search_tree(int key, struct tree *leaf)
 void print_tree(struct tree *leaf)
 {
 	if (leaf != 0) {
-		struct tree *node;
-		for (node = leaf->left; node != 0; node = node->left)
-			printf("%s\n", node->line);
-		for (node = leaf->right; node != 0; node = node->right)
-			printf("%s\n", node->line);
+		print_tree(leaf->left);
+		print_tree(leaf->right);
 		printf("%s\n", leaf->line);
 	}
 }
