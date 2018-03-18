@@ -26,8 +26,13 @@ int main(int argc, char *argv[])
 	if (serverfd < 0)	/* handle error */
 		return -1;
 	addrlen = sizeof(addr);
+#ifdef WINDOWS
 	newfd = accept(serverfd, (struct sockaddr*)&addr,
 		(unsigned int*)&addrlen);
+#else
+	newfd = accept(serverfd, (struct sockaddr*)&addr,
+		(unsigned int*)&addrlen);
+#endif
 	if (newfd < 0)
 		perror("accept");
 	puts("Client connected!");
