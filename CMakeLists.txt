@@ -13,7 +13,7 @@ configure_file (
 # include binary directory for config file
 include_directories("${PROJECT_BINARY_DIR}")
 
-cmake_policy(SET CMP0037 OLD)
+#cmake_policy(SET CMP0037 OLD)
 
 # add executables
 add_custom_target(makedirs)
@@ -102,6 +102,8 @@ add_executable(misc/calc misc/calc.c)
 add_dependencies(misc/calc makedirs)
 add_executable(misc/calc2 misc/calc2.c misc/stack.c misc/getop.c)
 add_dependencies(misc/calc2 makedirs)
+add_executable(misc/tree misc/tree.c)
+add_dependencies(misc/tree makedirs)
 
 # add cgi example targets
 add_executable(cgi/test1 cgi/test1.c)
