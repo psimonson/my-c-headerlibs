@@ -321,7 +321,7 @@ static int strcopy(char s1[], char s2[], int size)
 {
 	int i, j;
 
-	for (i = j = 0; s1[i] != 0 && i < size-1 && j < size-1; i++, j++)
+	for (i = j = 0; i < size-1 && s2[j] != 0; i++, j++)
 		s1[i] = s2[j];
 	s1[i] = '\0';
 	return i;
