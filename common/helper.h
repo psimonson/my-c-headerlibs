@@ -54,8 +54,8 @@ static void p_zero(void *s, int size)
 		((char*)s)[i] = 0;
 }
 
-/* getline:  gets user input from stdin */
-static int getline(char *s, int lim)
+/* getstr:  gets user input from stdin */
+static int getstr(char *s, int lim)
 {
 	int c, i;
 
@@ -163,8 +163,8 @@ static void expand(char s1[], char s2[])
 	s2[j] = '\0';
 }
 
-/* itoa:  converts integer to string */
-static void itoa(int n, char s[])
+/* p_itoa:  converts integer to string */
+static void p_itoa(int n, char s[])
 {
 	int i;
 	int sign;
@@ -285,7 +285,7 @@ static void itob(int n, char s[], int b)
 	reverse(s);
 }
 
-/* itoa:  converts integer to string */
+/* itoa2:  converts integer to string */
 static void itoa2(int n, char s[], int w)
 {
 	int i;
@@ -423,8 +423,8 @@ static int strindex_r(char s[], const char t[])
 	return -1;
 }
 
-/* atof:  convert string s to double */
-static double atof(char s[])
+/* p_atof:  convert string s to double */
+static double p_atof(char s[])
 {
 	double val, power;
 	int i, sign;
@@ -444,10 +444,10 @@ static double atof(char s[])
 	return sign * val / power;
 }
 
-/* atoi:  convert string s to integer */
-static int atoi(char s[])
+/* p_atoi:  convert string s to integer */
+static int p_atoi(char s[])
 {
-	return (int)atof(s);
+	return (int)p_atof(s);
 }
 
 #endif
