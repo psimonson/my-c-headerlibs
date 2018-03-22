@@ -84,8 +84,11 @@ static int read_log(void)
 		fputs(buf, stdout);
 		memset(buf, 0, sizeof buf);
 	}
+	close_log();
 	return 0;
 }
+
+static char *__cryptname = NULL;  /* store name for re-write of file */
 
 /* crypt_log:  encrypts/decrypts log file */
 static int crypt_log(void)
@@ -105,14 +108,17 @@ static int crypt_log(void)
 		fputc(c, tmp);
 		i++;
 	}
+	close_log();
 	rewind(tmp);
-	rewind(__logfile);
+	if (open_log(__cryptname, "wb") < 0)
+		exit(EXIT_FAILURE);
 	total = 0;
 	while ((bytes = fread(buf, 1, sizeof(buf), tmp)) > 0) {
 		bytes_wrote = fwrite(buf+total, 1, bytes, __logfile);
 		total += bytes_wrote;
 	}
 	fclose(tmp);
+	close_log();
 	return 0;
 }
 
@@ -142,6 +148,7 @@ static int do_log(int (*func)(const char *, va_list args),
 	}
 	va_end(args);
 	close_log();
+	free(__cryptname);
 	return 0;
 }
 
@@ -155,8 +162,9 @@ static int do_log2(int (*func)(void),
 	else
 		__logname = generate_tempname();
 	if (func == &crypt_log) {
-		if (open_log(__logname, "a+b") < 0)
+		if (open_log(__logname, "rb") < 0)
 			return -1;
+		__cryptname = str_dup(__logname);
 	} else if (func == &read_log) {
 		if (open_log(__logname, "r+b") < 0)
 			return -1;
