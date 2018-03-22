@@ -20,7 +20,7 @@ int main()
 		switch (state) {
 		case FIRST:
 			printf("Enter input filename: ");
-			getline(input, MAXLINE);
+			getstr(input, MAXLINE);
 			trim(input);
 			if (strcompare(input, "") == 0) {
 				printf("You must input a filename.");
@@ -37,7 +37,7 @@ int main()
 			break;
 		case SECOND:
 			printf("Enter output filename: ");
-			getline(input, MAXLINE);
+			getstr(input, MAXLINE);
 			trim(input);
 			if (strcompare(input, "") == 0) {
 				printf("You must input a filename.");
@@ -69,13 +69,13 @@ int main()
 				"2.  Convert from file.\n"
 				"3.  Exit\n\n"
 				"Enter Option: ");
-			getline(input, MAXLINE);
+			getstr(input, MAXLINE);
 			trim(input);
-			answer = atoi(input);
+			answer = p_atoi(input);
 			switch (answer) {
 			case 1:
 				printf("Enter some text: ");
-				getline(input, MAXLINE);
+				getstr(input, MAXLINE);
 				trim(input);
 				if (strcompare(input, "") == 0)
 					printf("You need to enter some"

@@ -8,7 +8,7 @@ int main()
 	char s[MAXLINE];
 
 	printf("Enter a string: ");
-	getline(s, MAXLINE);
+	getstr(s, MAXLINE);
 	rescapes(s);
 	printf("All escape sequences removed...\n%s\n",
 			s);

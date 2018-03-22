@@ -10,7 +10,7 @@ int main()
 
 	/* testing getline function */
 	printf("Enter a string to reverse: ");
-	getline(s1, MAXLINE);
+	getstr(s1, MAXLINE);
 	/* reverse functions testing */
 	printf("======================\n"
 		"String reversing - Test\n"
@@ -22,7 +22,7 @@ int main()
 
 	/* alphasort testing */
 	printf("Enter a string to sort: ");
-	getline(s2, MAXLINE);
+	getstr(s2, MAXLINE);
 	printf("=====================\n"
 		"Alpha sort - below...\n"
 		"=====================\n");
@@ -36,13 +36,13 @@ int main()
 		"Testing ATOI function\n"
 		"======================\n");
 	printf("Before: 51298\n"
-		"After: %d\n", atoi("51298"));
+		"After: %d\n", p_atoi("51298"));
 
 	/* testing strcmp */
 	printf("Enter first string to compare: ");
-	getline(s2, MAXLINE);
+	getstr(s2, MAXLINE);
 	printf("Enter second string to compare: ");
-	getline(s3, MAXLINE);
+	getstr(s3, MAXLINE);
 	printf("======================\n"
 		"Testing STRCMP Function\n"
 		"======================\n");

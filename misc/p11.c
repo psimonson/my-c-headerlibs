@@ -7,7 +7,7 @@ int main()
 {
 	char s[MAXLINE];
 
-	while (getline(s, MAXLINE) > 0) {
+	while (getstr(s, MAXLINE) > 0) {
 		trim(s);
 		if (strcompare(s, "") == 0)
 			break;

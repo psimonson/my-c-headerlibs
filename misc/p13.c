@@ -19,7 +19,7 @@ int main()
 			"2. Get File Stream\n"
 			"3. Exit\n\n"
 			"Enter choice (1-3): ");
-		getline(input, MAXLINE);
+		getstr(input, MAXLINE);
 		trim(input);
 		c = input[0];
 		switch (c) {
@@ -27,7 +27,7 @@ int main()
 			break;
 		case '1':
 			printf("\n\nEnter a line of text below...\n");
-			len = getline(input, MAXLINE);
+			len = getstr(input, MAXLINE);
 			if (len <= 0)
 				printf("Could not get a line of input.\n");
 			else {
@@ -38,7 +38,7 @@ int main()
 			break;
 		case '2':
 			printf("Enter filename: ");
-			len = getline(fname, MAXLINE);
+			len = getstr(fname, MAXLINE);
 			if (len <= 0)
 				printf("No filename was given.\n");
 			else {

@@ -9,11 +9,11 @@ int main()
 	double sum;
 
 	sum = 0;
-	while (getline(line, MAXLINE) > 0) {
+	while (getstr(line, MAXLINE) > 0) {
 		trim(line);
 		if (strcompare(line, "") == 0)
 			break;
-		printf("\t%g\n", sum += atof(line));
+		printf("\t%g\n", sum += p_atof(line));
 	}
 	return 0;
 }

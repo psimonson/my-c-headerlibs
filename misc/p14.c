@@ -31,7 +31,7 @@ int main()
 					"escapes\t - change all '\\n', '\\t', etc. to printable characters.\n"
 					"no escapes - change all escapes to visible characters\n\n");
 				printf("Enter type: ");
-				getline(input, MAXLINE);
+				getstr(input, MAXLINE);
 				trim(input);
 				if (strcompare(input, "") == 0)
 					printf("You need to enter some text.\n\n");
@@ -55,7 +55,7 @@ int main()
 				break;
 			case SECOND:
 				printf("Enter input file name: ");
-				getline(fname, MAXLINE);
+				getstr(fname, MAXLINE);
 				trim(fname);
 				if (strcompare(fname, "") == 0) {
 					state = END;
@@ -69,7 +69,7 @@ int main()
 				break;
 			case THIRD:
 				printf("Enter output file name: ");
-				getline(fname, MAXLINE);
+				getstr(fname, MAXLINE);
 				trim(fname);
 				if (strcompare(fname, "") == 0) {
 					state = END;

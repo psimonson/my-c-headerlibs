@@ -25,7 +25,7 @@ int main()
 	while ((type = getop(s)) != EOF) {
 		switch (type) {
 		case NUMBER:
-			push(atof(s));
+			push(p_atof(s));
 			break;
 		case '+':
 			push(pop() + pop());
