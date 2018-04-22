@@ -105,6 +105,8 @@ add_executable(misc_examples/t6 misc_examples/t6.c)
 add_dependencies(misc_examples/t6 makedirs)
 add_executable(misc_examples/t7 misc_examples/t7.c)
 add_dependencies(misc_examples/t7 makedirs)
+add_executable(misc_examples/t8 misc_examples/t8.c)
+add_dependencies(misc_examples/t8 makedirs)
 
 # add cgi example targets
 add_executable(cgi_examples/test1 cgi_examples/test1.c)
