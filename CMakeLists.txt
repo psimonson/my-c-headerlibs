@@ -101,6 +101,8 @@ add_executable(misc_examples/calc2 misc_examples/calc2.c misc_examples/stack.c m
 add_dependencies(misc_examples/calc2 makedirs)
 add_executable(misc_examples/tree misc_examples/tree.c)
 add_dependencies(misc_examples/tree makedirs)
+add_executable(misc_examples/t6 misc_examples/t6.c)
+add_dependencies(misc_examples/t6 makedirs)
 
 # add cgi example targets
 add_executable(cgi_examples/test1 cgi_examples/test1.c)

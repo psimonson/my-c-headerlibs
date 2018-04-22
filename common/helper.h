@@ -450,4 +450,32 @@ static int p_atoi(char s[])
 	return (int)p_atof(s);
 }
 
+/* p_swap:  interchange v[i] and v[j] */
+static void p_swap(int v[], int i, int j)
+{
+	int temp;
+
+	temp = v[i];
+	v[i] = v[j];
+	v[j] = temp;
+}
+
+/* p_qsort:  sort v[left]...v[right] into increasing order */
+static void p_qsort(int v[], int left, int right)
+{
+	int i, last;
+
+	if (left >= right)
+		return;
+	p_swap(v, left, (left + right)/2); /* move partition elem */
+	last = left;
+	for (i = left+1; i <= right; i++)	/* partition */
+		if (v[i] < v[left])
+			p_swap(v, ++last, i);
+	p_swap(v, left, last);		/* restore partition elem */
+	p_qsort(v, left, last-1);
+	p_qsort(v, last+1, right);
+}
+
+
 #endif
