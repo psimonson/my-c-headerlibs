@@ -123,22 +123,13 @@ static void alphasort(char s[], int size)
 	} while (swapped);
 }
 
-/* reverse:  reverses s inplace */
+/* reverse:  reverse s inplace */
 static void reverse(char s[])
 {
 	int c, i, j;
 
 	for (i = 0, j = strlength(s)-1; i < j && j > 0; ++i, --j)
 		c = s[j], s[j] = s[i], s[i] = c;
-}
-
-/* reverse_r:  reverse a string inplace (reversed) */
-static void reverse_r(char s[])
-{
-	int c, i, j;
-
-	for (i = 0, j = strlength(s)-1; i < j && j > 0; ++i, --j)
-		c = s[i], s[i] = s[j], s[j] = c;
 }
 
 /* expand:  expand a-z,A-Z,0-9 into the entire string of them */
@@ -475,6 +466,27 @@ static void p_qsort(int v[], int left, int right)
 	p_swap(v, left, last);		/* restore partition elem */
 	p_qsort(v, left, last-1);
 	p_qsort(v, last+1, right);
+}
+
+/* reverse_r:  reverse a string; recursively */
+static void reverse_r(char s[])
+{
+	static int i = 0;
+	static int j = -1;
+	char temp;
+
+	if (j < 0)	/* check initial value of j < 0 */
+		j = strlength(s) - 1;	/* if j < 0 set to end of string */
+	if (j - i > 0) {
+		temp = s[j];	/* store char at s[j] */
+		s[j] = s[i];	/* write char at s[i] to s[j] */
+		s[i] = temp;	/* write temp back to s[i] */
+		--j, ++i;	/* increment j and i */
+		reverse_r(s); /* run recursively */
+	} else {
+		i = 0;		/* reset i back to 0 */
+		j = -1;		/* reset j back to -1 */
+	}
 }
 
 
