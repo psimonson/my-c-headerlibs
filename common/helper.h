@@ -482,12 +482,28 @@ static void reverse_r(char s[])
 		s[j] = s[i];	/* write char at s[i] to s[j] */
 		s[i] = temp;	/* write temp back to s[i] */
 		--j, ++i;	/* increment j and i */
-		reverse_r(s); /* run recursively */
+		reverse_r(s);	/* run recursively */
 	} else {
 		i = 0;		/* reset i back to 0 */
 		j = -1;		/* reset j back to -1 */
 	}
 }
 
+/* itoa_r:  convert int to string; recursively */
+static void itoa_r(int n, char s[])
+{
+	int i, sign;
+
+	i = 0;
+	if ((sign = n) < 0)
+		n = -n;
+	do {
+		s[i++] = n % 10 + '0';
+	} while ((n /= 10) > 0);
+	if (sign < 0)
+		s[i++] = '-';
+	s[i] = '\0';
+	reverse_r(s);
+}
 
 #endif
