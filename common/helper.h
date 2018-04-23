@@ -41,6 +41,8 @@ typedef enum boolean bool_t;
 #define UP 1
 #define DOWN -1
 
+#define SWAP(t, x, y) do { t temp = x; x = y; y = temp; } while (0)
+
 
 /* ------------------------ String Functions ------------------------- */
 
