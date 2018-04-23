@@ -15,6 +15,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 
@@ -236,10 +237,6 @@ static int escape_r(char s[], char t[])
 	return j;
 }
 
-
-/* ------------------------ Miscellaneous Functions ------------------------- */
-
-
 /* htoi:  bitwise operation; convert hex string to decimal */
 static int htoi(char *s)
 {
@@ -307,10 +304,8 @@ static int strcompare(char s1[], char s2[])
 	return 0;
 }
 
-
-
 /* strcopy:  copies a string to another string */
-static int strcopy(char s1[], char s2[], int size)
+static int strcopy(char s1[], const char s2[], int size)
 {
 	int i, j;
 
@@ -506,6 +501,18 @@ static void itoa_r(int n, char s[])
 		s[i++] = '-';
 	s[i] = '\0';
 	reverse_r(s);
+}
+
+/* str_dup:  returns pointer to duplicated string */
+static char *str_dup(const char *s)
+{
+	char *r;
+
+	r = (char*)malloc(strlength(s)+1);
+	if (r == NULL)
+		return NULL;
+	strcopy(r, s, strlength(s));
+	return r;
 }
 
 #endif
