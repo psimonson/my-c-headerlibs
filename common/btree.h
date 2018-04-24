@@ -5,8 +5,7 @@
  ************************************************************
  */
 
-#ifndef BTREE_H
-#define BTREE_H
+#define PRS_BTREE_H
 
 #ifndef PRS_HELPER_H
 #include "helper.h"
@@ -42,11 +41,11 @@ static void destroy_tree(btree_t *leaf)
 }
 
 /* callback function declarations */
-typedef void (*print_callback)(btree_t *leaf);
-typedef void (*setopt_callback)();
+typedef void (*print_cb)(btree_t *leaf);
+typedef void (*setopt_cb)();
 
 /* init_tree:  call this initialize the tree */
-btree_t *init_tree(print_callback print_func, setopt_callback option_func)
+static btree_t *init_tree(print_cb print_func, setopt_cb option_func)
 {
 	void print_tree(btree_t *tree);
 	void setopt_tree(btree_t *tree, int key, const char *text);
@@ -67,7 +66,7 @@ btree_t *init_tree(print_callback print_func, setopt_callback option_func)
 }
 
 /* insert_tree:  adds a new leaf to the binary tree */
-void insert_tree(int key, btree_t **leaf)
+static void insert_tree(int key, btree_t **leaf)
 {
 	if (*leaf == 0) {
 		*leaf = (btree_t*)malloc(sizeof(btree_t));
@@ -84,7 +83,7 @@ void insert_tree(int key, btree_t **leaf)
 }
 
 /* search_tree:  searches given tree; returns leaf, NULL if not found */
-btree_t *search_tree(int key, btree_t *leaf)
+static btree_t *search_tree(int key, btree_t *leaf)
 {
 	if (leaf != 0) {
 		if (key == leaf->key_value)
@@ -98,7 +97,7 @@ btree_t *search_tree(int key, btree_t *leaf)
 }
 
 /* print_tree:  prints just the key values in the tree */
-void print_tree(btree_t *leaf)
+static void print_tree(btree_t *leaf)
 {
 	if (leaf != 0) {
 		print_tree(leaf->left);
@@ -108,7 +107,7 @@ void print_tree(btree_t *leaf)
 }
 
 /* print_whole_tree:  prints everything in the tree */
-void print_whole_tree(btree_t *leaf)
+static void print_whole_tree(btree_t *leaf)
 {
 	if (leaf != 0) {
 		print_whole_tree(leaf->left);
@@ -119,7 +118,7 @@ void print_whole_tree(btree_t *leaf)
 }
 
 /* setopt_tree:  sets data in the options struct of tree */
-void setopt_tree(btree_t *leaf, int key, const char *text)
+static void setopt_tree(btree_t *leaf, int key, const char *text)
 {
 	if (leaf != 0) {
 		btree_t *branch;
@@ -129,5 +128,3 @@ void setopt_tree(btree_t *leaf, int key, const char *text)
 		}
 	}
 }
-
-#endif

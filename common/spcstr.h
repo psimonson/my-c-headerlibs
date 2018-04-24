@@ -8,10 +8,11 @@
  *****************************************************************
  */
 
-#ifndef SPCSTR_H
-#define SPCSTR_H
+#define PRS_SPCSTR_H
 
+#ifndef PRS_STRING_H
 #include "prs_string.h"
+#endif
 
 #define DYN_START_SIZE 16
 
@@ -73,4 +74,3 @@ static void dyn_display(void)
 		printf("%s", __dyn_array[count++]);
 }
 
-#endif

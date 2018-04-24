@@ -9,11 +9,14 @@
  ***********************************************
  */
 
-#ifndef LOGGER_H
-#define LOGGER_H
+#define PRS_LOGGER_H
 
+#ifndef PRS_TEMPFILE_H
 #include "tempfile.h"
+#endif
+#ifndef PRS_STRING_H
 #include "prs_string.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -177,5 +180,3 @@ static int do_log2(int (*func)(void),
 	close_log();
 	return 0;
 }
-
-#endif

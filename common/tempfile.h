@@ -5,8 +5,7 @@
  ************************************************
  */
 
-#ifndef TEMPFILE_H
-#define TEMPFILE_H
+#define PRS_TEMPFILE_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,6 +78,3 @@ static FILE *tempfile(void)
 	atexit(&_tempfile_exit);
 	return fp;
 }
-
-#endif
-

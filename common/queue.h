@@ -5,8 +5,7 @@
  ******************************************************************
  */
 
-#ifndef QUEUE_H
-#define QUEUE_H
+#define PRS_QUEUE_H
 
 #include <stdio.h>
 
@@ -58,5 +57,3 @@ static int queue_get(queue_t *queue, int *val, int *pos)
 		queue->beg = queue->end;
 	return 0;
 }
-
-#endif

@@ -1,12 +1,11 @@
 /* cgi-helper.h - just some common setup stuff for cgi */
 
-#ifndef CGI_HELPER_H
-#define CGI_HELPER_H
+#define PRS_CGIHELPER_H
 
 #include <stdio.h>
 
 
-/* -------------------------------- Normal Functions ------------------------------ */
+/* ----------------------- Normal Functions ----------------------- */
 
 
 static void header_default(const char* title, const char* bgcolor, const char* fgcolor)
@@ -54,5 +53,3 @@ static void footer_default(const char* message)
 	printf("<p align=\"center\"><h5>%s</h5></p>", message);
 	printf("\n</body>\n</html>\n");
 }
-
-#endif

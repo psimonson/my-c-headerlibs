@@ -4,7 +4,6 @@
  ********************************************
  */
 
-#ifndef PRS_STRING_H
 #define PRS_STRING_H
 
 #include <stdio.h>
@@ -126,5 +125,3 @@ static char* str_dup(const char s[])
 	str_copy(retstr, s);
 	return retstr;
 }
-
-#endif

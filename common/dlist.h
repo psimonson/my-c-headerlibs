@@ -4,8 +4,7 @@
  ************************************************
  */
 
-#ifndef DLIST_H
-#define DLIST_H
+#define PRS_DLIST_H
 
 #include "prs_string.h"
 
@@ -122,5 +121,3 @@ static int dlist_is_empty(dlist_t *list)
 {
 	return (list == NULL) ? 0 : dlist_get_count(list) > 0;
 }
-
-#endif
