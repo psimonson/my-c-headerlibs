@@ -8,6 +8,7 @@
  *****************************************************************
  */
 
+#ifndef PRS_SPCSTR_H
 #define PRS_SPCSTR_H
 
 #ifndef PRS_STRING_H
@@ -73,4 +74,4 @@ static void dyn_display(void)
 	while (__dyn_array[count] != NULL && count < __dyn_array_count)
 		printf("%s", __dyn_array[count++]);
 }
-
+#endif

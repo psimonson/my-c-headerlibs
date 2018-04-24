@@ -1,5 +1,6 @@
 /* cgi-helper.h - just some common setup stuff for cgi */
 
+#ifndef PRS_CGIHELPER_H
 #define PRS_CGIHELPER_H
 
 #include <stdio.h>
@@ -53,3 +54,4 @@ static void footer_default(const char* message)
 	printf("<p align=\"center\"><h5>%s</h5></p>", message);
 	printf("\n</body>\n</html>\n");
 }
+#endif

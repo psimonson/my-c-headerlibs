@@ -9,6 +9,7 @@
  ***********************************************
  */
 
+#ifndef PRS_LOGGER_H
 #define PRS_LOGGER_H
 
 #ifndef PRS_TEMPFILE_H
@@ -180,3 +181,4 @@ static int do_log2(int (*func)(void),
 	close_log();
 	return 0;
 }
+#endif

@@ -7,7 +7,7 @@
  ********************************************************************
  */
 
-
+#ifndef PRS_HELPER_H
 #define PRS_HELPER_H
 
 /* ------------------------ Include Headers -------------------------- */
@@ -513,3 +513,4 @@ static char *str_dup(const char *s)
 	strcopy(r, s, strlength(s));
 	return r;
 }
+#endif

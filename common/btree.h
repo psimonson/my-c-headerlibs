@@ -5,6 +5,7 @@
  ************************************************************
  */
 
+#ifndef PRS_BTREE_H
 #define PRS_BTREE_H
 
 #ifndef PRS_HELPER_H
@@ -44,11 +45,12 @@ static void destroy_tree(btree_t *leaf)
 typedef void (*print_cb)(btree_t *leaf);
 typedef void (*setopt_cb)();
 
+static void print_tree(btree_t *tree);
+static void setopt_tree(btree_t *tree, int key, const char *text);
+
 /* init_tree:  call this initialize the tree */
 static btree_t *init_tree(print_cb print_func, setopt_cb option_func)
 {
-	void print_tree(btree_t *tree);
-	void setopt_tree(btree_t *tree, int key, const char *text);
 	btree_t *leaf;
 
 	leaf = (btree_t*)malloc(sizeof(btree_t));
@@ -97,7 +99,7 @@ static btree_t *search_tree(int key, btree_t *leaf)
 }
 
 /* print_tree:  prints just the key values in the tree */
-static void print_tree(btree_t *leaf)
+void print_tree(btree_t *leaf)
 {
 	if (leaf != 0) {
 		print_tree(leaf->left);
@@ -118,7 +120,7 @@ static void print_whole_tree(btree_t *leaf)
 }
 
 /* setopt_tree:  sets data in the options struct of tree */
-static void setopt_tree(btree_t *leaf, int key, const char *text)
+void setopt_tree(btree_t *leaf, int key, const char *text)
 {
 	if (leaf != 0) {
 		btree_t *branch;
@@ -128,3 +130,4 @@ static void setopt_tree(btree_t *leaf, int key, const char *text)
 		}
 	}
 }
+#endif

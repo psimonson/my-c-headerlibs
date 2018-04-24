@@ -4,6 +4,7 @@
  *****************************************************
  */
 
+#ifndef PRS_SOCKHELP_H
 #define PRS_SOCKHELP_H
 
 #ifdef WINDOWS
@@ -317,3 +318,4 @@ static int transfer(int sock, const char *address, const char *fname,
 	*bytes = total;
 	return 0;
 }
+#endif

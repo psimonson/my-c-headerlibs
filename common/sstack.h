@@ -4,6 +4,7 @@
  **********************************************************
  */
 
+#ifndef PRS_SSTACK_H
 #define PRS_SSTACK_H
 
 #include <stdio.h>
@@ -79,3 +80,4 @@ static int stack_popback(stack_t *stack)
 		return 0;
 	return stack->array[stack->top--];
 }
+#endif

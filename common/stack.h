@@ -5,6 +5,7 @@
  **************************************************************
  */
 
+#ifndef PRS_STACK_H
 #define PRS_STACK_H
 
 #include <stdio.h>
@@ -52,3 +53,4 @@ static int stack_pop(stack_t *stack, int *val, int *pos)
 	*pos = stack->pos[stack->top];
 	return 0;
 }
+#endif
