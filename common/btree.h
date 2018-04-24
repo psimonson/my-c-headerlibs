@@ -8,7 +8,9 @@
 #ifndef BTREE_H
 #define BTREE_H
 
+#ifndef PRS_HELPER_H
 #include "helper.h"
+#endif
 #include <stdlib.h>
 
 /* options structure */
