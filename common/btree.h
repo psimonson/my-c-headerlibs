@@ -1,6 +1,16 @@
 /************************************************************
  * btree.h - Simple binary tree that can be modified easily.
  *
+ * To use DATA_OPTIONS define please put this code into your
+ * file where you are going to use this.
+ *
+ * Code:
+ *   #undef options
+ *   struct options {
+ *     char *value; *** You can put anything here this is a
+ *                     place holder. ***
+ *   };
+ *
  * Created by Philip R. Simonson
  ************************************************************
  */
@@ -14,17 +24,31 @@
 #include <stdlib.h>
 
 /* options structure */
+#ifdef DATA_OPTIONS
+#define options OPTIONS2
 struct options {
 	char *value;
 };
+#else
+struct options {
+	char *value;
+};
+#endif
+
+typedef struct btree btree_t;
+
+/* callback function declarations */
+typedef void (*insert_callback)(int key, btree_t **leaf);
+typedef void (*print_callback)(btree_t *leaf);
+typedef void (*setopt_callback)();
 
 /* btree data structure */
-typedef struct btree btree_t;
 struct btree {
 	int key_value;
 	struct options opts;
-	void (*print)(btree_t *leaf);
-	void (*set_opts)();
+	insert_callback insert;
+	print_callback print;
+	setopt_callback set_opts;
 	struct btree *left;
 	struct btree *right;
 };
@@ -41,15 +65,17 @@ static void destroy_tree(btree_t *leaf)
 	}
 }
 
-/* callback function declarations */
-typedef void (*print_cb)(btree_t *leaf);
-typedef void (*setopt_cb)();
-
+static void insert_tree(int key, btree_t **leaf);
 static void print_tree(btree_t *tree);
 static void setopt_tree(btree_t *tree, int key, const char *text);
 
 /* init_tree:  call this initialize the tree */
-static btree_t *init_tree(print_cb print_func, setopt_cb option_func)
+#ifdef DATA_OPTIONS
+static btree_t *init_tree(insert_callback insert_func,
+	print_callback print_func, setopt_callback option_func)
+#else
+static btree_t *init_tree(void)
+#endif
 {
 	btree_t *leaf;
 
@@ -57,9 +83,17 @@ static btree_t *init_tree(print_cb print_func, setopt_cb option_func)
 	if (leaf == 0)
 		return NULL;
 
+	/* initialize custom functions and data */
 	leaf->key_value = 0;
+#ifdef DATA_OPTIONS
+	leaf->insert = (insert_func == NULL) ? insert_tree : insert_func;
 	leaf->print = (print_func == NULL) ? print_tree : print_func;
 	leaf->set_opts = (option_func == NULL) ? setopt_tree : option_func;
+#else
+	leaf->insert = insert_tree;
+	leaf->print = print_tree;
+	leaf->set_opts = setopt_tree;
+#endif
 
 	/* initialize left and right leafs */
 	leaf->left = 0;
@@ -68,7 +102,7 @@ static btree_t *init_tree(print_cb print_func, setopt_cb option_func)
 }
 
 /* insert_tree:  adds a new leaf to the binary tree */
-static void insert_tree(int key, btree_t **leaf)
+void insert_tree(int key, btree_t **leaf)
 {
 	if (*leaf == 0) {
 		*leaf = (btree_t*)malloc(sizeof(btree_t));
@@ -98,22 +132,12 @@ static btree_t *search_tree(int key, btree_t *leaf)
 	return 0;
 }
 
-/* print_tree:  prints just the key values in the tree */
-void print_tree(btree_t *leaf)
+/* print_whole_tree:  prints everything in the tree */
+static void print_tree(btree_t *leaf)
 {
 	if (leaf != 0) {
 		print_tree(leaf->left);
 		print_tree(leaf->right);
-		printf("Key value: %d\n", leaf->key_value);
-	}
-}
-
-/* print_whole_tree:  prints everything in the tree */
-static void print_whole_tree(btree_t *leaf)
-{
-	if (leaf != 0) {
-		print_whole_tree(leaf->left);
-		print_whole_tree(leaf->right);
 		printf("Key Value: %d\nString %d: %s\n",
 			leaf->key_value, leaf->key_value, leaf->opts.value);
 	}
