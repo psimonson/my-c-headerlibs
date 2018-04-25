@@ -28,8 +28,9 @@ struct dlist_data;
 
 /* definitions for callbacks */
 typedef dlist_t *(*create_cb)();
-typedef void(*destroy_cb)(dlist_t **);
+typedef void (*destroy_cb)(dlist_t **);
 typedef void (*add_cb)(dlist_t *, const char *);
+typedef void (*display_cb)(dlist_t *);
 
 /* dlist structure */
 struct dlist_data {
@@ -37,6 +38,7 @@ struct dlist_data {
 	create_cb create;
 	add_cb add;
 	destroy_cb destroy;
+	display_cb display;
 };
 
 /* function prototypes */
@@ -48,7 +50,7 @@ static void dlist_display(dlist_t *list);
 /* dlist_init:  initialize dynamic linked list */
 #ifdef DLIST_DATA_OPTIONS
 static struct dlist_data *dlist_init(create_cb create_func, add_cb add_func,
-	destroy_cb destroy_func)
+	destroy_cb destroy_func, display_cb display_func)
 #else
 static struct dlist_data *dlist_init(void)
 #endif
@@ -64,10 +66,12 @@ static struct dlist_data *dlist_init(void)
 	data->create = (create_func == NULL) ? dlist_create : create_func;
 	data->add = (add_func == NULL) ? dlist_add : add_func;
 	data->destroy = (destroy_func == NULL) ? dlist_destroy : destroy_func;
+	data->display = (display_func == NULL) ? dlist_display : display_func;
 #else
 	data->create = dlist_create;
 	data->add = dlist_add;
 	data->destroy = dlist_destroy;
+	data->display = dlist_display;
 #endif
 	return data;
 }
