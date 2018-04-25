@@ -304,12 +304,11 @@ static int strcompare(char s1[], char s2[])
 }
 
 /* strcopy:  copies a string to another string */
-static int strcopy(char s1[], const char s2[], int size)
+static int strcopy(char *s1, const char *s2)
 {
 	int i, j;
 
-	for (i = j = 0; i < size-1 && s2[j] != 0; i++, j++)
-		s1[i] = s2[j];
+	for (i = j = 0; (s1[i] = s2[j]) != 0; i++,j++)
 	s1[i] = '\0';
 	return i;
 }
@@ -343,7 +342,7 @@ static void rescapes(char s[])
 			tmp[j++] = s[i++];
 		}
 	tmp[j] = '\0';
-	strcopy(s, tmp, strlength(tmp)+1);
+	strcopy(s, tmp);
 }
 
 /* chtolt:  convert input character from regular text to 1337 5p34k */
@@ -503,14 +502,26 @@ static void itoa_r(int n, char s[])
 }
 
 /* str_dup:  returns pointer to duplicated string */
-static char *str_dup(const char *s)
+static char *str_dup(const char *org)
 {
-	char *r;
+	int org_size;
+	static char *dup;
+	char *dup_offset;
 
-	r = (char*)malloc(strlength(s)+1);
-	if (r == NULL)
-		return NULL;
-	strcopy(r, s, strlength(s));
-	return r;
+	/* Allocate memory for duplicate */
+	org_size = strlength(org);
+	dup = (char*)malloc(sizeof(char)*org_size+1);
+	if (dup == NULL)
+		return (char*)NULL;
+
+	/* Copy string */
+	dup_offset = dup;
+	while (*org) {
+		*dup_offset = *org;
+		dup_offset++;
+		org++;
+	}
+	*dup_offset = '\0';
+	return dup;
 }
 #endif

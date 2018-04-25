@@ -7,27 +7,79 @@
 #ifndef PRS_DLIST_H
 #define PRS_DLIST_H
 
-#include "prs_string.h"
+#ifndef PRS_HELPER_H
+#include "helper.h"
+#endif
+#include <stdlib.h>
 
 /* used for id inside struct */
 static int id;
 
 /* data structure for list */
+#ifndef DLIST_DATA_OPTIONS
 struct dlist {
 	int id;
 	char *data;
 	struct dlist *next;
 };
-/* typedef for DLIST structure */
+#endif
 typedef struct dlist dlist_t;
+struct dlist_data;
+
+/* definitions for callbacks */
+typedef dlist_t *(*create_cb)();
+typedef void (*remove_cb)(dlist_t *);
+typedef dlist_t *(*destroy_cb)(struct dlist_data *);
+typedef void (*add_cb)(dlist_t *, const char *);
+
+/* dlist structure */
+struct dlist_data {
+	struct dlist *list;
+	create_cb create;
+	add_cb add;
+	remove_cb remove;
+	destroy_cb destroy;
+};
+
+/* function prototypes */
+static dlist_t *dlist_create(const char *data);
+static void dlist_remove(dlist_t *list);
+static dlist_t *dlist_destroy(struct dlist_data *);
+static void dlist_add(dlist_t *list, const char *data);
+static void dlist_display(dlist_t *list);
+
+/* dlist_init:  initialize dynamic linked list */
+static struct dlist_data *dlist_init(void)
+{
+	struct dlist_data *data;
+
+	data = (struct dlist_data*)malloc(sizeof(struct dlist_data));
+	if (data == 0)
+		return NULL;
+
+	data->list = 0;
+#ifdef DLIST_DATA_OPTIONS
+	data->create = (create_func == NULL) ? dlist_create : create_func;
+	data->add = (add_func == NULL) ? dlist_add : add_func;
+	data->remove = (remove_func == NULL) ? dlist_remove : remove_func;
+	data->destroy = (destroy_func == NULL) ? dlist_destroy : destroy_func;
+#else
+	data->create = dlist_create;
+	data->add = dlist_add;
+	data->remove = dlist_remove;
+	data->destroy = dlist_destroy;
+#endif
+	return data;
+}
+
 
 /* dlist_create:  create the dynamic linked list */
-static dlist_t *dlist_create(const char *data)
+dlist_t *dlist_create(const char *data)
 {
 	extern int id;
 	dlist_t *list;
 
-	list = malloc(sizeof(dlist_t));
+	list = (dlist_t*)malloc(sizeof(dlist_t));
 	if (list == NULL)
 		return NULL;
 	list->id = ++id;
@@ -37,7 +89,7 @@ static dlist_t *dlist_create(const char *data)
 }
 
 /* dlist_remove:  remove an item; freeing the memory */
-static void dlist_remove(dlist_t *list)
+void dlist_remove(dlist_t *list)
 {
 	dlist_t *tmp;
 
@@ -58,22 +110,35 @@ static void dlist_remove(dlist_t *list)
 }
 
 /* dlist_destroy:  destroy whole list; freeing all memory */
-static void dlist_destroy(dlist_t *list)
+dlist_t *dlist_destroy(struct dlist_data *data)
 {
 	dlist_t *tmp;
+	int i;
 
-	tmp = list;
-	while (tmp->next != NULL) {
-		dlist_remove(tmp);
+	i = 0;
+	tmp = data->list;
+	while (tmp->next->next != NULL) {
+		i++;
 		tmp = tmp->next;
 	}
-	free(list);
-	list = NULL;
+	for (; i >= 0; i--)
+		data->remove(data->list);
 	id = 0;
+	return (data->list == NULL) ? NULL : data->list;
+}
+
+/* dlist_cleanup:  cleans all data used from dlist */
+void dlist_cleanup(struct dlist_data *data)
+{
+	if (data != 0) {
+		if (data->list != 0)
+			data->list = data->destroy(data);
+		free(data);
+	}
 }
 
 /* dlist_add:  add item to end of list */
-static void dlist_add(dlist_t *list, const char *data)
+void dlist_add(dlist_t *list, const char *data)
 {
 	dlist_t *tmp;
 
@@ -86,7 +151,7 @@ static void dlist_add(dlist_t *list, const char *data)
 }
 
 /* dlist_display:  displays the Contents of the list */
-static void dlist_display(dlist_t *list)
+void dlist_display(dlist_t *list)
 {
 	dlist_t *tmp;
 
@@ -110,7 +175,7 @@ static int dlist_get_count(dlist_t *list)
 
 	count = 0;
 	tmp = list;
-	while (tmp->next != NULL) {
+	while (tmp != NULL) {
 		count++;
 		tmp = tmp->next;
 	}
@@ -120,6 +185,6 @@ static int dlist_get_count(dlist_t *list)
 /* dlist_is_empty:  checks for elements; returns 0 if empty */
 static int dlist_is_empty(dlist_t *list)
 {
-	return (list == NULL) ? 0 : dlist_get_count(list) > 0;
+	return (list != NULL) ? 0 : 1;
 }
 #endif
