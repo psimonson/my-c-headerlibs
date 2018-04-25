@@ -38,14 +38,21 @@ void setopts(int key, int value, const char *data, btree_t *leaf)
 void print(btree_t *leaf)
 {
 	if (leaf != 0) {
-		print(leaf->left);
-		print(leaf->right);
-		printf("======= Branch [%d] ======\n"
+		printf("====== Branch [%d] ======\n"
 			"String: %s\n"
 			"Test Integer: %d\n"
-			"==== End Branch [%d] ====\n\n",
+			"==== End Branch [%d] ====\n",
 			leaf->key_value, leaf->opts.value, leaf->opts.test,
 			leaf->key_value);
+	}
+}
+
+void print_whole(btree_t *leaf)
+{
+	if (leaf != 0) {
+		print(leaf);
+		print_whole(leaf->left);
+		print_whole(leaf->right);
 	}
 }
 
@@ -61,17 +68,32 @@ void destroy(btree_t **leaf)
 }
 
 /* program to simply test my binary tree header library */
-int main(void)
+int main(int argc, char *argv[])
 {
 	btree_t *tree; /* without initializing to zero, use init_tree() */
 
-	tree = init_tree(&insert, &setopts, &print, &destroy);
+	tree = init_tree(&insert, &setopts, &print_whole, &destroy);
 	tree->insert(1, &tree);
 	tree->insert(2, &tree);
+	tree->insert(3, &tree);
+	tree->insert(4, &tree);
 	tree->set_opts(0, 45, "Hello world!", tree);
 	tree->set_opts(1, 50, "Hello again world!", tree);
 	tree->set_opts(2, 65, "Hello for the third time world!", tree);
-	tree->print(tree);
+	tree->set_opts(3, 75, "This is another test!", tree);
+	tree->set_opts(4, 100, "Binary search tree example.", tree);
+	if (argc > 1)
+		while (*++argv != 0) {
+			btree_t *branch;
+			
+			branch = search_tree(atoi(*argv), tree);
+			if (branch != 0)
+				print(branch);
+			else
+				printf("%d not found in tree.\n", atoi(*argv));
+		}
+	else
+		tree->print(tree);
 	tree->destroy(&tree);
 
 	return 0;
