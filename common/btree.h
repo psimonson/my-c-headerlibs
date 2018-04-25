@@ -81,6 +81,7 @@ static btree_t *init_tree(void)
 
 	/* initialize custom functions and data */
 	leaf->key_value = 0;
+	p_zero(&leaf->opts, sizeof(leaf->opts));
 #ifdef DATA_OPTIONS
 	leaf->insert = (insert_func == NULL) ? insert_tree : insert_func;
 	leaf->print = (print_func == NULL) ? print_tree : print_func;
