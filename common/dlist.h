@@ -175,7 +175,7 @@ static int dlist_get_count(dlist_t *list)
 
 	count = 0;
 	tmp = list;
-	while (tmp != NULL) {
+	while (tmp->next != NULL) {
 		count++;
 		tmp = tmp->next;
 	}
