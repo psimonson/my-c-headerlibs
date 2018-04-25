@@ -28,8 +28,7 @@ struct dlist_data;
 
 /* definitions for callbacks */
 typedef dlist_t *(*create_cb)();
-typedef void (*remove_cb)(dlist_t *);
-typedef dlist_t *(*destroy_cb)(struct dlist_data *);
+typedef void(*destroy_cb)(dlist_t **);
 typedef void (*add_cb)(dlist_t *, const char *);
 
 /* dlist structure */
@@ -37,19 +36,22 @@ struct dlist_data {
 	struct dlist *list;
 	create_cb create;
 	add_cb add;
-	remove_cb remove;
 	destroy_cb destroy;
 };
 
 /* function prototypes */
 static dlist_t *dlist_create(const char *data);
-static void dlist_remove(dlist_t *list);
-static dlist_t *dlist_destroy(struct dlist_data *);
+static void dlist_destroy(dlist_t **);
 static void dlist_add(dlist_t *list, const char *data);
 static void dlist_display(dlist_t *list);
 
 /* dlist_init:  initialize dynamic linked list */
+#ifdef DLIST_DATA_OPTIONS
+static struct dlist_data *dlist_init(create_cb create_func, add_cb add_func,
+	destroy_cb destroy_func)
+#else
 static struct dlist_data *dlist_init(void)
+#endif
 {
 	struct dlist_data *data;
 
@@ -61,12 +63,10 @@ static struct dlist_data *dlist_init(void)
 #ifdef DLIST_DATA_OPTIONS
 	data->create = (create_func == NULL) ? dlist_create : create_func;
 	data->add = (add_func == NULL) ? dlist_add : add_func;
-	data->remove = (remove_func == NULL) ? dlist_remove : remove_func;
 	data->destroy = (destroy_func == NULL) ? dlist_destroy : destroy_func;
 #else
 	data->create = dlist_create;
 	data->add = dlist_add;
-	data->remove = dlist_remove;
 	data->destroy = dlist_destroy;
 #endif
 	return data;
@@ -88,43 +88,19 @@ dlist_t *dlist_create(const char *data)
 	return list;
 }
 
-/* dlist_remove:  remove an item; freeing the memory */
-void dlist_remove(dlist_t *list)
-{
-	dlist_t *tmp;
-
-	if (list->next == NULL) {
-		free(list->data);
-		free(list);
-	}
-
-	/* get to the last node */
-	tmp = list;
-	while (tmp->next->next != NULL) {
-		tmp = tmp->next;
-	}
-
-	/* now current is last item */
-	free(tmp->data);
-	free(tmp);
-}
-
 /* dlist_destroy:  destroy whole list; freeing all memory */
-dlist_t *dlist_destroy(struct dlist_data *data)
+void dlist_destroy(dlist_t **list)
 {
-	dlist_t *tmp;
-	int i;
+	dlist_t *cur, *next;
 
-	i = 0;
-	tmp = data->list;
-	while (tmp->next->next != NULL) {
-		i++;
-		tmp = tmp->next;
+	cur = *list;
+	while (cur != NULL) {
+		next = cur->next;
+		free(cur->data);
+		free(cur);
+		cur = next;
 	}
-	for (; i >= 0; i--)
-		data->remove(data->list);
-	id = 0;
-	return (data->list == NULL) ? NULL : data->list;
+	*list = NULL;
 }
 
 /* dlist_cleanup:  cleans all data used from dlist */
@@ -132,7 +108,7 @@ void dlist_cleanup(struct dlist_data *data)
 {
 	if (data != 0) {
 		if (data->list != 0)
-			data->list = data->destroy(data);
+			data->destroy(&data->list);
 		free(data);
 	}
 }
@@ -185,6 +161,6 @@ static int dlist_get_count(dlist_t *list)
 /* dlist_is_empty:  checks for elements; returns 0 if empty */
 static int dlist_is_empty(dlist_t *list)
 {
-	return (list != NULL) ? 0 : 1;
+	return (list != NULL);
 }
 #endif

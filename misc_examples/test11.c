@@ -17,8 +17,9 @@ int main()
 	printf("List item count: %d\n", dlist_get_count(data->list));
 
 	/* destroy the list */
-	data->list = data->destroy(data);
-	printf("List empty status: %d\n", dlist_is_empty(data->list));
+	data->destroy(&data->list);
+	printf("List empty status: %s\n",
+		(dlist_is_empty(data->list) == 0) ? "Empty" : "Not Empty");
 	dlist_cleanup(data);
 	return EXIT_SUCCESS; /* return success */
 }
