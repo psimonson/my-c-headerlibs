@@ -2,14 +2,12 @@
  * btree.h - Simple binary tree that can be modified easily.
  *
  * To use DATA_OPTIONS define please put this code into your
- * file where you are going to use this.
+ * file above where you include this header, and define
+ * DATA_OPTIONS before you include this header also if you
+ * want it custom.
  *
  * Code:
- *   #undef options
- *   struct options {
- *     char *value; *** You can put anything here this is a
- *                     place holder. ***
- *   };
+ *   struct options { ... };
  *
  * Created by Philip R. Simonson
  ************************************************************
@@ -24,12 +22,7 @@
 #include <stdlib.h>
 
 /* options structure */
-#ifdef DATA_OPTIONS
-#define options OPTIONS2
-struct options {
-	char *value;
-};
-#else
+#ifndef DATA_OPTIONS
 struct options {
 	char *value;
 };
@@ -41,6 +34,7 @@ typedef struct btree btree_t;
 typedef void (*insert_callback)(int key, btree_t **leaf);
 typedef void (*print_callback)(btree_t *leaf);
 typedef void (*setopt_callback)();
+typedef void (*destroy_callback)(btree_t **leaf);
 
 /* btree data structure */
 struct btree {
@@ -49,19 +43,20 @@ struct btree {
 	insert_callback insert;
 	print_callback print;
 	setopt_callback set_opts;
+	destroy_callback destroy;
 	struct btree *left;
 	struct btree *right;
 };
 
 /* destroy_tree:  frees all memory; wiping the tree clean */
-static void destroy_tree(btree_t *leaf)
+static void destroy_tree(btree_t **leaf)
 {
-	if (leaf != 0) {
-		destroy_tree(leaf->left);
-		destroy_tree(leaf->right);
-		if (leaf->opts.value != 0)
-			free(leaf->opts.value);
-		free(leaf);
+	if (*leaf != 0) {
+		destroy_tree(&(*leaf)->left);
+		destroy_tree(&(*leaf)->right);
+		if ((*leaf)->opts.value != 0)
+			free((*leaf)->opts.value);
+		free(*leaf);
 	}
 }
 
@@ -72,7 +67,8 @@ static void setopt_tree(btree_t *tree, int key, const char *text);
 /* init_tree:  call this initialize the tree */
 #ifdef DATA_OPTIONS
 static btree_t *init_tree(insert_callback insert_func,
-	print_callback print_func, setopt_callback option_func)
+	setopt_callback option_func, print_callback print_func,
+	destroy_callback destroy_func)
 #else
 static btree_t *init_tree(void)
 #endif
@@ -89,10 +85,12 @@ static btree_t *init_tree(void)
 	leaf->insert = (insert_func == NULL) ? insert_tree : insert_func;
 	leaf->print = (print_func == NULL) ? print_tree : print_func;
 	leaf->set_opts = (option_func == NULL) ? setopt_tree : option_func;
+	leaf->destroy = (destroy_func == NULL) ? destroy_tree : destroy_func;
 #else
 	leaf->insert = insert_tree;
 	leaf->print = print_tree;
 	leaf->set_opts = setopt_tree;
+	leaf->destroy = destroy_tree;
 #endif
 
 	/* initialize left and right leafs */

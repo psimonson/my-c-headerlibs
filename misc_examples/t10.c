@@ -12,7 +12,7 @@ int main(void)
 	tree->set_opts(tree, 1, "Hello again world!");
 	tree->set_opts(tree, 2, "Hello for the third time world!");
 	tree->print(tree);
-	destroy_tree(tree);
+	tree->destroy(&tree);
 
 	return 0;
 }
