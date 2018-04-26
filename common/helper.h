@@ -71,7 +71,7 @@ static int getstr(char *s, int lim)
 }
 
 /* strlength:  returns the length of a string */
-static int strlength(const char s[])
+static int strlength(const char *s)
 {
 	int i;
 
@@ -93,7 +93,7 @@ static int strindex(char *s, const char *t)
 }
 
 /* shellsort:  sort v[0]...v[n-1] to increasing order */
-static void shellsort(int v[], int n)
+static void shellsort(int *v, int n)
 {
 	int gap, i, j, temp;
 
@@ -107,7 +107,7 @@ static void shellsort(int v[], int n)
 }
 
 /* alphasort:  sort string of characters in alphabetical order */
-static void alphasort(char s[], int size)
+static void alphasort(char *s, int size)
 {
 	int i, tmp;
 	unsigned char swapped;
@@ -126,7 +126,7 @@ static void alphasort(char s[], int size)
 }
 
 /* reverse:  reverse s inplace */
-static void reverse(char s[])
+static void reverse(char *s)
 {
 	int c, i, j;
 
@@ -135,7 +135,7 @@ static void reverse(char s[])
 }
 
 /* expand:  expand a-z,A-Z,0-9 into the entire string of them */
-static void expand(char s1[], char s2[])
+static void expand(char *s1, char *s2)
 {
 	int i, j, k, count;
 
@@ -157,7 +157,7 @@ static void expand(char s1[], char s2[])
 }
 
 /* p_itoa:  converts integer to string */
-static void p_itoa(int n, char s[])
+static void p_itoa(int n, char *s)
 {
 	int i;
 	int sign;
@@ -174,18 +174,18 @@ static void p_itoa(int n, char s[])
 }
 
 /* trim:  trims newlines, blanks, tabs off string */
-static void trim(char s[])
+static void trim(char *s)
 {
 	int i;
 
 	for (i = strlength(s)-1; i >= 0; i--)
-		if (s[i] == '\t' || s[i] == '\n')
+		if (s[i] == '\r' || s[i] == '\n')
 			break;
 	s[i] = '\0';
 }
 
 /* escape:  change newlines, tabs; into visible representation */
-static int escape(char s[], char t[])
+static int escape(char *s, char *t)
 {
 	int i, j;
 
@@ -208,7 +208,7 @@ static int escape(char s[], char t[])
 }
 
 /* escape_r:  visible representation of newlines and tabs into characters */
-static int escape_r(char s[], char t[])
+static int escape_r(char *s, char *t)
 {
 	int last, i, j;
 
@@ -257,7 +257,7 @@ static int htoi(char *s)
 }
 
 /* itob:  formats n as a base b integer in s */
-static void itob(int n, char s[], int b)
+static void itob(int n, char *s, int b)
 {
 	int sign;
 	int i;
@@ -275,7 +275,7 @@ static void itob(int n, char s[], int b)
 }
 
 /* itoa2:  converts integer to string */
-static void itoa2(int n, char s[], int w)
+static void itoa2(int n, char *s, int w)
 {
 	int i;
 	int sign;
@@ -293,11 +293,11 @@ static void itoa2(int n, char s[], int w)
 }
 
 /* strcompare:  compare s1 to s2; returns s2-s1 */
-static int strcompare(char s1[], char s2[])
+static int strcompare(char *s1, char *s2)
 {
 	int i, j;
 
-	for (i = j = 0; i < strlength(s1) || j < strlength(s2); i++, j++)
+	for (i = j = 0; i < strlength(s1); i++, j++)
 		if (s1[i] != s2[j])
 			return s2[j] - s1[i];
 	return 0;
@@ -306,9 +306,9 @@ static int strcompare(char s1[], char s2[])
 /* strcopy:  copies a string to another string */
 static int strcopy(char *s1, const char *s2)
 {
-	int i, j;
+	int i;
 
-	for (i = j = 0; (s1[i] = s2[j]) != 0; i++,j++)
+	for (i = 0; (s1[i] = s2[i]) != 0; i++);
 	s1[i] = '\0';
 	return i;
 }
@@ -318,13 +318,13 @@ static int memcopy(void *s1, void *s2, int size)
 {
 	int i, j;
 
-	for (i = j = 0; i < size && j < size; i++, j++)
+	for (i = j = 0; j < size; i++, j++)
 		((char *)s1)[i] = ((char *)s2)[j];
 	return i;
 }
 
 /* rescapes:  remove all escape sequences from cstring */
-static void rescapes(char s[])
+static void rescapes(char *s)
 {
 	int len = strlength(s);
 	char tmp[len+1];
@@ -387,22 +387,22 @@ static int chtolt(int c)
 }
 
 /* leetconv:  convert s2 into leet speak in s1 */
-static void leetconv(char s1[], char s2[])
+static void leetconv(char *s1, char *s2)
 {
 	int i, j;
 
-	for (i = j = 0; s2[j] != 0; ++i, ++j)
-		s1[i] = chtolt(s2[j]);
+	for (i = j = 0; (s1[i] = chtolt(s2[j])) != 0; ++i, ++j);
 	s1[i] = '\0';
 }
 
 /* strindex_r:  returns index of t in s, -1 if none; in reverse */
-static int strindex_r(char s[], const char t[])
+static int strindex_r(char *s, const char *t)
 {
 	int i, j, k;
 
 	for (i = strlength(s)-1; i >= 0; i--) {
-		for (j = i, k = strlength(t)-1; k >= 0 && j >= 0 && s[j] == t[k]; j--, k--);
+		for (j = i, k = strlength(t)-1; k >= 0 && j >= 0
+			&& s[j] == t[k]; j--, k--);
 		if (k < 0)
 			return i;
 	}
@@ -410,7 +410,7 @@ static int strindex_r(char s[], const char t[])
 }
 
 /* p_atof:  convert string s to double */
-static double p_atof(char s[])
+static double p_atof(char *s)
 {
 	double val, power;
 	int i, sign;
