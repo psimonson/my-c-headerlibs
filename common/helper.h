@@ -174,14 +174,17 @@ static void p_itoa(int n, char *s)
 }
 
 /* trim:  trims newlines, blanks, tabs off string */
-static void trim(char *s)
+static int trim(char *s)
 {
 	int i;
 
 	for (i = strlength(s)-1; i >= 0; i--)
 		if (s[i] == '\r' || s[i] == '\n')
+			s[i] = '\0';
+		else if (isprint(s[i]))
 			break;
-	s[i] = '\0';
+	s[i+1] = '\0';
+	return i+1;
 }
 
 /* escape:  change newlines, tabs; into visible representation */

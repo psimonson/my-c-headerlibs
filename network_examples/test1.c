@@ -5,8 +5,6 @@
  **************************************************
  */
 
-/* uncomment for windows build... */
-/* #define WINDOWS */
 #include "../common/sock_help.h"
 
 #define MAXLINE		1024
@@ -20,15 +18,16 @@ int main(int argc, char *argv[])
 	int serverfd;
 	int addrlen;
 	int newfd;
+	int bytes;
 
 	/* create server socket */
 	serverfd = create_server(0, 5555, "0.0.0.0");
 	if (serverfd < 0)	/* handle error */
 		return -1;
 	addrlen = sizeof(addr);
-#ifdef WINDOWS
+#ifdef WIN32
 	newfd = accept(serverfd, (struct sockaddr*)&addr,
-		(unsigned int*)&addrlen);
+		(int*)&addrlen);
 #else
 	newfd = accept(serverfd, (struct sockaddr*)&addr,
 		(unsigned int*)&addrlen);
@@ -36,21 +35,20 @@ int main(int argc, char *argv[])
 	if (newfd < 0)
 		perror("accept");
 	puts("Client connected!");
+	send_msg(newfd, "Type 'exit' without quotes to quit...\r\n"
+		"Anything else will echo back to you.\r\n");
 
 	while (1) {
-		int bytes;
-
-		if ((bytes = getln_remote(newfd, line, sizeof(line))) <= 0) {
-			if (bytes == 0) {
-				puts("Client disconnected!");
-			} else {
-				perror("recv");
+		if ((bytes = get_cmd(newfd, line, sizeof(line))) > 0) {
+			if (strcompare(line, "exit") == 0) {
+				close_conn(newfd);
+				break;
 			}
-			close_conn(newfd);
-			break;
+			bytes = send_msg(newfd, "You gave me...\r\n");
+			sprintf(message, "%s\r\n", line);
+			bytes = send_msg(newfd, message);
 		} else {
 			/* handle sending data */
-			bytes = send_msg(newfd, "You gave me...\r\n");
 			if (bytes <= 0) {
 				if (bytes == 0) {
 					puts("Client disconnected!");
@@ -60,11 +58,10 @@ int main(int argc, char *argv[])
 				close_conn(newfd);
 				break;
 			}
-			sprintf(message, "%s\r\n", line);
-			bytes = send_msg(newfd, message);
 		}
 	}
 	close_conn(serverfd);	/* close server socket */
+	printf("Connection closed.\n");
 	return 0;
 }
 

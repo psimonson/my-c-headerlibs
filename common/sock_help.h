@@ -21,7 +21,9 @@
 #include <fcntl.h>
 #endif
 
-#include <stdio.h>
+#ifndef PRS_HELPER_H
+#include "helper.h"
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -38,7 +40,11 @@
 #define MAX_CLIENTS	10
 
 /* set_nonblocking: set a socket to non-blocking IO */
+#ifdef WIN32
+static int set_nonblocking(SOCKET sock)
+#else
 static int set_nonblocking(int sock)
+#endif
 {
 #ifdef WINDOWS
 	unsigned long mode = 1;
@@ -52,7 +58,7 @@ static int set_nonblocking(int sock)
 static int create_server(int nonblocking, int port, const char *address)
 {
 	struct sockaddr_in server;
-#ifdef WINDOWS
+#ifdef WIN32
 	SOCKET sock;
 	WSADATA wsaData;
 #else
@@ -65,7 +71,7 @@ static int create_server(int nonblocking, int port, const char *address)
 	server.sin_port = htons(port);
 	server.sin_addr.s_addr = inet_addr(address);
 
-#ifdef WINDOWS
+#ifdef WIN32
 	if (WSAStartup(0x0202, &wsaData) != 0) {
 		puts("Error: Could not start winsock.");
 		return -1;
@@ -111,14 +117,9 @@ static int create_server(int nonblocking, int port, const char *address)
 static int create_client(int nonblocking, int port, const char *address)
 {
 	struct sockaddr_in server;
-#ifdef WINDOWS
+#ifdef WIN32
 	SOCKET sock;
 	WSADATA wsaData;
-
-	if (WSAStartup(0x0202, &wsaData) != 0) {
-		fprintf(stderr, "Error: Cannot start winsock library.\n");
-		return -1;
-	}
 #else
 	int sock;
 #endif
@@ -128,7 +129,11 @@ static int create_client(int nonblocking, int port, const char *address)
 	server.sin_port = htons(port);
 	server.sin_addr.s_addr = inet_addr(address);
 
-#ifdef WINDOWS
+#ifdef WIN32
+	if (WSAStartup(0x0202, &wsaData) != 0) {
+		fprintf(stderr, "Error: Cannot start winsock library.\n");
+		return -1;
+	}
 	if ((sock = WSASocket(AF_INET, SOCK_STREAM,
 		IPPROTO_TCP, NULL, 0, 0)) == INVALID_SOCKET) {
 		fprintf(stderr, "Error: Cannot create the client socket.\n");
@@ -152,7 +157,11 @@ static int create_client(int nonblocking, int port, const char *address)
 }
 
 /* send_msg:  send message to remote socket */
+#ifdef WIN32
+static int send_msg(SOCKET sock, const char *msg)
+#else
 static int send_msg(int sock, const char *msg)
+#endif
 {
 	int bytes;
 	if ((bytes = send(sock, msg, strlen(msg), 0)) != strlen(msg)) {
@@ -163,9 +172,13 @@ static int send_msg(int sock, const char *msg)
 }
 
 /* close_conn:  closes remote connection */
+#ifdef WIN32
+static void close_conn(SOCKET sock)
+#else
 static void close_conn(int sock)
+#endif
 {
-#ifdef WINDOWS
+#ifdef WIN32
 	closesocket(sock);
 	WSACleanup();
 #else
@@ -185,7 +198,11 @@ static int check_conn(const char *addr, int port)
 }
 
 /* getln_remote:  gets a remote string */
-static int getln_remote(int sock, char s[], int size)
+#ifdef WIN32
+static int getln_remote(SOCKET sock, char *s, int size)
+#else
+static int getln_remote(int sock, char *s, int size)
+#endif
 {
 	char ch;
 	int chars_remain;
@@ -210,28 +227,19 @@ static int getln_remote(int sock, char s[], int size)
 	return i;
 }
 
-/* strip_cmd:  strips off newlines */
-static void strip_cmd(char buf[], int *len)
-{
-	int i = *len;
-
-	while (i > 0) {
-		if (isprint(buf[i]))
-			break;
-		--i;
-	}
-	buf[i+1] = '\0';
-	*len = i+1;
-}
-
 /* get_cmd:  gets a remote string; removing newlines */
-static void get_cmd(int sock, char buf[], int size)
+#ifdef WIN32
+static int get_cmd(SOCKET sock, char *buf, int size)
+#else
+static int get_cmd(int sock, char *buf, int size)
+#endif
 {
 	int i;
 
 	memset(buf, 0, size);
-	i = getln_remote(sock, buf, size);
-	strip_cmd(buf, &i);
+	(void)getln_remote(sock, buf, size);
+	i = trim(buf);
+	return i;
 }
 
 /* pstrcmp:  compare string s1 with s2 */
@@ -269,8 +277,13 @@ static int pstricmp(const char *p1, const char *p2)
 }
 
 /* transfer:  upload/download files from remote machine */
+#ifdef WIN32
+static int transfer(SOCKET sock, const char *address, const char *fname,
+		int *bytes, unsigned char sending)
+#else
 static int transfer(int sock, const char *address, const char *fname,
 		int *bytes, unsigned char sending)
+#endif
 {
 	FILE *fp = NULL;
 	char buf[MAXLINE];
