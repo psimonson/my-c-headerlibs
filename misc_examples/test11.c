@@ -7,7 +7,7 @@ int main()
 
 	/* list create, set, add new node */
 	data = dlist_init();
-	data->list = dlist_create("Hello.");
+	data->list = data->create("Hello.");
 	data->add(data->list, "Hello world");
 	data->add(data->list, "Hello again world!");
 

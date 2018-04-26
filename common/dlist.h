@@ -29,7 +29,7 @@ struct dlist_data;
 /* definitions for callbacks */
 typedef dlist_t *(*create_cb)();
 typedef void (*destroy_cb)(dlist_t **);
-typedef void (*add_cb)(dlist_t *, const char *);
+typedef void (*add_cb)();
 typedef void (*display_cb)(dlist_t *);
 
 /* dlist structure */
