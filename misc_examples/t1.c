@@ -28,7 +28,7 @@ int main()
 		"=====================\n");
 	reverse_r(s2);
 	printf("Before: %s\n", s2);
-	alphasort(s2, strlength(s2));
+	alpha_sort(s2, strlength(s2));
 	printf("After: %s\n", s2);
 
 	/* testing atoi */

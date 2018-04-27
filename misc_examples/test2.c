@@ -1,3 +1,4 @@
+#include "../common/prs_string.h"
 #include "../common/logger.h"
 
 #define LOG_NAME "log2.txt"

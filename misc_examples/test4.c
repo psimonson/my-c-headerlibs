@@ -1,4 +1,4 @@
-#include "../common/prs_string.h"
+#include "../common/helper.h"
 
 #define MAXLINE 512
 
@@ -13,10 +13,10 @@ int main(int argc, char *argv[])
 	while (running) {
 		if (last) free(last);
 		printf("Enter your name: ");
-		readln(buf, MAXLINE);
+		getstr(buf, MAXLINE);
 		last = str_dup(buf);
 		printf("You typed: %s\n", buf);
-		if (str_cmp(buf, "exit") == 0)
+		if (strcompare(buf, "exit") == 0)
 			running = 0;
 	}
 	printf("Last string typed was: %s\n", last);

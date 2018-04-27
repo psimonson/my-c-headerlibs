@@ -93,7 +93,7 @@ static int strindex(char *s, const char *t)
 }
 
 /* shellsort:  sort v[0]...v[n-1] to increasing order */
-static void shellsort(int *v, int n)
+static void shell_sort(int *v, int n)
 {
 	int gap, i, j, temp;
 
@@ -107,7 +107,7 @@ static void shellsort(int *v, int n)
 }
 
 /* alphasort:  sort string of characters in alphabetical order */
-static void alphasort(char *s, int size)
+static void alpha_sort(char *s, int size)
 {
 	int i, tmp;
 	unsigned char swapped;
@@ -316,8 +316,18 @@ static int strcopy(char *s1, const char *s2)
 	return i;
 }
 
+/* memset:  sets all memory in p to n */
+static void *memset(void *p, int n, size_t size)
+{
+	int i;
+
+	for (i = 0; i < size; i++)
+		*(((char*)p)+i) = n;
+	return p;
+}
+
 /* memmove:  move memory to another location */
-static int memcopy(void *s1, void *s2, int size)
+static int mem_copy(void *s1, void *s2, int size)
 {
 	int i, j;
 

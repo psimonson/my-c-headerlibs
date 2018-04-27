@@ -12,7 +12,7 @@
 #define PRS_SPCSTR_H
 
 #ifndef PRS_STRING_H
-#include "prs_string.h"
+#include "helper.h"
 #endif
 
 #define DYN_START_SIZE 16

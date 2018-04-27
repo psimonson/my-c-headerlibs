@@ -115,7 +115,7 @@ static int trim_string(char s[])
 }
 
 /* str_dup:  duplicate a string; store into heap */
-static char* str_dup(const char s[])
+static char* str_duplicate(const char s[])
 {
 	char* retstr;
 	int size;

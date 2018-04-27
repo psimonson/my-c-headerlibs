@@ -15,14 +15,12 @@
 #ifndef PRS_TEMPFILE_H
 #include "tempfile.h"
 #endif
-#ifndef PRS_STRING_H
-#include "prs_string.h"
+#ifndef PRS_HELPER_H
+#include "helper.h"
 #endif
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
 #include <errno.h>
 
 #define NAMESIZ 256
@@ -108,7 +106,7 @@ static int crypt_log(void)
 	rewind(__logfile);
 	i = 0;
 	while ((c = fgetc(__logfile)) != EOF) {
-		c ^= key[i%strlen(key)] & 0xf0;
+		c ^= key[i%strlength(key)] & 0xf0;
 		fputc(c, tmp);
 		i++;
 	}
