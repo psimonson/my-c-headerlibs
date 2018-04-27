@@ -34,12 +34,12 @@ int main(int argc, char *argv[])
 
 			sscanf(buf, "key_value=%d;data=%[^\t\n];\n",
 				&key, data);
-			tree->set_opts(tree, key, data);
-			tree->insert(key+1, &tree);
+			btree_setopt(tree, key, data);
+			btree_insert(key+1, &tree);
 		}
 		fclose(fp);
-		tree->print(tree);
-		tree->destroy(&tree);
+		btree_print(tree);
+		btree_destroy(&tree);
 	} else {
 		if ((fp = fopen(argv[1], "at")) == NULL)
 			DIE("Cannot open file for writing.");

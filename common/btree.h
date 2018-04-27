@@ -40,13 +40,14 @@ typedef void (*destroy_callback)(btree_t **leaf);
 struct btree {
 	int key_value;
 	struct options opts;
-	insert_callback insert;
-	print_callback print;
-	setopt_callback set_opts;
-	destroy_callback destroy;
 	struct btree *left;
 	struct btree *right;
 };
+
+insert_callback btree_insert;
+print_callback btree_print;
+setopt_callback btree_setopt;
+destroy_callback btree_destroy;
 
 /* destroy_tree:  frees all memory; wiping the tree clean */
 static void destroy_tree(btree_t **leaf)
@@ -79,21 +80,21 @@ static btree_t *init_tree(void)
 	if (leaf == 0)
 		return NULL;
 
+#ifdef DATA_OPTIONS
+	btree_insert = (insert_func == NULL) ? insert_tree : insert_func;
+	btree_print = (print_func == NULL) ? print_tree : print_func;
+	btree_setopt = (option_func == NULL) ? setopt_tree : option_func;
+	btree_destroy = (destroy_func == NULL) ? destroy_tree : destroy_func;
+#else
+	btree_insert = insert_tree;
+	btree_print = print_tree;
+	btree_setopt = setopt_tree;
+	btree_destroy = destroy_tree;
+#endif
+
 	/* initialize custom functions and data */
 	leaf->key_value = 0;
 	p_zero(&leaf->opts, sizeof(leaf->opts));
-#ifdef DATA_OPTIONS
-	leaf->insert = (insert_func == NULL) ? insert_tree : insert_func;
-	leaf->print = (print_func == NULL) ? print_tree : print_func;
-	leaf->set_opts = (option_func == NULL) ? setopt_tree : option_func;
-	leaf->destroy = (destroy_func == NULL) ? destroy_tree : destroy_func;
-#else
-	leaf->insert = insert_tree;
-	leaf->print = print_tree;
-	leaf->set_opts = setopt_tree;
-	leaf->destroy = destroy_tree;
-#endif
-
 	/* initialize left and right leafs */
 	leaf->left = 0;
 	leaf->right = 0;

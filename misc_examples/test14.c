@@ -17,15 +17,15 @@ struct dlist {
 #include "../common/dlist.h"
 
 /* create:  creates first element of dlist */
-dlist_t *create(int id, const char *data)
+dlist_t *create(void)
 {
 	dlist_t *list;
 
 	list = (dlist_t*)malloc(sizeof(dlist_t));
 	if (list == 0)
 		return NULL;
-	list->id = id;
-	list->data = str_dup(data);
+	list->id = -1;
+	list->data = 0;
 	list->next = NULL;
 	return list;
 }
@@ -45,7 +45,16 @@ void destroy(dlist_t **list)
 	*list = NULL;
 }
 
-/* dlist_add:  add item to end of list */
+/* set:  custom set data function */
+void set(dlist_t *list, int id, const char *data)
+{
+	if (list == 0)
+		return;
+	list->id = id;
+	list->data = str_dup(data);
+}
+
+/* add:  add item to end of list */
 void add(dlist_t *list, int id, const char *data)
 {
 	dlist_t *tmp;
@@ -55,7 +64,8 @@ void add(dlist_t *list, int id, const char *data)
 		tmp = tmp->next;
 	}
 
-	tmp->next = create(id, data);
+	tmp->next = create();
+	set(tmp->next, id, data);
 }
 
 /* dlist_display:  displays the contents of the list */
@@ -67,27 +77,26 @@ void display(dlist_t *list)
 /* program to test my dynamic linked list */
 int main()
 {
-	struct dlist_data *data;
+	dlist_t *list;
 
 	/* list create, set, add new node
 	 * args for dlist_init(create, add, destroy, display)
 	 */
-	data = dlist_init(create, add, destroy, NULL);
-	data->list = data->create(0, "Hello.");
-	data->add(data->list, 1, "Hello world");
-	data->add(data->list, 2, "Hello again world!");
+	list = dlist_init(create, add, set, destroy, NULL);
+	dlist_set(list, 0, "Hello.");
+	dlist_add(list, 1, "Hello world");
+	dlist_add(list, 2, "Hello again world!");
 
 	/* now display the list */
-	data->display(data->list);
+	dlist_display(list);
 	/* display the count */
-	printf("List item count: %d\n", dlist_get_count(data->list));
+	printf("List item count: %d\n", dlist_get_count(list));
 
 	/* destroy the list */
-/*	data->destroy(&data->list);	* Uncomment to clear list before
- 					* status check happens */
+/*	dlist_destroy(&list);	* Uncomment to clear list before
+ 				* status check happens */
 	printf("List empty status: %s\n",
-		(dlist_is_empty(data->list) == 0) ? "Empty" : "Not Empty");
-	/* if data->destroy() not used, this also destroys the list */
-	dlist_cleanup(data);
+		(dlist_is_empty(list) == 0) ? "Empty" : "Not Empty");
+	dlist_cleanup(list);
 	return EXIT_SUCCESS; /* return success */
 }

@@ -73,15 +73,15 @@ int main(int argc, char *argv[])
 	btree_t *tree; /* without initializing to zero, use init_tree() */
 
 	tree = init_tree(&insert, &setopts, &print_whole, &destroy);
-	tree->insert(1, &tree);
-	tree->insert(2, &tree);
-	tree->insert(3, &tree);
-	tree->insert(4, &tree);
-	tree->set_opts(0, 45, "Hello world!", tree);
-	tree->set_opts(1, 50, "Hello again world!", tree);
-	tree->set_opts(2, 65, "Hello for the third time world!", tree);
-	tree->set_opts(3, 75, "This is another test!", tree);
-	tree->set_opts(4, 100, "Binary search tree example.", tree);
+	btree_insert(1, &tree);
+	btree_insert(2, &tree);
+	btree_insert(3, &tree);
+	btree_insert(4, &tree);
+	btree_setopt(0, 45, "Hello world!", tree);
+	btree_setopt(1, 50, "Hello again world!", tree);
+	btree_setopt(2, 65, "Hello for the third time world!", tree);
+	btree_setopt(3, 75, "This is another test!", tree);
+	btree_setopt(4, 100, "Binary search tree example.", tree);
 	if (argc > 1)
 		while (*++argv != 0) {
 			btree_t *branch;
@@ -93,8 +93,7 @@ int main(int argc, char *argv[])
 				printf("%d not found in tree.\n", atoi(*argv));
 		}
 	else
-		tree->print(tree);
-	tree->destroy(&tree);
-
+		btree_print(tree);
+	btree_destroy(&tree);
 	return 0;
 }

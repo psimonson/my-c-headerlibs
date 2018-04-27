@@ -6,13 +6,13 @@ int main(void)
 	btree_t *tree; /* without initializing to zero, use init_tree() */
 
 	tree = init_tree();
-	tree->insert(1, &tree);
-	tree->insert(2, &tree);
-	tree->set_opts(tree, 0, "Hello world!");
-	tree->set_opts(tree, 1, "Hello again world!");
-	tree->set_opts(tree, 2, "Hello for the third time world!");
-	tree->print(tree);
-	tree->destroy(&tree);
+	btree_insert(1, &tree);
+	btree_insert(2, &tree);
+	btree_setopt(tree, 0, "Hello world!");
+	btree_setopt(tree, 1, "Hello again world!");
+	btree_setopt(tree, 2, "Hello for the third time world!");
+	btree_print(tree);
+	btree_destroy(&tree);
 
 	return 0;
 }

@@ -26,59 +26,59 @@ struct dlist {
 typedef struct dlist dlist_t;
 struct dlist_data;
 
-/* definitions for callbacks */
-typedef dlist_t *(*create_cb)();
-typedef void (*destroy_cb)(dlist_t **);
+/* declarations for callbacks */
+typedef dlist_t *(*create_cb)(void);
 typedef void (*add_cb)();
+typedef void (*set_cb)();
 typedef void (*display_cb)(dlist_t *);
+typedef void (*destroy_cb)(dlist_t **);
 
-/* dlist structure */
-struct dlist_data {
-	struct dlist *list;
-	create_cb create;
-	add_cb add;
-	destroy_cb destroy;
-	display_cb display;
-};
+/* definitions for callbacks */
+create_cb dlist_create;
+add_cb dlist_add;
+set_cb dlist_set;
+display_cb dlist_display;
+destroy_cb dlist_destroy;
 
 /* function prototypes */
-static dlist_t *dlist_create(const char *data);
-static void dlist_destroy(dlist_t **);
-static void dlist_add(dlist_t *list, const char *data);
-static void dlist_display(dlist_t *list);
+static dlist_t *create_dlist(void);
+static void destroy_dlist(dlist_t **);
+static void add_dlist(dlist_t *list, const char *data);
+static void set_dlist(dlist_t *list, const char *data);
+static void display_dlist(dlist_t *list);
 
 /* dlist_init:  initialize dynamic linked list */
 #ifdef DLIST_DATA_OPTIONS
-static struct dlist_data *dlist_init(create_cb create_func, add_cb add_func,
-	destroy_cb destroy_func, display_cb display_func)
+static dlist_t *dlist_init(create_cb create_func, add_cb add_func,
+	set_cb set_func, destroy_cb destroy_func, display_cb display_func)
 #else
-static struct dlist_data *dlist_init(void)
+static dlist_t *dlist_init(void)
 #endif
 {
-	struct dlist_data *data;
+	dlist_t *list;
 
-	data = (struct dlist_data*)malloc(sizeof(struct dlist_data));
-	if (data == 0)
-		return NULL;
-
-	data->list = 0;
 #ifdef DLIST_DATA_OPTIONS
-	data->create = (create_func == NULL) ? dlist_create : create_func;
-	data->add = (add_func == NULL) ? dlist_add : add_func;
-	data->destroy = (destroy_func == NULL) ? dlist_destroy : destroy_func;
-	data->display = (display_func == NULL) ? dlist_display : display_func;
+	dlist_create = (create_func == NULL) ? create_dlist : create_func;
+	dlist_add = (add_func == NULL) ? add_dlist : add_func;
+	dlist_set = (set_func == NULL) ? set_dlist : set_func;
+	dlist_destroy = (destroy_func == NULL) ? destroy_dlist : destroy_func;
+	dlist_display = (display_func == NULL) ? display_dlist : display_func;
 #else
-	data->create = dlist_create;
-	data->add = dlist_add;
-	data->destroy = dlist_destroy;
-	data->display = dlist_display;
+	dlist_create = create_dlist;
+	dlist_add = add_dlist;
+	dlist_set = set_dlist;
+	dlist_destroy = destroy_dlist;
+	dlist_display = display_dlist;
 #endif
-	return data;
+	list = dlist_create();
+	if (list == NULL)
+		return NULL;
+	return list;
 }
 
 
 /* dlist_create:  create the dynamic linked list */
-dlist_t *dlist_create(const char *data)
+dlist_t *create_dlist(void)
 {
 	extern int id;
 	dlist_t *list;
@@ -87,13 +87,13 @@ dlist_t *dlist_create(const char *data)
 	if (list == NULL)
 		return NULL;
 	list->id = ++id;
-	list->data = str_dup(data);
+	list->data = 0;
 	list->next = NULL;
 	return list;
 }
 
 /* dlist_destroy:  destroy whole list; freeing all memory */
-void dlist_destroy(dlist_t **list)
+void destroy_dlist(dlist_t **list)
 {
 	dlist_t *cur, *next;
 
@@ -108,17 +108,21 @@ void dlist_destroy(dlist_t **list)
 }
 
 /* dlist_cleanup:  cleans all data used from dlist */
-void dlist_cleanup(struct dlist_data *data)
+void dlist_cleanup(dlist_t *list)
 {
-	if (data != 0) {
-		if (data->list != 0)
-			data->destroy(&data->list);
-		free(data);
+	if (list != 0) {
+		destroy_dlist(&list);
 	}
 }
 
+void set_dlist(dlist_t *list, const char *data)
+{
+	if (list != 0)
+		list->data = str_dup(data);
+}
+
 /* dlist_add:  add item to end of list */
-void dlist_add(dlist_t *list, const char *data)
+void add_dlist(dlist_t *list, const char *data)
 {
 	dlist_t *tmp;
 
@@ -127,11 +131,12 @@ void dlist_add(dlist_t *list, const char *data)
 		tmp = tmp->next;
 	}
 
-	tmp->next = dlist_create(data);
+	tmp->next = dlist_create();
+	set_dlist(tmp->next, data);
 }
 
 /* dlist_display:  displays the Contents of the list */
-void dlist_display(dlist_t *list)
+void display_dlist(dlist_t *list)
 {
 	dlist_t *tmp;
 
