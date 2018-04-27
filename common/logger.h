@@ -81,10 +81,10 @@ static int read_log(void)
 {
 	char buf[BUFSIZ];
 
-	memset(buf, 0, sizeof buf);
+	mem_set(buf, 0, sizeof buf);
 	while (fgets(buf, sizeof(buf)-1, __logfile) != NULL) {
 		fputs(buf, stdout);
-		memset(buf, 0, sizeof buf);
+		mem_set(buf, 0, sizeof buf);
 	}
 	close_log();
 	return 0;

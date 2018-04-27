@@ -317,7 +317,7 @@ static int strcopy(char *s1, const char *s2)
 }
 
 /* memset:  sets all memory in p to n */
-static void *memset(void *p, int n, size_t size)
+static void *mem_set(void *p, int n, size_t size)
 {
 	int i;
 
