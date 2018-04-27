@@ -7,7 +7,7 @@
 #ifndef PRS_SOCKHELP_H
 #define PRS_SOCKHELP_H
 
-#ifdef WINDOWS
+#ifdef WIN32
 #include <winsock2.h>
 #include <windows.h>
 #include <io.h>
@@ -46,7 +46,7 @@ static int set_nonblocking(SOCKET sock)
 static int set_nonblocking(int sock)
 #endif
 {
-#ifdef WINDOWS
+#ifdef WIN32
 	unsigned long mode = 1;
 	return ioctlsocket(sock, FIONBIO, &mode);
 #else
@@ -55,7 +55,11 @@ static int set_nonblocking(int sock)
 }
 
 /* create_server:  creates a server; return socket fd */
+#ifdef WIN32
+static SOCKET create_server(int nonblocking, int port, const char *address)
+#else
 static int create_server(int nonblocking, int port, const char *address)
+#endif
 {
 	struct sockaddr_in server;
 #ifdef WIN32
@@ -114,7 +118,11 @@ static int create_server(int nonblocking, int port, const char *address)
 }
 
 /* create_client:  creates a client socket to connect to a server */
+#ifdef WIN32
+static SOCKET create_client(int nonblocking, int port, const char *address)
+#else
 static int create_client(int nonblocking, int port, const char *address)
+#endif
 {
 	struct sockaddr_in server;
 #ifdef WIN32
@@ -189,7 +197,11 @@ static void close_conn(int sock)
 /* check_conn:  checks remote connection; if can successfully connect */
 static int check_conn(const char *addr, int port)
 {
+#ifdef WIN32
+	SOCKET sock;
+#else
 	int sock;
+#endif
 	sock = create_client(0, port, addr);
 	if (sock < 0)
 		return -1;
