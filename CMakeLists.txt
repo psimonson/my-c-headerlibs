@@ -117,6 +117,8 @@ add_executable(misc_examples/t12 misc_examples/t12.c)
 add_dependencies(misc_examples/t12 makedirs)
 add_executable(misc_examples/test14 misc_examples/test14.c)
 add_dependencies(misc_examples/test14 makedirs)
+add_executable(misc_examples/test15 misc_examples/test15.c)
+add_dependencies(misc_examples/test15 makedirs)
 add_executable(misc_examples/getint misc_examples/getint.c)
 add_dependencies(misc_examples/getint makedirs)
 

@@ -41,6 +41,14 @@ typedef enum boolean bool_t;
 #define UP 1
 #define DOWN -1
 
+
+/* ------------------------ Type definitions ------------------------- */
+
+/* ------------------------ Data Structures -------------------------- */
+
+/* ------------------------- Custom Macros --------------------------- */
+
+
 #define SWAP(t,x,y) do { t temp = x; x = y; y = temp; } while(0)
 
 
@@ -48,21 +56,20 @@ typedef enum boolean bool_t;
 
 
 /* p_zero:  zero memory block */
-static void p_zero(void *s, int size)
+static void p_zero(void *s, size_t len)
 {
-	int i;
-
-	for (i = 0; i < size; ++i)
-		((char*)s)[i] = 0;
+	char *p = (char*)s;
+	while (len-- != 0)
+		*p++ = 0;
 }
 
 /* getstr:  gets user input from stdin */
 static int getstr(char *s, int lim)
 {
-	int c, i;
+	int c,i;
 
-	i = 0;
-	while (--lim > 0 && (c = getchar()) != EOF && c != '\n')
+	i=0;
+	while(--lim > 0 && (c = getchar()) != EOF && c != '\n')
 		s[i++] = c;
 	if (c == '\n')
 		s[i++] = c;
