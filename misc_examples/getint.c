@@ -13,8 +13,17 @@ int getint(int *pn)
 		return 0;
 	}
 	sign = (c == '-') ? -1 : 1;
-	if (c == '+' || c == '-')
+	if (c == '+' || c == '-') {
+		int negPos = c;
+
 		c = getch();
+
+		if (!isdigit(c)) {
+			ungetch(c);
+			ungetch(negPos);
+			return 0; /* invalid input */
+		}
+	}
 	for (*pn = 0; isdigit(c); c = getch())
 		*pn = 10 * *pn + (c - '0');
 	*pn *= sign;
