@@ -41,7 +41,7 @@ typedef enum boolean bool_t;
 #define UP 1
 #define DOWN -1
 
-#define SWAP(t, x, y) do { t temp = x; x = y; y = temp; } while (0)
+#define SWAP(t,x,y) do { t temp = x; x = y; y = temp; } while(0)
 
 
 /* ------------------------ String Functions ------------------------- */
@@ -70,13 +70,42 @@ static int getstr(char *s, int lim)
 	return i;
 }
 
-/* strlength:  returns the length of a string */
+/* strlength:  get length of given string */
 static int strlength(const char *s)
 {
 	int i;
 
-	for (i = 0; s[i] != '\0'; i++);
+	for(i=0; *s != '\0'; s++)
+		i++;
 	return i;
+}
+
+/* reverse:  reverse string in place; using pointers */
+static void reverse(char *s)
+{
+	int c,i,j;
+
+	for(i=0, j=strlength(s)-1; i < j; i++,j--) {
+		c = s[i];
+		s[i] = s[j];
+		s[j] = c;
+	}
+}
+
+/* itoa2:  convert n into string; storing in s */
+static void p_itoa(int n, char *s)
+{
+	char *tmp = s;
+	int sign;
+
+	sign = (n < 0) ? -1 : 1;
+	do {
+		*tmp++ = sign * (n % 10) + '0';
+	} while ((n /= 10) > 0);
+	if (sign < 0)
+		*tmp++ = '-';
+	*tmp = '\0';
+	reverse(s);
 }
 
 /* strindex:  return index of t in s, -1 if none */
@@ -125,15 +154,6 @@ static void alpha_sort(char *s, int size)
 	} while (swapped);
 }
 
-/* reverse:  reverse s inplace */
-static void reverse(char *s)
-{
-	int c, i, j;
-
-	for (i = 0, j = strlength(s)-1; i < j && j > 0; ++i, --j)
-		c = s[j], s[j] = s[i], s[i] = c;
-}
-
 /* expand:  expand a-z,A-Z,0-9 into the entire string of them */
 static void expand(char *s1, char *s2)
 {
@@ -154,23 +174,6 @@ static void expand(char *s1, char *s2)
 		}
 	}
 	s2[j] = '\0';
-}
-
-/* p_itoa:  converts integer to string */
-static void p_itoa(int n, char *s)
-{
-	int i;
-	int sign;
-
-	sign = (n < 0) ? -1 : 1;
-	i = 0;
-	do {	/* generate digits in revverse order */
-		s[i++] = sign * (n % 10) + '0';	/* get next digit */
-	} while ((n /= 10) != 0);	/* delete it */
-	if (sign < 0)
-		s[i++] = '-';
-	s[i] = '\0';
-	reverse(s);
 }
 
 /* trim:  trims newlines, blanks, tabs off string */
