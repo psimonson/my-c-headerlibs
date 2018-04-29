@@ -39,6 +39,12 @@
 #define MAX_LINE	16384
 #define MAX_CLIENTS	10
 
+#ifdef _WIN32
+#define BAD_SOCKET	INVALID_SOCKET
+#else
+#define BAD_SOCKET	-1
+#endif
+
 /* set_nonblocking: set a socket to non-blocking IO */
 #ifdef _WIN32
 static int set_nonblocking(SOCKET sock)

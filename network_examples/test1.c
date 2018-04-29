@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
 	/* create server socket */
 	serverfd = create_server(0, 5555, "0.0.0.0");
-	if (serverfd < 0)	/* handle error */
+	if (serverfd == BAD_SOCKET) /* handle error */
 		return -1;
 	addrlen = sizeof(addr);
 #ifdef WIN32
@@ -32,8 +32,11 @@ int main(int argc, char *argv[])
 	newfd = accept(serverfd, (struct sockaddr*)&addr,
 		(unsigned int*)&addrlen);
 #endif
-	if (newfd < 0)
+	if (newfd == BAD_SOCKET) { /* handle error */
 		perror("accept");
+		close_conn(serverfd); /* close server connection */
+		return 1;
+	}
 	puts("Client connected!");
 	send_msg(newfd, "Type 'exit' without quotes to quit...\r\n"
 		"Anything else will echo back to you.\r\n");

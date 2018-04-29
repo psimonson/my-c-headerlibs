@@ -8,12 +8,6 @@
 
 #include "../common/sock_help.h"
 
-#ifdef _WIN32
-#define BAD_SOCKET INVALID_SOCKET
-#else
-#define BAD_SOCKET -1
-#endif
-
 #define PORT 5000
 
 int main()
