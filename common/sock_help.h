@@ -30,10 +30,10 @@
 #include <errno.h>
 
 /* transfer defines */
-#define MAXLINE		1024
-#define TRANSFER_PORT	4545
-#define TRANSFER_SEND   1
-#define TRANSFER_RECV   0
+#define TRANSFER_MAXLINE	1024
+#define TRANSFER_PORT		4545
+#define TRANSFER_SEND   	1
+#define TRANSFER_RECV   	0
 
 /* normal defines */
 #define MAX_LINE	16384
@@ -304,7 +304,7 @@ static int transfer(int sock, const char *address, const char *fname,
 #endif
 {
 	FILE *fp = NULL;
-	char buf[MAXLINE];
+	char buf[TRANSFER_MAXLINE];
 	int bytesRead, bytesWritten;
 	int total_read, total;
 
