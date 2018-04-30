@@ -1,0 +1,44 @@
+************************************************
+* sock_help.h - Creates a socket application   *
+* using winsock (Windows) or <sys/socket.h>    *
+* (Linux). Helps you create a server or client *
+* in an easy manner.                           *
+************************************************
+* Created by Philip '5n4k3' Simonson           *
+************************************************
+
+In Windows SOCKET is defined as
+	#define SOCKET (unsigned int)
+
+Windows
+SOCKET create_server(int, int, const char *);
+Linux
+int create_server(int, int, const char *);
+
+create_server parameters starting left to right.
+1. (int) nonblocking = 0 or 1 (can be true or false)
+2. (int) port = 5000 (can be anything up to 65535)
+3. (const char *) address = "0.0.0.0" (all available)
+	or "127.0.0.1" (local host "loopback")
+
+Windows
+SOCKET create_client(int, int, const char *);
+Linux
+int create_client(int, int, const char *);
+
+create_client parameters starting left to right.
+1. (int) nonblocking = 0 or 1 (can be true or false)
+2. (int) port = 5000 (can be anything up to 65535)
+3. (const char *) address = "0.0.0.0" (all available)
+	or "127.0.0.1" (local host "loopback")
+
+Windows
+void close_conn(SOCKET)
+Linux
+void close_conn(int)
+
+close_conn parameters.
+1. socket file descriptor you get from running
+   create_server() or create_client().
+
+     >>> End Of Text <<<
