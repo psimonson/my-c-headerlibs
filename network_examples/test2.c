@@ -12,11 +12,7 @@
 
 int main()
 {
-#ifdef _WIN32
-	SOCKET sockfd, newfd;
-#else
-	int sockfd, newfd;
-#endif
+	SERVER_INFO;
 	
 	/* create the listening server */
 	sockfd = create_server(0, PORT, "0.0.0.0");

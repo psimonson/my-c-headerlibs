@@ -39,6 +39,16 @@
 #define MAX_LINE	16384
 #define MAX_CLIENTS	10
 
+/* server and client info defines */
+#ifdef _WIN32
+#define SERVER_INFO SOCKET sockfd, newfd
+#define CLIENT_INFO SOCKET sockfd
+#else
+#define SERVER_INFO int sockfd, newfd
+#define CLIENT_INFO int sockfd
+#endif
+
+/* incase of bad socket */
 #ifdef _WIN32
 #define BAD_SOCKET	INVALID_SOCKET
 #else

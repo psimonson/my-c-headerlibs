@@ -12,20 +12,19 @@
 /* program to handle multiple clients simple chat server */
 int main(int argc, char *argv[])
 {
+	SERVER_INFO;
 	char line[MAXLINE];
 	char message[MAXLINE];
-	int serverfd;
-	int newfd;
 	int bytes;
 
 	/* create server socket */
-	serverfd = create_server(0, 5555, "0.0.0.0");
-	if (serverfd == BAD_SOCKET) /* handle error */
+	sockfd = create_server(0, 5555, "0.0.0.0");
+	if (sockfd == BAD_SOCKET) /* handle error */
 		return -1;
-	newfd = accept_conn(serverfd);
+	newfd = accept_conn(sockfd);
 	if (newfd == BAD_SOCKET) { /* handle error */
 		perror("accept");
-		close_conn(serverfd); /* close server connection */
+		close_conn(sockfd); /* close server connection */
 		return 1;
 	}
 	puts("Client connected!");
@@ -54,7 +53,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-	close_conn(serverfd);	/* close server socket */
+	close_conn(sockfd);	/* close server socket */
 	printf("Connection closed.\n");
 	return 0;
 }
