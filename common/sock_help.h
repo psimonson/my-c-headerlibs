@@ -195,6 +195,33 @@ static int send_msg(int sock, const char *msg)
 	return bytes;
 }
 
+/* get_addr_info:  custom get address information */
+#ifdef _WIN32
+static void get_addr_info(SOCKET sock, char *address, int *port)
+#else
+static void get_addr_info(int sock, char *address, int *port)
+#endif
+{
+	struct sockaddr_in addr;
+	int res,addrlen;
+
+	addrlen = sizeof(addr);
+#ifdef _WIN32
+	res = getpeername(sock, (struct sockaddr*)&addr,
+		(int*)&addrlen);
+#else
+	res = getpeername(sock, (struct sockaddr*)&addr,
+		(unsigned int*)&addrlen);
+#endif
+	if (res == 0) {
+		strcpy(address, inet_ntoa(addr.sin_addr));
+		*port = htons(addr.sin_port);
+	} else {
+		strcpy(address, "");
+		*port = -1;
+	}
+}
+
 /* accept_conn:  accepts connection from client */
 #ifdef _WIN32
 static SOCKET accept_conn(SOCKET sock)
