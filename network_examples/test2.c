@@ -17,8 +17,6 @@ int main()
 #else
 	int sockfd, newfd;
 #endif
-	struct sockaddr_in addr;
-	int addrlen;
 	
 	/* create the listening server */
 	sockfd = create_server(0, PORT, "0.0.0.0");
@@ -26,13 +24,7 @@ int main()
 		return 1;
 
 	/* accepts client connection */
-#ifdef _WIN32
-	newfd = accept(sockfd, (struct sockaddr*)&addr,
-			&addrlen);
-#else
-	newfd = accept(sockfd, (struct sockaddr*)&addr,
-			(unsigned int*)&addrlen);
-#endif
+	newfd = accept_conn(sockfd);
 	if (newfd == BAD_SOCKET) {
 		perror("accept");
 		return 1;

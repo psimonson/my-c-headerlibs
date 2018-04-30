@@ -185,6 +185,25 @@ static int send_msg(int sock, const char *msg)
 	return bytes;
 }
 
+/* accept_conn:  accepts connection from client */
+#ifdef _WIN32
+static SOCKET accept_conn(SOCKET sock)
+#else
+static int accept_conn(int sock)
+#endif
+{
+	struct sockaddr_in addr;
+#ifdef _WIN32
+	SOCKET newfd;
+	int addrlen;
+	newfd = accept(sock, (struct sockaddr*)&addr, (int*)&addrlen);
+#else
+	int newfd,addrlen;
+	newfd = accept(sock, (struct sockaddr*)&addr, (unsigned int*)&addrlen);
+#endif
+	return newfd;
+}
+
 /* close_conn:  closes remote connection */
 #ifdef _WIN32
 static void close_conn(SOCKET sock)

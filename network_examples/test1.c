@@ -12,11 +12,9 @@
 /* program to handle multiple clients simple chat server */
 int main(int argc, char *argv[])
 {
-	struct sockaddr_in addr;
 	char line[MAXLINE];
 	char message[MAXLINE];
 	int serverfd;
-	int addrlen;
 	int newfd;
 	int bytes;
 
@@ -24,14 +22,7 @@ int main(int argc, char *argv[])
 	serverfd = create_server(0, 5555, "0.0.0.0");
 	if (serverfd == BAD_SOCKET) /* handle error */
 		return -1;
-	addrlen = sizeof(addr);
-#ifdef WIN32
-	newfd = accept(serverfd, (struct sockaddr*)&addr,
-		(int*)&addrlen);
-#else
-	newfd = accept(serverfd, (struct sockaddr*)&addr,
-		(unsigned int*)&addrlen);
-#endif
+	newfd = accept_conn(serverfd);
 	if (newfd == BAD_SOCKET) { /* handle error */
 		perror("accept");
 		close_conn(serverfd); /* close server connection */
