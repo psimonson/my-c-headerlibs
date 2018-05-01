@@ -155,7 +155,9 @@ static int trim(char *s)
 	char *p = s;
 
 	while (*p++ != 0);
-	while (*--p != '\r' || *p != '\n');
+	while ((p--)-s != 0)
+		if (*p == '\r' || *p == '\n')
+			*p = 0;
 	return p-s;
 }
 
@@ -257,9 +259,12 @@ static char *str_dup(const char *s)
 /* getstr:  gets a string from standard input */
 static int getstr(char *s, int lim)
 {
-	char *p;
+	char c,*p;
 
-	for (p = s; --lim > 0 && (*p = getchar()) != EOF && *p != '\n'; p++);
+	for (p = s; --lim > 0 && (c = getchar()) != EOF && c != '\n'; p++)
+		*p = c;
+	if (c == '\n')
+		*p++ = c;
 	*p = '\0';
 	return p-s;
 }
