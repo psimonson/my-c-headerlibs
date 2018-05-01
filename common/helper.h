@@ -540,24 +540,22 @@ static void p_qsort(int v[], int left, int right)
 	p_qsort(v, last+1, right);
 }
 
-/* reverse_r:  reverse a string; recursively */
-static void reverse_r(char s[])
+/* reverse_r:  recursively reverse s in place */
+static void reverse_r(char *s)
 {
-	static int i = 0;
-	static int j = -1;
-	char temp;
+	static char *p = NULL;
 
-	if (j < 0)	/* check initial value of j < 0 */
-		j = str_len(s) - 1;	/* if j < 0 set to end of string */
-	if (j - i > 0) {
-		temp = s[j];	/* store char at s[j] */
-		s[j] = s[i];	/* write char at s[i] to s[j] */
-		s[i] = temp;	/* write temp back to s[i] */
-		--j, ++i;	/* increment j and i */
-		reverse_r(s);	/* run recursively */
+	if (p == NULL) {
+		p = s;
+		while (*p++);
+	}
+	if ((p-s) != 0) {
+		char tmp = *--p;
+		*p = *s;
+		*s++ = tmp;
+		reverse(s);
 	} else {
-		i = 0;		/* reset i back to 0 */
-		j = -1;		/* reset j back to -1 */
+		p = NULL;	/* reset p to NULL */
 	}
 }
 
