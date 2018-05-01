@@ -1,4 +1,4 @@
-#include "../common/prs_string.h"
+#include "../common/helper.h"
 #include "../common/logger.h"
 
 #define LOG_NAME "log2.txt"
@@ -19,16 +19,16 @@ int main(int argc, char *argv[])
 		switch (argv[1][1]) {
 		case 'w':
 			printf("INPUT >> ");
-			readln2(buf, sizeof buf);
-			trim_string(buf);
+			getstr(buf, sizeof buf);
+			trim(buf);
 			do_log(write_log, LOG_NAME, "%s\n", buf);
 			do_log2(crypt_log, LOG_NAME);
 		break;
 		case 'a':
 			do_log2(crypt_log, LOG_NAME);
 			printf("INPUT >> ");
-			readln2(buf, sizeof buf);
-			trim_string(buf);
+			getstr(buf, sizeof buf);
+			trim(buf);
 			do_log(append_log, LOG_NAME, "%s\n", buf);
 			do_log2(crypt_log, LOG_NAME);
 		break;

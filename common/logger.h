@@ -106,7 +106,7 @@ static int crypt_log(void)
 	rewind(__logfile);
 	i = 0;
 	while ((c = fgetc(__logfile)) != EOF) {
-		c ^= key[i%strlength(key)] & 0xf0;
+		c ^= key[i%str_len(key)] & 0xf0;
 		fputc(c, tmp);
 		i++;
 	}
