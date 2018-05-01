@@ -28,7 +28,7 @@ int main()
 		"=====================\n");
 	reverse_r(s2);
 	printf("Before: %s\n", s2);
-	alpha_sort(s2, strlength(s2));
+	alpha_sort(s2, str_len(s2));
 	printf("After: %s\n", s2);
 
 	/* testing atoi */
@@ -47,8 +47,8 @@ int main()
 		"Testing STRCMP Function\n"
 		"======================\n");
 	printf("String compare: %s - %s\n", s2, s2);
-	printf("Result: %s\n", (strcompare(s2, s2) == 0) ? "True" : "False");
+	printf("Result: %s\n", (str_cmp(s2, s2) == 0) ? "True" : "False");
 	printf("String compare: %s - %s\n", s2, s3);
-	printf("Result: %s\n", (strcompare(s2, s3) == 0) ? "True" : "False");
+	printf("Result: %s\n", (str_cmp(s2, s3) == 0) ? "True" : "False");
 	return 0;
 }

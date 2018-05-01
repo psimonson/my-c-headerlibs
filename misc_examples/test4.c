@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 		getstr(buf, MAXLINE);
 		last = str_dup(buf);
 		printf("You typed: %s\n", buf);
-		if (strcompare(buf, "exit") == 0)
+		if (str_cmp(buf, "exit") == 0)
 			running = 0;
 	}
 	printf("Last string typed was: %s\n", last);

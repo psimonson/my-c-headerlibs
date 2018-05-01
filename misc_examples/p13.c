@@ -31,7 +31,7 @@ int main()
 			if (len <= 0)
 				printf("Could not get a line of input.\n");
 			else {
-				rescapes(input);
+/*				rescapes(input); */
 				printf("Line below with escapes removed.\n%s\n", input);
 			}
 			p_zero(input, MAXLINE);
@@ -47,7 +47,7 @@ int main()
 					printf("Cannot open file: %s\n", fname);
 				else {
 					while (fgets(input, MAXLINE-1, fin) != NULL) {
-						rescapes(input);
+/*						rescapes(input);*/
 						printf("%s\n", input);
 					}
 					fclose(fin);
