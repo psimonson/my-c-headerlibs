@@ -550,21 +550,18 @@ static void p_qsort(int v[], int left, int right)
 /* reverse_r:  recursively reverse s in place */
 static void reverse_r(char *s)
 {
-	static int i = 0;
-	static int j = -1;
-	int c;
+	static char *p = 0;
 
-	if (j == -1) {
-		j = str_len(s);
+	if (p == 0) {
+		p = s+str_len(s)-1;
 	}
-	if (i-j > 0) {
-		c = s[j];
-		s[j] = s[i];
-		s[i] = c;
-		reverse(s);
+	if (p-s > 0) {
+		int tmp = *p;
+		*p-- = *s;
+		*s++ = tmp;
+		reverse_r(s);
 	} else {
-		i = 0;
-		j = -1;
+		p = 0;
 	}
 }
 
