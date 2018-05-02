@@ -67,7 +67,7 @@ static void mem_cpy(void *s, void *t, size_t n)
 {
 	char *t2 = (char*)t;
 
-	while ((char*)s < (char*)t+n)
+	while (t2-((char*)t) < n)
 		*(char*)s++ = *(char*)t2++;
 }
 
