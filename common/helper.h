@@ -208,6 +208,24 @@ static void reverse(char *s)
 	}
 }
 
+/* reverse_r:  recursively reverse s in place */
+static void reverse_r(char *s)
+{
+	static char *p = 0;
+
+	if (p == 0) {
+		p = s+str_len(s)-1;
+	}
+	if (p-s > 0) {
+		int tmp = *p;
+		*p-- = *s;
+		*s++ = tmp;
+		reverse_r(s);
+	} else {
+		p = 0;
+	}
+}
+
 /* p_itoa:  convert n to string; store in s */
 static void p_itoa(int n, char *s)
 {
@@ -493,10 +511,8 @@ static int chtolt(int c)
 /* leetconv:  convert s2 into leet speak in s1 */
 static void leetconv(char *s1, char *s2)
 {
-	int i, j;
-
-	for (i = j = 0; (s1[i] = chtolt(s2[j])) != 0; ++i, ++j);
-	s1[i] = '\0';
+	while ((*s1++ = chtolt(*s2++)) != 0);
+	*s1 = '\0';
 }
 
 /* p_atof:  convert string s to double */
@@ -545,24 +561,6 @@ static void p_qsort(int v[], int left, int right)
 	p_swap(v, left, last);		/* restore partition elem */
 	p_qsort(v, left, last-1);
 	p_qsort(v, last+1, right);
-}
-
-/* reverse_r:  recursively reverse s in place */
-static void reverse_r(char *s)
-{
-	static char *p = 0;
-
-	if (p == 0) {
-		p = s+str_len(s)-1;
-	}
-	if (p-s > 0) {
-		int tmp = *p;
-		*p-- = *s;
-		*s++ = tmp;
-		reverse_r(s);
-	} else {
-		p = 0;
-	}
 }
 
 

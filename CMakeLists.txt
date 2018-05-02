@@ -16,11 +16,17 @@ include_directories("${PROJECT_BINARY_DIR}")
 #cmake_policy(SET CMP0037 OLD)
 
 # add executables
-add_custom_target(makedirs)
+add_custom_target(makedirs ALL)
 add_custom_command(TARGET makedirs
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/misc_examples
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/network_examples
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/cgi_examples
+)
+
+# copy bitmaps to build
+add_custom_target(copybitmaps ALL)
+add_custom_command(TARGET copybitmaps
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/bitmaps ${CMAKE_BINARY_DIR}/misc_examples
 )
 
 # cflags
@@ -123,6 +129,8 @@ add_executable(misc_examples/test15 misc_examples/test15.c)
 add_dependencies(misc_examples/test15 makedirs)
 add_executable(misc_examples/getint misc_examples/getint.c)
 add_dependencies(misc_examples/getint makedirs)
+add_executable(misc_examples/bitmap misc_examples/bitmap.c)
+add_dependencies(misc_examples/bitmap makedirs copybitmaps)
 
 # add cgi example targets
 add_executable(cgi_examples/test1 cgi_examples/test1.c)
