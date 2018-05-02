@@ -85,7 +85,7 @@ int main()
 				/* process here */
 				while (fgets(input, MAXLINE-1, fin) != NULL) {
 					if (type == 0)
-						escape_r(output, input);
+						rescape(output, input);
 					else
 						escape(output, input);
 					fputs(output, fout);

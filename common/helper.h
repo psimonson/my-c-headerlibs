@@ -41,69 +41,6 @@ typedef enum Boolean {
 #define false FALSE
 
 
-/* ----------------------------- Stdio Functions -------------------------- */
-
-
-/* reverse:  reverse s in place */
-static void reverse(char *s)
-{
-	char *p = s;
-
-	while (*p != 0)
-		p++;
-	while ((p-s) != 0) {
-		char tmp = *--p;
-		*p = *s;
-		*s++ = tmp;
-	}
-}
-
-/* p_itoa:  convert n to string; store in s */
-static void p_itoa(int n, char *s)
-{
-	char *p = s;
-	int sign;
-
-	sign = (n < 0) ? -1 : 1;
-	if (n < 0)
-		n = -n;
-	do {
-		*p++ = sign * (n % 10) + '0';
-	} while ((n /= 10) > 0);
-	*p = '\0';
-	reverse(s);
-}
-
-/* itoa_r:  convert n to string; store in s */
-static void itoa_r(int n, char *s)
-{
-	char *p = s;
-	int sign;
-
-	sign = (n < 0) ? -1 : 1;
-	if (n < 0)
-		n = -n;
-	*p++ = sign * (n % 10) + '0';
-	if (n > 0)
-		itoa_r(n/10, p);
-	*p = '\0';
-}
-
-/* p_atoi:  convert s to integer; return it */
-static int p_atoi(char *s)
-{
-	int n, sign;
-
-	while (isspace(*s)) s++;
-	sign = (*s == '-') ? -1 : 1;
-	if (*s == '+' || *s == '-')
-		s++;
-	for (n = 0; isdigit(*s); s++)
-		n = 10 * n + (*s - '0');
-	return n*sign;
-}
-
-
 /* ---------------------------- Memory Functions -------------------------- */
 
 
@@ -164,8 +101,9 @@ static int trim(char *s)
 /* str_len:  get length of a null terminated string */
 static int str_len(const char *s)
 {
-	const char *p = s;
-	while (*p != '\0')
+	char *p = (char*)s;
+
+	while (*p != 0)
 		p++;
 	return p-s;
 }
@@ -253,6 +191,69 @@ static char *str_dup(const char *s)
 }
 
 
+/* ----------------------------- Stdio Functions -------------------------- */
+
+
+/* reverse:  reverse s in place */
+static void reverse(char *s)
+{
+	if (s != 0 && *s != '\0') {
+		char *p = s+str_len(s)-1;
+
+		while (s < p) {
+			char tmp = *s;
+			*s++ = *p;
+			*p-- = tmp;
+		}
+	}
+}
+
+/* p_itoa:  convert n to string; store in s */
+static void p_itoa(int n, char *s)
+{
+	char *p = s;
+	int sign;
+
+	sign = (n < 0) ? -1 : 1;
+	if (n < 0)
+		n = -n;
+	do {
+		*p++ = sign * (n % 10) + '0';
+	} while ((n /= 10) > 0);
+	*p = '\0';
+	reverse(s);
+}
+
+/* itoa_r:  convert n to string; store in s */
+static void itoa_r(int n, char *s)
+{
+	char *p = s;
+	int sign;
+
+	sign = (n < 0) ? -1 : 1;
+	if (n < 0)
+		n = -n;
+	*p++ = sign * (n % 10) + '0';
+	if (n > 0)
+		itoa_r(n/10, p);
+	*p = '\0';
+}
+
+/* p_atoi:  convert s to integer; return it */
+static int p_atoi(char *s)
+{
+	int n, sign;
+
+	while (isspace(*s)) s++;
+	sign = (*s == '-') ? -1 : 1;
+	if (*s == '+' || *s == '-')
+		s++;
+	for (n = 0; isdigit(*s); s++)
+		n = 10 * n + (*s - '0');
+	return n*sign;
+}
+
+
 /* ----------------------- Miscellaneous Functions ----------------------- */
 
 
@@ -261,8 +262,9 @@ static int getstr(char *s, int lim)
 {
 	char c,*p;
 
-	for (p = s; --lim > 0 && (c = getchar()) != EOF && c != '\n'; p++)
-		*p = c;
+	p = s;
+	while (--lim > 0 && (c = getchar()) != EOF && c != '\n')
+		*p++ = c;
 	if (c == '\n')
 		*p++ = c;
 	*p = '\0';
@@ -359,7 +361,7 @@ static int escape(char *s, char *t)
 }
 
 /* escape_r:  visible representation of newlines and tabs into characters */
-static int escape_r(char *s, char *t)
+static int rescape(char *s, char *t)
 {
 	int last, i, j;
 
@@ -388,7 +390,7 @@ static int escape_r(char *s, char *t)
 }
 
 /* htoi:  bitwise operation; convert hex string to decimal */
-static int htoi(char *s)
+static unsigned int htoi(char *s)
 {
 	unsigned int val = 0;
 
@@ -548,19 +550,21 @@ static void p_qsort(int v[], int left, int right)
 /* reverse_r:  recursively reverse s in place */
 static void reverse_r(char *s)
 {
-	static char *p = NULL;
+	static int i = 0;
+	static int j = -1;
+	int c;
 
-	if (p == NULL) {
-		p = s;
-		while (*p++);
+	if (j == -1) {
+		j = str_len(s);
 	}
-	if ((p-s) != 0) {
-		char tmp = *--p;
-		*p = *s;
-		*s++ = tmp;
+	if (i-j > 0) {
+		c = s[j];
+		s[j] = s[i];
+		s[i] = c;
 		reverse(s);
 	} else {
-		p = NULL;	/* reset p to NULL */
+		i = 0;
+		j = -1;
 	}
 }
 

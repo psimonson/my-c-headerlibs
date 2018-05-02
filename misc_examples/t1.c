@@ -13,7 +13,7 @@ int main()
 	getstr(s1, MAXLINE);
 	/* reverse functions testing */
 	printf("======================\n"
-		"String reversing - Test\n"
+		"String reversing\n"
 		"======================\n");
 	reverse(s1);
 	printf("Backward: %s\n", s1);
