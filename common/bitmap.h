@@ -29,7 +29,7 @@ typedef struct BITMAP_INFO_HEADER {
 typedef struct BITMAP_FILE {
 	BITMAP_HEADER header;
 	BITMAP_INFO info;
-	char *data;
+	unsigned char *data;
 } BITMAP_FILE;
 
 void destroy_BMP(BITMAP_FILE *bmp)
@@ -74,10 +74,10 @@ BITMAP_FILE *load_BMP(const char *filename)
 
 		if (bmp->header.header == 0x4D42) {
 			fseek(fp, bmp->header.offset, SEEK_SET);
-			bmp->data = malloc(sizeof(char)*bmp->header.size+1);
+			bmp->data = malloc(sizeof(unsigned char)*
+					bmp->header.size);
 			if (bmp->data) {
 				fread(bmp->data, 1, bmp->header.size, fp);
-				bmp->data[bmp->header.size+1] = 0;
 				printf("Valid image loaded.\n");
 				fclose(fp);
 				return bmp;
@@ -109,11 +109,11 @@ void display_info_BMP(BITMAP_FILE *bmp)
 			bmp->header.header, bmp->header.size,
 			bmp->header.offset, bmp->info.width,
 			bmp->info.height, bmp->info.bpp);
-		printf("*** Data Below ***\n"
+/*		printf("*** Data Below ***\n"
 			"***********************************\n"
 			"%s\n"
 			"***********************************\n",
-			bmp->data);
+			bmp->data); */
 	}
 }
 
