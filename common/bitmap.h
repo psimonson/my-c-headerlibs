@@ -164,4 +164,38 @@ static void BMP_to_asciiart(BITMAP_FILE *bmp)
 	}
 }
 
+/* BMP_to_count:  counts the amount of shades in the whole image */
+static void BMP_to_count(BITMAP_FILE *bmp)
+{
+	char shades[MAX_SHADES] = {'#','$','O','=','+','|','-','^','.',' '};
+	int shade_count[MAX_SHADES] = { 0 };
+	int average_color;
+	int rowsize;
+	int x, y;
+
+	if (!bmp)
+		return;
+
+	/* get row size */
+	rowsize = bmp->info.width * 3;
+
+	/* loop through converting average color to shade */
+	for (y = bmp->info.height-1; y >= 0; y--) {
+		for (x = 0; x < rowsize; x++) {
+			average_color = (bmp->data[x+y*rowsize] +
+					bmp->data[x+1+y*rowsize] +
+					bmp->data[x+2+y*rowsize]) / 3;
+
+			/* convert to a shade */
+			average_color /= (256/MAX_SHADES);
+			if (average_color >= MAX_SHADES)
+				average_color = MAX_SHADES-1;
+
+			shade_count[average_color]++;
+		}
+	}
+	for (x = 0; x < 10; x++)
+		printf("%c: %d\n", shades[x], shade_count[x]);
+}
+
 #endif
