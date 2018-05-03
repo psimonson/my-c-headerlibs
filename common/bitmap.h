@@ -146,8 +146,8 @@ static void BMP_to_asciiart(BITMAP_FILE *bmp)
 	rowsize = bmp->info.width*3;
 
 	/* loop through converting average color to ascii */
-	for (y = bmp->info.height-1; y >= 0; y--) {
-		for (x = 0; x < rowsize; x++) {
+	for (y = bmp->info.height-1; y >= 0; y -= 2) {
+		for (x = 0; x < rowsize; x += 3) {
 			average_color = (bmp->data[x+y*rowsize] +
 					bmp->data[x+1+y*rowsize] +
 					bmp->data[x+2+y*rowsize]) / 3;
@@ -177,11 +177,11 @@ static void BMP_to_count(BITMAP_FILE *bmp)
 		return;
 
 	/* get row size */
-	rowsize = bmp->info.width * 3;
+	rowsize = bmp->info.width*3; /* width * 3 */
 
 	/* loop through converting average color to shade */
-	for (y = bmp->info.height-1; y >= 0; y--) {
-		for (x = 0; x < rowsize; x++) {
+	for (y = bmp->info.height-1; y >= 0; y -= 2) {
+		for (x = 0; x < rowsize; x += 3) {
 			average_color = (bmp->data[x+y*rowsize] +
 					bmp->data[x+1+y*rowsize] +
 					bmp->data[x+2+y*rowsize]) / 3;
@@ -192,7 +192,9 @@ static void BMP_to_count(BITMAP_FILE *bmp)
 				average_color = MAX_SHADES-1;
 
 			shade_count[average_color]++;
+/*			putchar(shades[average_color]); */
 		}
+/*		putchar('\n'); */
 	}
 	for (x = 0; x < 10; x++)
 		printf("%c: %d\n", shades[x], shade_count[x]);
