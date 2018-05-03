@@ -1,3 +1,12 @@
+/****************************************************************
+ * bitmap.h - Header library for loading bitmaps and converting *
+ * them to ascii. Also, will do other stuff with bitmaps in the *
+ * future.                                                      *
+ ****************************************************************
+ * Created by Philip '5n4k3' Simonson            (05-03-2018)   *
+ ****************************************************************
+ */
+
 #ifndef PRS_BITMAP_H
 #define PRS_BITMAP_H
 
@@ -34,7 +43,8 @@ typedef struct BITMAP_FILE {
 	unsigned char *data;
 } BITMAP_FILE;
 
-void destroy_BMP(BITMAP_FILE *bmp)
+/* destroy_BMP:  frees bitmap resources */
+static void destroy_BMP(BITMAP_FILE *bmp)
 {
 	if (bmp) {
 		if (bmp->data)
@@ -43,7 +53,8 @@ void destroy_BMP(BITMAP_FILE *bmp)
 	}
 }
 
-BITMAP_FILE *load_BMP(const char *filename)
+/* load_BMP:  loads an image file into a bitmap data structure */
+static BITMAP_FILE *load_BMP(const char *filename)
 {
 	BITMAP_FILE *bmp;
 	FILE *fp;
@@ -96,7 +107,8 @@ BITMAP_FILE *load_BMP(const char *filename)
 	return NULL;
 }
 
-void display_info_BMP(BITMAP_FILE *bmp)
+/* display_info_BMP:  display info about the bitmap file */
+static void display_info_BMP(BITMAP_FILE *bmp)
 {
 	if (bmp) {
 		printf("***INFO BELOW ***\n"
@@ -120,7 +132,7 @@ void display_info_BMP(BITMAP_FILE *bmp)
 }
 
 /* BMP_to_asciiart:  convert image data to ascii and print */
-void BMP_to_asciiart(BITMAP_FILE *bmp)
+static void BMP_to_asciiart(BITMAP_FILE *bmp)
 {
 	char shades[MAX_SHADES] = {'#','$','O','=','+','|','-','^','.',' '};
 	int average_color;
