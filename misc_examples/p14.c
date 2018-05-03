@@ -33,18 +33,18 @@ int main()
 				printf("Enter type: ");
 				getstr(input, MAXLINE);
 				trim(input);
-				if (strcompare(input, "") == 0)
+				if (str_cmp(input, "") == 0)
 					printf("You need to enter some text.\n\n");
 				else {
-					if (strcompare(input, "escapes") == 0) {
+					if (str_cmp(input, "escapes") == 0) {
 						printf("Adding escape sequences...\n");
 						type = 0;
 						state = SECOND;
-					} else if (strcompare(input, "no escapes") == 0) {
+					} else if (str_cmp(input, "no escapes") == 0) {
 						printf("Replacing escape sequences...\n");
 						type = 1;
 						state = SECOND;
-					} else if (strcompare(input, "exit") == 0) {
+					} else if (str_cmp(input, "exit") == 0) {
 						printf("Quitting program...\n");
 						state = END;
 					} else {
@@ -57,7 +57,7 @@ int main()
 				printf("Enter input file name: ");
 				getstr(fname, MAXLINE);
 				trim(fname);
-				if (strcompare(fname, "") == 0) {
+				if (str_cmp(fname, "") == 0) {
 					state = END;
 				} else {
 					if ((fin = fopen(fname, "rt")) == NULL) {
@@ -71,7 +71,7 @@ int main()
 				printf("Enter output file name: ");
 				getstr(fname, MAXLINE);
 				trim(fname);
-				if (strcompare(fname, "") == 0) {
+				if (str_cmp(fname, "") == 0) {
 					state = END;
 				} else {
 					if ((fout = fopen(fname, "wt")) == NULL) {
@@ -85,7 +85,7 @@ int main()
 				/* process here */
 				while (fgets(input, MAXLINE-1, fin) != NULL) {
 					if (type == 0)
-						escape_r(output, input);
+						rescape(output, input);
 					else
 						escape(output, input);
 					fputs(output, fout);

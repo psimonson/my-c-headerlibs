@@ -11,9 +11,9 @@ int main()
 	sum = 0;
 	while (getstr(line, MAXLINE) > 0) {
 		trim(line);
-		if (strcompare(line, "") == 0)
+		if (str_cmp(line, "") == 0)
 			break;
-		printf("\t%g\n", sum += p_atof(line));
+		printf("\t%g\n", sum += p_atoi(line));
 	}
 	return 0;
 }

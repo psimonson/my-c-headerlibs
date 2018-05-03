@@ -32,14 +32,14 @@ void tests(void)
 
 	/* test1 - func tolower */
 	repstr(s1, 13, 1);
-	if (strcompare(s1, "HELLO WORLD!") == 0)
+	if (str_cmp(s1, "HELLO WORLD!") == 0)
 		++passed;
 	else
 		printf("Test 1 - (func isupper) failed.\n");
 
 	/* test1 - func toupper */
 	repstr(s2, 13, 0);
-	if (strcompare(s2, "hello world!") == 0)
+	if (str_cmp(s2, "hello world!") == 0)
 		++passed;
 	else
 		printf("Test 1 - (func islower) failed.\n");

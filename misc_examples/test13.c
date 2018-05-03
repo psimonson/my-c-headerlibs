@@ -1,4 +1,4 @@
-#include "../common/prs_string.h"
+#include "../common/helper.h"
 #include <string.h>
 #include <dirent.h>
 #ifdef _WIN32

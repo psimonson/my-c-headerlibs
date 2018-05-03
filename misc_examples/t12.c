@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 		die(0, "Usage: %s [-r <file>]"
 			" <file> <key_value> <quoted-data>\n",
 			argv[0]);
-	if (argc == 3 && (strcompare(argv[1], "-r") == 0)) {
+	if (argc == 3 && (str_cmp(argv[1], "-r") == 0)) {
 		btree_t *tree;
 		char buf[1024];
 

@@ -9,9 +9,9 @@ int main()
 
 	while (getstr(s, MAXLINE) > 0) {
 		trim(s);
-		if (strcompare(s, "") == 0)
+		if (str_cmp(s, "") == 0)
 			break;
-		else if (strcompare(s, "thepass") == 0)
+		else if (str_cmp(s, "thepass") == 0)
 			printf("Correct!\n");
 		else
 			printf("Wrong!\n");

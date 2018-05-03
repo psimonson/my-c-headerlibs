@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
 	while (1) {
 		if ((bytes = get_cmd(newfd, line, sizeof(line))) > 0) {
-			if (strcompare(line, "exit") == 0) {
+			if (str_cmp(line, "exit") == 0) {
 				close_conn(newfd);
 				break;
 			}

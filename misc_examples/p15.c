@@ -22,7 +22,7 @@ int main()
 			printf("Enter input filename: ");
 			getstr(input, MAXLINE);
 			trim(input);
-			if (strcompare(input, "") == 0) {
+			if (str_cmp(input, "") == 0) {
 				printf("You must input a filename.");
 				state = DEFAULT;
 			} else {
@@ -39,7 +39,7 @@ int main()
 			printf("Enter output filename: ");
 			getstr(input, MAXLINE);
 			trim(input);
-			if (strcompare(input, "") == 0) {
+			if (str_cmp(input, "") == 0) {
 				printf("You must input a filename.");
 				state = DEFAULT;
 			} else {
@@ -77,7 +77,7 @@ int main()
 				printf("Enter some text: ");
 				getstr(input, MAXLINE);
 				trim(input);
-				if (strcompare(input, "") == 0)
+				if (str_cmp(input, "") == 0)
 					printf("You need to enter some"
 						" text.\n");
 				else {

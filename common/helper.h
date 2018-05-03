@@ -1,132 +1,304 @@
-/*
- ********************************************************************
- * helper.h - simple helper functions that I commonly use.
- *
- * Date: 11/13/2017
- * Create by Philip '5n4k3' Simonson
- ********************************************************************
+/******************************************************************
+ * helper.h - Some helper functions, include this to have a lot   *
+ * of functions at your disposel. Some are re-incarnated standard *
+ * library functions, some are of my own making.                  *
+ ******************************************************************
+ * Created by Philip R. Simonson           (05-01-2018)           *
+ ******************************************************************
  */
 
 #ifndef PRS_HELPER_H
 #define PRS_HELPER_H
 
-/* ------------------------ Include Headers -------------------------- */
-
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <errno.h>
+
+#define UP 1
+#define DOWN 0
+
+#define SWAP(t,x,y) do { t temp = y; x = y; y = temp; } while(0)
 
 
-/* ------------------------- Enumerations ---------------------------- */
+/* ---------------------------- Misc Enumerations ------------------------- */
 
 
-enum boolean { NO, YES };
 enum escapes { BELL = '\a', BACKSPACE = '\b', TAB = '\t',
 		NEWLINE = '\n', VTAB = '\v', RETURN = '\r' };
-enum getln_types { GETLN_TYPE_NONE = -1, GETLN_TYPE_NORMAL,
-		GETLN_TYPE_IGNORE };
-
-typedef enum boolean bool_t;
 
 
-/* ------------------------- Global Defines -------------------------- */
+/* --------------------------- Boolean Declaration ------------------------ */
 
 
-#define TRUE 1
-#define FALSE 0
+typedef enum Boolean {
+	FALSE,
+	TRUE
+} bool_t;
+
 #define true TRUE
 #define false FALSE
 
-#define UP 1
-#define DOWN -1
+
+/* ---------------------------- Memory Functions -------------------------- */
 
 
-/* ------------------------ Type definitions ------------------------- */
+/* p_zero:  zero memory; n amount in p */
+static void p_zero(void *p, size_t n)
+{
+	char *s = (char*)p;
 
-/* ------------------------ Data Structures -------------------------- */
+	while (s < (char*)p+n) *s++ = 0;
+}
 
-/* ------------------------- Custom Macros --------------------------- */
+/* mem_set:  sets p to c amount of n */
+static void *mem_set(void *p, int c, size_t n)
+{
+	char *s = (char*)p;
+
+	while (s < (char*)p+n)
+		*(char*)s++ = c;
+	return p;
+}
+
+/* mem_cpy:  copies t to s; n amount of bytes */
+static void mem_cpy(void *s, void *t, size_t n)
+{
+	char *t2 = (char*)t;
+
+	while (t2-((char*)t) < n)
+		*(char*)s++ = *(char*)t2++;
+}
+
+/* mem_cmp:  compare t to s; n amount of bytes */
+static int mem_cmp(void *s, void *t, size_t n)
+{
+	char *t2 = (char*)t;
+
+	while (t2 < (char*)t+n)
+		if (*t2++ != *(char*)s++)
+			return (*(char*)s-*t2);
+	return 0;
+}
 
 
-#define SWAP(t,x,y) do { t temp = x; x = y; y = temp; } while(0)
+/* ---------------------------- String Functions -------------------------- */
 
 
-/* ------------------------ String Functions ------------------------- */
+/* trim:  trim off newlines from string */
+static int trim(char *s)
+{
+	char *p = s;
 
+	while (*p++ != 0);
+	while ((p--)-s != 0)
+		if (*p == '\r' || *p == '\n')
+			*p = 0;
+	return p-s;
+}
 
-/* p_zero:  zero memory block */
-static void p_zero(void *s, size_t len)
+/* str_len:  get length of a null terminated string */
+static int str_len(const char *s)
 {
 	char *p = (char*)s;
-	while (len-- != 0)
-		*p++ = 0;
+
+	while (*p != 0)
+		p++;
+	return p-s;
 }
 
-/* getstr:  gets user input from stdin */
-static int getstr(char *s, int lim)
+/* str_cat:  concatenate t on end of s; assume s is big enough */
+static int str_cat(char *s, const char *t)
 {
-	int c,i;
+	const char *t2 = t;
+	char *s2 = s;
 
-	i=0;
-	while(--lim > 0 && (c = getchar()) != EOF && c != '\n')
-		s[i++] = c;
-	if (c == '\n')
-		s[i++] = c;
-	s[i] = '\0';
-	return i;
+	while (*s2 != '\0')
+		s2++;
+	while ((*s2++ = *t2++) != 0);
+	return (s2-s)-1;
 }
 
-/* strlength:  get length of given string */
-static int strlength(const char *s)
+/* str_cpy:  copy t to s; assume s is big enough */
+static int str_cpy(char *s, const char *t)
 {
-	int i;
+	const char *t2 = t;
+	char *s2 = s;
 
-	for(i=0; *s != '\0'; s++)
-		i++;
-	return i;
+	while ((*s2++ = *t2++) != 0);
+	return (s2-s)-1;
 }
 
-/* reverse:  reverse string in place; using pointers */
+/* str_cmp:  compares t to s; null terminated strings */
+static int str_cmp(const char *s, const char *t)
+{
+	while (*s == *t++)
+		if (*s++ == '\0')
+			return 0;
+	return (*s-*t);
+}
+
+/* strn_cat:  concatenates n amount of chars from t to s */
+static int strn_cat(char *s, const char *t, size_t n)
+{
+	const char *t2 = t;
+	char *s2 = s;
+
+	while (*s2 != '\0')
+		s2++;
+	while (t2 < t+n)
+		*s2++ = *t2++;
+	*s2 = 0;
+	return (s2-s)-1;
+}
+
+/* strn_cpy:  copies n amount of chars from t to s */
+static int strn_cpy(char *s, const char *t, size_t n)
+{
+	const char *t2 = t;
+	char *s2 = s;
+
+	while (t2 < t+n)
+		*s++ = *t2++;
+	return (s-s2);
+}
+
+/* strn_cmp:  compares t to s; n amount of chars */
+static int strn_cmp(char *s, const char *t, size_t n)
+{
+	char *s2 = s;
+
+	while (s2 < s+n)
+		if (*s2++ != 0)
+			return (s2-t);
+	return 0;
+}
+
+/* str_dup:  duplicates s; returns pointer of dupped string */
+static char *str_dup(const char *s)
+{
+	char *p;
+
+	/* allocate memory for s */
+	p = (char*)malloc(str_len(s)+1);
+	if (p == 0)
+		return NULL;
+
+	/* copy string into p */
+	while ((*p++ = *s++));
+	return p;
+}
+
+
+/* ----------------------------- Stdio Functions -------------------------- */
+
+
+/* reverse:  reverse s in place */
 static void reverse(char *s)
 {
-	int c,i,j;
+	if (s != 0 && *s != '\0') {
+		char *p = s+str_len(s)-1;
 
-	for(i=0, j=strlength(s)-1; i < j; i++,j--) {
-		c = s[i];
-		s[i] = s[j];
-		s[j] = c;
+		while (s < p) {
+			char tmp = *s;
+			*s++ = *p;
+			*p-- = tmp;
+		}
 	}
 }
 
-/* itoa2:  convert n into string; storing in s */
+/* reverse_r:  recursively reverse s in place */
+static void reverse_r(char *s)
+{
+	static char *p = 0;
+
+	if (p == 0) {
+		p = s+str_len(s)-1;
+	}
+	if (p-s > 0) {
+		int tmp = *p;
+		*p-- = *s;
+		*s++ = tmp;
+		reverse_r(s);
+	} else {
+		p = 0;
+	}
+}
+
+/* p_itoa:  convert n to string; store in s */
 static void p_itoa(int n, char *s)
 {
-	char *tmp = s;
+	char *p = s;
 	int sign;
 
 	sign = (n < 0) ? -1 : 1;
+	if (n < 0)
+		n = -n;
 	do {
-		*tmp++ = sign * (n % 10) + '0';
+		*p++ = sign * (n % 10) + '0';
 	} while ((n /= 10) > 0);
-	if (sign < 0)
-		*tmp++ = '-';
-	*tmp = '\0';
+	*p = '\0';
 	reverse(s);
 }
 
-/* strindex:  return index of t in s, -1 if none */
-static int strindex(char *s, const char *t)
+/* itoa_r:  convert n to string; store in s */
+static void itoa_r(int n, char *s)
 {
-	int i, j, k;
+	char *p = s;
+	int sign;
 
-	for (i = 0; s[i] != '\0'; i++) {
-		for (j=i, k=0; t[k]!='\0' && s[j]==t[k]; j++, k++);
-		if (k > 0 && t[k] == '\0')
-			return i;
-	}
-	return -1;
+	sign = (n < 0) ? -1 : 1;
+	if (n < 0)
+		n = -n;
+	*p++ = sign * (n % 10) + '0';
+	if (n > 0)
+		itoa_r(n/10, p);
+	*p = '\0';
 }
+
+/* p_atoi:  convert s to integer; return it */
+static int p_atoi(char *s)
+{
+	int n, sign;
+
+	while (isspace(*s)) s++;
+	sign = (*s == '-') ? -1 : 1;
+	if (*s == '+' || *s == '-')
+		s++;
+	for (n = 0; isdigit(*s); s++)
+		n = 10 * n + (*s - '0');
+	return n*sign;
+}
+
+
+/* ----------------------- Miscellaneous Functions ----------------------- */
+
+
+/* getstr:  gets a string from standard input */
+static int getstr(char *s, int lim)
+{
+	char c,*p;
+
+	p = s;
+	while (--lim > 0 && (c = getchar()) != EOF && c != '\n')
+		*p++ = c;
+	if (c == '\n')
+		*p++ = c;
+	*p = '\0';
+	return p-s;
+}
+
+/* get_input:  gets input with getstr; displays message first */
+static int get_input(const char *msg, char *s, int lim)
+{
+	printf("%s", msg);
+	return getstr(s, lim);
+}
+
+
+/* --------------- Functions to Convert to use pointers ------------------ */
+
 
 /* shellsort:  sort v[0]...v[n-1] to increasing order */
 static void shell_sort(int *v, int n)
@@ -183,20 +355,6 @@ static void expand(char *s1, char *s2)
 	s2[j] = '\0';
 }
 
-/* trim:  trims newlines, blanks, tabs off string */
-static int trim(char *s)
-{
-	int i;
-
-	for (i = strlength(s)-1; i >= 0; i--)
-		if (s[i] == '\r' || s[i] == '\n')
-			s[i] = '\0';
-		else if (isprint(s[i]))
-			break;
-	s[i+1] = '\0';
-	return i+1;
-}
-
 /* escape:  change newlines, tabs; into visible representation */
 static int escape(char *s, char *t)
 {
@@ -221,7 +379,7 @@ static int escape(char *s, char *t)
 }
 
 /* escape_r:  visible representation of newlines and tabs into characters */
-static int escape_r(char *s, char *t)
+static int rescape(char *s, char *t)
 {
 	int last, i, j;
 
@@ -250,7 +408,7 @@ static int escape_r(char *s, char *t)
 }
 
 /* htoi:  bitwise operation; convert hex string to decimal */
-static int htoi(char *s)
+static unsigned int htoi(char *s)
 {
 	unsigned int val = 0;
 
@@ -287,69 +445,10 @@ static void itob(int n, char *s, int b)
 	reverse(s);
 }
 
-/* itoa2:  converts integer to string */
-static void itoa2(int n, char *s, int w)
-{
-	int i;
-	int sign;
-
-	sign = (n < 0) ? -1 : 1;
-	do {	/* generate digits in revverse order */
-		s[i++] = sign * (n % 10) + '0';	/* get next digit */
-	} while ((n /= 10) != 0);	/* delete it */
-	if (sign < 0)
-		s[i++] = '-';
-	while (i <= w)
-		s[i++] = ' ';
-	s[i] = '\0';
-	reverse(s);
-}
-
-/* strcompare:  compare s1 to s2; returns s2-s1 */
-static int strcompare(char *s1, char *s2)
-{
-	int i, j;
-
-	for (i = j = 0; i < strlength(s1); i++, j++)
-		if (s1[i] != s2[j])
-			return s2[j] - s1[i];
-	return 0;
-}
-
-/* strcopy:  copies a string to another string */
-static int strcopy(char *s1, const char *s2)
-{
-	int i;
-
-	for (i = 0; (s1[i] = s2[i]) != 0; i++);
-	s1[i] = '\0';
-	return i;
-}
-
-/* memset:  sets all memory in p to n */
-static void *mem_set(void *p, int n, size_t size)
-{
-	int i;
-
-	for (i = 0; i < size; i++)
-		*(((char*)p)+i) = n;
-	return p;
-}
-
-/* memmove:  move memory to another location */
-static int mem_copy(void *s1, void *s2, int size)
-{
-	int i, j;
-
-	for (i = j = 0; j < size; i++, j++)
-		((char *)s1)[i] = ((char *)s2)[j];
-	return i;
-}
-
 /* rescapes:  remove all escape sequences from cstring */
 static void rescapes(char *s)
 {
-	int len = strlength(s);
+	int len = str_len(s);
 	char tmp[len+1];
 	int i, j;
 
@@ -365,7 +464,7 @@ static void rescapes(char *s)
 			tmp[j++] = s[i++];
 		}
 	tmp[j] = '\0';
-	strcopy(s, tmp);
+	str_cpy(s, tmp);
 }
 
 /* chtolt:  convert input character from regular text to 1337 5p34k */
@@ -412,24 +511,8 @@ static int chtolt(int c)
 /* leetconv:  convert s2 into leet speak in s1 */
 static void leetconv(char *s1, char *s2)
 {
-	int i, j;
-
-	for (i = j = 0; (s1[i] = chtolt(s2[j])) != 0; ++i, ++j);
-	s1[i] = '\0';
-}
-
-/* strindex_r:  returns index of t in s, -1 if none; in reverse */
-static int strindex_r(char *s, const char *t)
-{
-	int i, j, k;
-
-	for (i = strlength(s)-1; i >= 0; i--) {
-		for (j = i, k = strlength(t)-1; k >= 0 && j >= 0
-			&& s[j] == t[k]; j--, k--);
-		if (k < 0)
-			return i;
-	}
-	return -1;
+	while ((*s1++ = chtolt(*s2++)) != 0);
+	*s1 = '\0';
 }
 
 /* p_atof:  convert string s to double */
@@ -451,12 +534,6 @@ static double p_atof(char *s)
 		power *= 10.0;
 	}
 	return sign * val / power;
-}
-
-/* p_atoi:  convert string s to integer */
-static int p_atoi(char s[])
-{
-	return (int)p_atof(s);
 }
 
 /* p_swap:  interchange v[i] and v[j] */
@@ -486,65 +563,5 @@ static void p_qsort(int v[], int left, int right)
 	p_qsort(v, last+1, right);
 }
 
-/* reverse_r:  reverse a string; recursively */
-static void reverse_r(char s[])
-{
-	static int i = 0;
-	static int j = -1;
-	char temp;
 
-	if (j < 0)	/* check initial value of j < 0 */
-		j = strlength(s) - 1;	/* if j < 0 set to end of string */
-	if (j - i > 0) {
-		temp = s[j];	/* store char at s[j] */
-		s[j] = s[i];	/* write char at s[i] to s[j] */
-		s[i] = temp;	/* write temp back to s[i] */
-		--j, ++i;	/* increment j and i */
-		reverse_r(s);	/* run recursively */
-	} else {
-		i = 0;		/* reset i back to 0 */
-		j = -1;		/* reset j back to -1 */
-	}
-}
-
-/* itoa_r:  convert int to string; recursively */
-static void itoa_r(int n, char s[])
-{
-	int i, sign;
-
-	i = 0;
-	if ((sign = n) < 0)
-		n = -n;
-	do {
-		s[i++] = n % 10 + '0';
-	} while ((n /= 10) > 0);
-	if (sign < 0)
-		s[i++] = '-';
-	s[i] = '\0';
-	reverse_r(s);
-}
-
-/* str_dup:  returns pointer to duplicated string */
-static char *str_dup(const char *org)
-{
-	int org_size;
-	static char *dup;
-	char *dup_offset;
-
-	/* Allocate memory for duplicate */
-	org_size = strlength(org);
-	dup = (char*)malloc(sizeof(char)*org_size+1);
-	if (dup == NULL)
-		return (char*)NULL;
-
-	/* Copy string */
-	dup_offset = dup;
-	while (*org) {
-		*dup_offset = *org;
-		dup_offset++;
-		org++;
-	}
-	*dup_offset = '\0';
-	return dup;
-}
 #endif
