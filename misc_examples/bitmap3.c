@@ -9,8 +9,7 @@ int main(void)
 	if (!bmp)		/* check for loading error */
 		return 1;
 
-	/* TODO: Add code here for bitmap */
-
+	BMP_to_count(bmp);	/* count shades in bitmap */
 	destroy_BMP(bmp);	/* free bmp resources */
 	return 0;		/* return success */
 }
