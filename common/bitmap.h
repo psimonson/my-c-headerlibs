@@ -135,10 +135,10 @@ void BMP_to_asciiart(BITMAP_FILE *bmp)
 
 	/* loop through converting average color to ascii */
 	for (y = bmp->info.height-1; y >= 0; y--) {
-		for (x = 0; x < bmp->info.width; x++) {
-			average_color = (bmp->data[x*3+y*rowsize] +
-					bmp->data[x*3+1+y*rowsize] +
-					bmp->data[x*3+2+y*rowsize]) / 3;
+		for (x = 0; x < rowsize; x++) {
+			average_color = (bmp->data[x+y*rowsize] +
+					bmp->data[x+1+y*rowsize] +
+					bmp->data[x+2+y*rowsize]) / 3;
 
 			/* convert to a shade */
 			average_color /= (256/MAX_SHADES);
