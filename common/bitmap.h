@@ -1,6 +1,8 @@
 #ifndef PRS_BITMAP_H
 #define PRS_BITMAP_H
 
+#define MAX_SHADES 10
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -114,6 +116,39 @@ void display_info_BMP(BITMAP_FILE *bmp)
 			"%s\n"
 			"***********************************\n",
 			bmp->data); */
+	}
+}
+
+/* BMP_to_asciiart:  convert image data to ascii and print */
+void BMP_to_asciiart(BITMAP_FILE *bmp)
+{
+	char shades[MAX_SHADES] = {'#','$','O','=','+','|','-','^','.',' '};
+	int average_color;
+	int rowsize;
+	int x, y;
+
+	if (!bmp)
+		return;
+
+	/* get proper row size */
+	rowsize = bmp->info.width*3;
+
+	/* loop through converting average color to ascii */
+	for (y = bmp->info.height-1; y >= 0; y--) {
+		for (x = 0; x < bmp->info.width; x++) {
+			average_color = (bmp->data[x*3+y*rowsize] +
+					bmp->data[x*3+1+y*rowsize] +
+					bmp->data[x*3+2+y*rowsize]) / 3;
+
+			/* convert to a shade */
+			average_color /= (256/MAX_SHADES);
+			if (average_color >= MAX_SHADES)
+				average_color = MAX_SHADES-1;
+
+			/* write char to stdout */
+			putchar(shades[average_color]);
+		}
+		putchar('\n');
 	}
 }
 
