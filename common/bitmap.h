@@ -132,8 +132,15 @@ static void display_info_BMP(BITMAP_FILE *bmp)
 }
 
 /* BMP_to_asciiart:  convert image data to ascii and print */
+#ifdef BMP_PUT_TO_FILE
+static void BMP_to_asciiart(BITMAP_FILE *bmp, const char *filename)
+#else
 static void BMP_to_asciiart(BITMAP_FILE *bmp)
+#endif
 {
+#ifdef BMP_PUT_TO_FILE
+	FILE *fp;
+#endif
 	char shades[MAX_SHADES] = {'#','$','O','=','+','|','-','^','.',' '};
 	int average_color;
 	int rowsize;
@@ -141,6 +148,20 @@ static void BMP_to_asciiart(BITMAP_FILE *bmp)
 
 	if (!bmp)
 		return;
+
+#ifdef BMP_PUT_TO_FILE
+	if (filename == NULL)
+		fp = stdin;
+	else {
+		if ((fp = fopen(filename, "wb")) == NULL) {
+			fprintf(stderr, "Failed to open %s for writing.\n"
+					"Cannot write ascii art into it.\n",
+					filename);
+			destroy_BMP(bmp);
+			exit(1);
+		}
+	}
+#endif
 
 	/* get proper row size */
 	rowsize = bmp->info.width*3;
@@ -158,10 +179,22 @@ static void BMP_to_asciiart(BITMAP_FILE *bmp)
 				average_color = MAX_SHADES-1;
 
 			/* write char to stdout */
+#ifdef BMP_PUT_TO_FILE
+			fputc(shades[average_color], fp);
+#else
 			putchar(shades[average_color]);
+#endif
 		}
+#ifdef BMP_PUT_TO_FILE
+		fputc('\n', fp);
+#else
 		putchar('\n');
+#endif
 	}
+#ifdef BMP_PUT_TO_FILE
+	if (filename != NULL)
+		fclose(fp);
+#endif
 }
 
 /* BMP_to_count:  counts the amount of shades in the whole image */
