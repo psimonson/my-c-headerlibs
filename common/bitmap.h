@@ -12,7 +12,9 @@
 
 #define MAX_SHADES 10
 
-#include <stdio.h>
+#ifndef PRS_HELPER_H
+#include "helper.h"
+#endif
 #include <stdlib.h>
 
 typedef struct BITMAP_FILE_HEADER {
@@ -231,6 +233,60 @@ static void BMP_to_count(BITMAP_FILE *bmp)
 	}
 	for (x = 0; x < 10; x++)
 		printf("%c: %d\n", shades[x], shade_count[x]);
+}
+
+/* create_BMP:  make a blank BMP file; from given width/height/bitsperpixel */
+static int create_BMP(const char *filename, unsigned int w, unsigned int h,
+	unsigned short bpp)
+{
+	BITMAP_FILE *bmp;
+	FILE *fp;
+	const unsigned int pixel_byte_size = h*w*bpp/8;
+	const unsigned int file_size = sizeof(BITMAP_HEADER)+sizeof(BITMAP_INFO)+pixel_byte_size;
+
+	if ((fp = fopen(filename, "wb")) == NULL) {
+		fprintf(stderr, "Error open file for writing.\n");
+		return 1;
+	}
+	bmp = (BITMAP_FILE*)malloc(sizeof(BITMAP_FILE));
+	if (!bmp) {
+		fclose(fp);
+		return 2;
+	}
+	bmp->data = (unsigned char*)malloc(pixel_byte_size);
+	if (!bmp->data) {
+		destroy_BMP(bmp);
+		return 2;
+	}
+
+	/* setup bitmap file header */
+	bmp->header.header = 0x4D42;
+	bmp->header.size = file_size;
+	bmp->header.res1 = 0;
+	bmp->header.res2 = 0;
+	bmp->header.offset = sizeof(BITMAP_HEADER)+sizeof(BITMAP_INFO);
+
+	/* setup bitmap info header */
+	bmp->info.size = sizeof(BITMAP_INFO);
+	bmp->info.width = w;
+	bmp->info.height = h;
+	bmp->info.col_planes = 1;
+	bmp->info.bpp = bpp;
+	bmp->info.compression = 0;
+	bmp->info.image_size = pixel_byte_size;
+	bmp->info.h_res = 0x130B;
+	bmp->info.v_res = 0x130B;
+	bmp->info.num_cols = 0;
+	bmp->info.num_imp = 0;
+
+	/* wipe pixel data */
+	mem_set(bmp->data, 0xFF, pixel_byte_size);
+	fwrite(&bmp->info, 1, sizeof(BITMAP_HEADER)+sizeof(BITMAP_INFO), fp);
+	fwrite(bmp->data, 1, pixel_byte_size, fp);
+	fclose(fp);
+
+	destroy_BMP(bmp);
+	return 0;
 }
 
 #endif
