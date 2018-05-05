@@ -17,6 +17,10 @@
 #endif
 #include <stdlib.h>
 
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
+
 typedef struct BITMAP_FILE_HEADER {
 	unsigned short header;
 	unsigned int size;
@@ -39,9 +43,14 @@ typedef struct BITMAP_INFO_HEADER {
 	unsigned int num_imp;
 } BITMAP_INFO;
 
-typedef struct BITMAP_FILE {
-	BITMAP_HEADER header;
+typedef struct BITMAP {
+	BITMAP_HEADER file;
 	BITMAP_INFO info;
+} BITMAP;
+
+typedef struct BITMAP_FILE {
+	BITMAP header;
+	char fname[MAX_PATH];
 	unsigned char *data;
 } BITMAP_FILE;
 
@@ -67,32 +76,36 @@ static BITMAP_FILE *load_BMP(const char *filename)
 	}
 	bmp = (BITMAP_FILE*)malloc(sizeof(BITMAP_FILE));
 	if (bmp) {
+		/* set bitmap name */
+		str_cpy(bmp->fname, filename);
+
 		/* BMP HEADER */
-		fread(&bmp->header.header, 2, 1, fp);
-		fread(&bmp->header.size, 4, 1, fp);
-		fread(&bmp->header.res1, 2, 1, fp);
-		fread(&bmp->header.res2, 2, 1, fp);
-		fread(&bmp->header.offset, 4, 1, fp);
+		fread(&bmp->header.file.header, 2, 1, fp);
+		fread(&bmp->header.file.size, 4, 1, fp);
+		fread(&bmp->header.file.res1, 2, 1, fp);
+		fread(&bmp->header.file.res2, 2, 1, fp);
+		fread(&bmp->header.file.offset, 4, 1, fp);
 
 		/* BMP HEADER INFO */
-		fread(&bmp->info.size, 4, 1, fp);
-		fread(&bmp->info.width, 4, 1, fp);
-		fread(&bmp->info.height, 4, 1, fp);
-		fread(&bmp->info.col_planes, 2, 1, fp);
-		fread(&bmp->info.bpp, 2, 1, fp);
-		fread(&bmp->info.compression, 4, 1, fp);
-		fread(&bmp->info.image_size, 4, 1, fp);
-		fread(&bmp->info.h_res, 4, 1, fp);
-		fread(&bmp->info.v_res, 4, 1, fp);
-		fread(&bmp->info.num_cols, 4, 1, fp);
-		fread(&bmp->info.num_imp, 4, 1, fp);
+		fread(&bmp->header.info.size, 4, 1, fp);
+		fread(&bmp->header.info.width, 4, 1, fp);
+		fread(&bmp->header.info.height, 4, 1, fp);
+		fread(&bmp->header.info.col_planes, 2, 1, fp);
+		fread(&bmp->header.info.bpp, 2, 1, fp);
+		fread(&bmp->header.info.compression, 4, 1, fp);
+		fread(&bmp->header.info.image_size, 4, 1, fp);
+		fread(&bmp->header.info.h_res, 4, 1, fp);
+		fread(&bmp->header.info.v_res, 4, 1, fp);
+		fread(&bmp->header.info.num_cols, 4, 1, fp);
+		fread(&bmp->header.info.num_imp, 4, 1, fp);
 
-		if (bmp->header.header == 0x4D42) {
-			fseek(fp, bmp->header.offset, SEEK_SET);
+		if (bmp->header.file.header == 0x4D42) {
+			fseek(fp, bmp->header.file.offset, SEEK_SET);
 			bmp->data = malloc(sizeof(unsigned char)*
-					bmp->header.size);
+					bmp->header.info.image_size);
 			if (bmp->data) {
-				fread(bmp->data, 1, bmp->header.size, fp);
+				fread(bmp->data, 1,
+					bmp->header.info.image_size, fp);
 				printf("Valid image loaded.\n");
 				fclose(fp);
 				return bmp;
@@ -122,9 +135,9 @@ static void display_info_BMP(BITMAP_FILE *bmp)
 			"BITMAP HEIGHT            : %u\n"
 			"BITMAP BITS PER PIXEL    : %u\n"
 			"***********************************\n",
-			bmp->header.header, bmp->header.size,
-			bmp->header.offset, bmp->info.width,
-			bmp->info.height, bmp->info.bpp);
+			bmp->header.file.header, bmp->header.file.size,
+			bmp->header.file.offset, bmp->header.info.width,
+			bmp->header.info.height, bmp->header.info.bpp);
 /*		printf("*** Data Below ***\n"
 			"***********************************\n"
 			"%s\n"
@@ -166,10 +179,10 @@ static void BMP_to_asciiart(BITMAP_FILE *bmp)
 #endif
 
 	/* get proper row size */
-	rowsize = bmp->info.width*3;
+	rowsize = bmp->header.info.width*3;
 
 	/* loop through converting average color to ascii */
-	for (y = bmp->info.height-1; y >= 0; y -= 2) {
+	for (y = bmp->header.info.height-1; y >= 0; y -= 2) {
 		for (x = 0; x < rowsize; x += 3) {
 			average_color = (bmp->data[x+y*rowsize] +
 					bmp->data[x+1+y*rowsize] +
@@ -212,10 +225,10 @@ static void BMP_to_count(BITMAP_FILE *bmp)
 		return;
 
 	/* get row size */
-	rowsize = bmp->info.width*3; /* width * 3 */
+	rowsize = bmp->header.info.width*3; /* width * 3 */
 
 	/* loop through converting average color to shade */
-	for (y = bmp->info.height-1; y >= 0; y -= 2) {
+	for (y = bmp->header.info.height-1; y >= 0; y -= 2) {
 		for (x = 0; x < rowsize; x += 3) {
 			average_color = (bmp->data[x+y*rowsize] +
 					bmp->data[x+1+y*rowsize] +
@@ -241,8 +254,8 @@ static int create_BMP(const char *filename, unsigned int w, unsigned int h,
 {
 	BITMAP_FILE *bmp;
 	FILE *fp;
-	const unsigned int pixel_byte_size = h*w*bpp/8;
-	const unsigned int file_size = sizeof(BITMAP_HEADER)+sizeof(BITMAP_INFO)+pixel_byte_size;
+	const unsigned int pixel_byte_size = (h*w*bpp)/8;
+	const unsigned int file_size = sizeof(BITMAP)+pixel_byte_size;
 
 	if ((fp = fopen(filename, "wb")) == NULL) {
 		fprintf(stderr, "Error open file for writing.\n");
@@ -259,29 +272,31 @@ static int create_BMP(const char *filename, unsigned int w, unsigned int h,
 		return 2;
 	}
 
+	mem_set(bmp->fname, 0, sizeof bmp->fname);
+
 	/* setup bitmap file header */
-	bmp->header.header = 0x4D42;
-	bmp->header.size = file_size;
-	bmp->header.res1 = 0;
-	bmp->header.res2 = 0;
-	bmp->header.offset = sizeof(BITMAP_HEADER)+sizeof(BITMAP_INFO);
+	bmp->header.file.header = 0x4D42;
+	bmp->header.file.size = file_size;
+	bmp->header.file.res1 = 0;
+	bmp->header.file.res2 = 0;
+	bmp->header.file.offset = sizeof(BITMAP);
 
 	/* setup bitmap info header */
-	bmp->info.size = sizeof(BITMAP_INFO);
-	bmp->info.width = w;
-	bmp->info.height = h;
-	bmp->info.col_planes = 1;
-	bmp->info.bpp = bpp;
-	bmp->info.compression = 0;
-	bmp->info.image_size = pixel_byte_size;
-	bmp->info.h_res = 0x130B;
-	bmp->info.v_res = 0x130B;
-	bmp->info.num_cols = 0;
-	bmp->info.num_imp = 0;
+	bmp->header.info.size = sizeof(BITMAP_INFO);
+	bmp->header.info.width = w;
+	bmp->header.info.height = h;
+	bmp->header.info.col_planes = 1;
+	bmp->header.info.bpp = bpp;
+	bmp->header.info.compression = 0;
+	bmp->header.info.image_size = pixel_byte_size;
+	bmp->header.info.h_res = 0x130B;
+	bmp->header.info.v_res = 0x130B;
+	bmp->header.info.num_cols = 0;
+	bmp->header.info.num_imp = 0;
 
 	/* wipe pixel data */
 	mem_set(bmp->data, 0xFF, pixel_byte_size);
-	fwrite(&bmp->info, 1, sizeof(BITMAP_HEADER)+sizeof(BITMAP_INFO), fp);
+	fwrite(&bmp->header, 1, sizeof(BITMAP), fp);
 	fwrite(bmp->data, 1, pixel_byte_size, fp);
 	fclose(fp);
 
