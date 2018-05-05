@@ -6,17 +6,11 @@ int main(void)
 	BITMAP_FILE *bmp;
 
 	srand(time(NULL));
-	if (create_BMP("test.bmp", 64, 64, 24)) {
-		fprintf(stderr, "Error creating bitmap.\n");
-		return 2;
-	}
-
-	bmp = load_BMP("test.bmp");
-	if (!bmp) {
-		fprintf(stderr, "Error loading bitmap.\n");
-		return 2;
-	}
+	bmp = create_BMP("test.bmp", 64, 64, 24);
+	if (!bmp)
+		return 1;
 	make_BMP(bmp);
+	write_BMP(bmp, 0);
 	destroy_BMP(bmp);
 	return 0;
 }
