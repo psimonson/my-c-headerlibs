@@ -57,7 +57,7 @@ static void *mem_set(void *p, int c, size_t n)
 {
 	char *s = (char*)p;
 
-	while (s < (char*)p+n)
+	while ((s-(char*)p) < n)
 		*(char*)s++ = c;
 	return p;
 }
@@ -76,7 +76,7 @@ static int mem_cmp(void *s, void *t, size_t n)
 {
 	char *t2 = (char*)t;
 
-	while (t2 < (char*)t+n)
+	while ((t2-(char*)t) < n)
 		if (*t2++ != *(char*)s++)
 			return (*(char*)s-*t2);
 	return 0;

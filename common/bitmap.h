@@ -21,13 +21,10 @@ typedef struct BITMAP_FILE_HEADER {
 	unsigned short res1;
 	unsigned short res2;
 	unsigned int offset;
-} BITMAP_HEADER;
-
-typedef struct BITMAP_INFO_HEADER {
-	unsigned int size;
+	unsigned int info_size;
 	unsigned int width;
 	unsigned int height;
-	unsigned short col_planes;
+	unsigned short planes;
 	unsigned short bpp;
 	unsigned int compression;
 	unsigned int image_size;
@@ -35,11 +32,10 @@ typedef struct BITMAP_INFO_HEADER {
 	unsigned int v_res;
 	unsigned int num_cols;
 	unsigned int num_imp;
-} BITMAP_INFO;
+} BITMAP_FILE_HEADER;
 
 typedef struct BITMAP_FILE {
-	BITMAP_HEADER header;
-	BITMAP_INFO info;
+	BITMAP_FILE_HEADER info;
 	unsigned char *data;
 } BITMAP_FILE;
 
@@ -66,17 +62,17 @@ static BITMAP_FILE *load_BMP(const char *filename)
 	bmp = (BITMAP_FILE*)malloc(sizeof(BITMAP_FILE));
 	if (bmp) {
 		/* BMP HEADER */
-		fread(&bmp->header.header, 2, 1, fp);
-		fread(&bmp->header.size, 4, 1, fp);
-		fread(&bmp->header.res1, 2, 1, fp);
-		fread(&bmp->header.res2, 2, 1, fp);
-		fread(&bmp->header.offset, 4, 1, fp);
+		fread(&bmp->info.header, 2, 1, fp);
+		fread(&bmp->info.size, 4, 1, fp);
+		fread(&bmp->info.res1, 2, 1, fp);
+		fread(&bmp->info.res2, 2, 1, fp);
+		fread(&bmp->info.offset, 4, 1, fp);
 
 		/* BMP HEADER INFO */
-		fread(&bmp->info.size, 4, 1, fp);
+		fread(&bmp->info.info_size, 4, 1, fp);
 		fread(&bmp->info.width, 4, 1, fp);
 		fread(&bmp->info.height, 4, 1, fp);
-		fread(&bmp->info.col_planes, 2, 1, fp);
+		fread(&bmp->info.planes, 2, 1, fp);
 		fread(&bmp->info.bpp, 2, 1, fp);
 		fread(&bmp->info.compression, 4, 1, fp);
 		fread(&bmp->info.image_size, 4, 1, fp);
@@ -85,12 +81,12 @@ static BITMAP_FILE *load_BMP(const char *filename)
 		fread(&bmp->info.num_cols, 4, 1, fp);
 		fread(&bmp->info.num_imp, 4, 1, fp);
 
-		if (bmp->header.header == 0x4D42) {
-			fseek(fp, bmp->header.offset, SEEK_SET);
+		if (bmp->info.header == 0x4D42) {
+			fseek(fp, bmp->info.offset, SEEK_SET);
 			bmp->data = malloc(sizeof(unsigned char)*
-					bmp->header.size);
+					bmp->info.size);
 			if (bmp->data) {
-				fread(bmp->data, 1, bmp->header.size, fp);
+				fread(bmp->data, 1, bmp->info.size, fp);
 				printf("Valid image loaded.\n");
 				fclose(fp);
 				return bmp;
@@ -120,8 +116,8 @@ static void display_info_BMP(BITMAP_FILE *bmp)
 			"BITMAP HEIGHT            : %u\n"
 			"BITMAP BITS PER PIXEL    : %u\n"
 			"***********************************\n",
-			bmp->header.header, bmp->header.size,
-			bmp->header.offset, bmp->info.width,
+			bmp->info.header, bmp->info.size,
+			bmp->info.offset, bmp->info.width,
 			bmp->info.height, bmp->info.bpp);
 /*		printf("*** Data Below ***\n"
 			"***********************************\n"
@@ -167,8 +163,8 @@ static void BMP_to_asciiart(BITMAP_FILE *bmp)
 	rowsize = bmp->info.width*3;
 
 	/* loop through converting average color to ascii */
-	for (y = bmp->info.height-1; y >= 0; y -= 2) {
-		for (x = 0; x < rowsize; x += 3) {
+	for (y = bmp->info.height-1; y >= 0; y-=2) {
+		for (x = 0; x < rowsize; x+=3) {
 			average_color = (bmp->data[x+y*rowsize] +
 					bmp->data[x+1+y*rowsize] +
 					bmp->data[x+2+y*rowsize]) / 3;
