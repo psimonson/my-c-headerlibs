@@ -21,6 +21,7 @@
 #define MAX_PATH 260
 #endif
 
+#pragma pack(push, 1)
 typedef struct BITMAP_FILE_HEADER {
 	unsigned short header;
 	unsigned int size;
@@ -47,6 +48,7 @@ typedef struct BITMAP {
 	BITMAP_HEADER file;
 	BITMAP_INFO info;
 } BITMAP;
+#pragma pack(pop)
 
 typedef struct BITMAP_FILE {
 	BITMAP header;
@@ -254,14 +256,14 @@ static int create_BMP(const char *filename, unsigned int w, unsigned int h,
 {
 	BITMAP_FILE *bmp;
 	FILE *fp;
-	const unsigned int pixel_byte_size = (h*w*bpp)/8;
-	const unsigned int file_size = sizeof(BITMAP)+pixel_byte_size;
+	const int pixel_byte_size = h*w*bpp/8;
+	const int file_size = sizeof(BITMAP)+pixel_byte_size;
 
 	if ((fp = fopen(filename, "wb")) == NULL) {
 		fprintf(stderr, "Error open file for writing.\n");
 		return 1;
 	}
-	bmp = (BITMAP_FILE*)malloc(sizeof(BITMAP_FILE));
+	bmp = (BITMAP_FILE*)calloc(1, sizeof(BITMAP_FILE));
 	if (!bmp) {
 		fclose(fp);
 		return 2;
@@ -269,6 +271,7 @@ static int create_BMP(const char *filename, unsigned int w, unsigned int h,
 	bmp->data = (unsigned char*)malloc(pixel_byte_size);
 	if (!bmp->data) {
 		destroy_BMP(bmp);
+		fclose(fp);
 		return 2;
 	}
 
@@ -295,8 +298,8 @@ static int create_BMP(const char *filename, unsigned int w, unsigned int h,
 	bmp->header.info.num_imp = 0;
 
 	/* wipe pixel data */
-	mem_set(bmp->data, 0xFF, pixel_byte_size);
 	fwrite(&bmp->header, 1, sizeof(BITMAP), fp);
+	mem_set(bmp->data, 0xFF, pixel_byte_size);
 	fwrite(bmp->data, 1, pixel_byte_size, fp);
 	fclose(fp);
 
