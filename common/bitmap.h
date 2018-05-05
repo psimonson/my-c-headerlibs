@@ -307,4 +307,31 @@ static int create_BMP(const char *filename, unsigned int w, unsigned int h,
 	return 0;
 }
 
+/* make_BMP:  set data; overwriting file */
+static void make_BMP(BITMAP_FILE *bmp)
+{
+	FILE *fp;
+	int rowsize;
+	int x,y;
+
+	if ((fp = fopen(bmp->fname, "r+b")) == NULL) {
+		fprintf(stderr, "Cannot open file for writing.\n");
+		return;
+	}
+	fseek(fp, bmp->header.file.offset, SEEK_SET);
+	if (bmp->data) {
+		mem_set(bmp->data, 0xff, bmp->header.info.image_size);
+		rowsize = bmp->header.info.width*3;
+		for (y=bmp->header.info.height-1; y >= 0; y--) {
+			for (x=0; x < rowsize; x++) {
+				bmp->data[x+y*rowsize] = rand()%255;
+				bmp->data[x+1+y*rowsize] = rand()%255;
+				bmp->data[x+2+y*rowsize] = rand()%255;
+			}
+		}
+		fwrite(bmp->data, 1, bmp->header.info.image_size, fp);
+	}
+	fclose(fp);
+}
+
 #endif
