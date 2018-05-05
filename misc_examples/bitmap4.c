@@ -2,10 +2,13 @@
 
 int main(void)
 {
-	if (create_BMP("hello_1337.bmp", 800, 600, 24) != 0) {
-		fprintf(stderr, "Failed to create bitmap.\n");
+	BITMAP_FILE *bmp;
+
+	bmp = create_BMP("hello_1337.bmp", 800, 600, 24);
+	if (!bmp)
 		return 1;
-	} else
-		fprintf(stdout, "Bitmap create successfully.\n");
+	make_BMP(bmp);
+	write_BMP(bmp, 0);
+	destroy_BMP(bmp);
 	return 0;
 }

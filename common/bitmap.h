@@ -70,6 +70,8 @@ static void destroy_BMP(BITMAP_FILE *bmp)
 static BITMAP_FILE *load_BMP(const char *filename)
 {
 	BITMAP_FILE *bmp;
+	unsigned int image_size;
+	unsigned int file_size;
 	FILE *fp;
 
 	if ((fp = fopen(filename, "rb")) == NULL) {
@@ -79,6 +81,7 @@ static BITMAP_FILE *load_BMP(const char *filename)
 	bmp = (BITMAP_FILE*)malloc(sizeof(BITMAP_FILE));
 	if (bmp) {
 		/* set bitmap name */
+		mem_set(bmp->fname, 0, sizeof bmp->fname);
 		str_cpy(bmp->fname, filename);
 
 		/* BMP HEADER */
@@ -101,13 +104,15 @@ static BITMAP_FILE *load_BMP(const char *filename)
 		fread(&bmp->header.info.num_cols, 4, 1, fp);
 		fread(&bmp->header.info.num_imp, 4, 1, fp);
 
-		if (bmp->header.file.header == 0x4D42) {
+		image_size = bmp->header.info.image_size;
+		file_size = image_size+sizeof(BITMAP);
+
+		if (bmp->header.file.header == 0x4D42 &&
+				bmp->header.file.size == file_size) {
 			fseek(fp, bmp->header.file.offset, SEEK_SET);
-			bmp->data = malloc(sizeof(unsigned char)*
-					bmp->header.info.image_size);
+			bmp->data = malloc(sizeof(unsigned char)*image_size);
 			if (bmp->data) {
-				fread(bmp->data, 1,
-					bmp->header.info.image_size, fp);
+				fread(bmp->data, 1, image_size, fp);
 				printf("Valid image loaded.\n");
 				fclose(fp);
 				return bmp;
@@ -116,12 +121,35 @@ static BITMAP_FILE *load_BMP(const char *filename)
 				fclose(fp);
 			}
 		} else {
-			printf("Image is invalid.\n");
+			printf("File Size: %u\nSize compared to: "
+					"%u\nImage is invalid.\n",
+					bmp->header.file.size,
+					file_size);
 			fclose(fp);
 		}
 	}
 	destroy_BMP(bmp);
 	return NULL;
+}
+
+/* write_BMP:  write BMP out to file */
+static int write_BMP(BITMAP_FILE *bmp, unsigned char data_only)
+{
+	FILE *fp;
+
+	if (bmp) {
+		if ((fp = fopen(bmp->fname, "wb")) == NULL) {
+			fprintf(stderr, "Cannot open file for writing.\n");
+			return 1;
+		}
+		if (!data_only)
+			fwrite(&bmp->header, 1, sizeof(BITMAP), fp);
+		else
+			fseek(fp, bmp->header.file.offset, SEEK_SET);
+		fwrite(bmp->data, 1, bmp->header.info.image_size, fp);
+		fclose(fp);
+	}
+	return 0;
 }
 
 /* display_info_BMP:  display info about the bitmap file */
@@ -251,31 +279,26 @@ static void BMP_to_count(BITMAP_FILE *bmp)
 }
 
 /* create_BMP:  make a blank BMP file; from given width/height/bitsperpixel */
-static int create_BMP(const char *filename, unsigned int w, unsigned int h,
+static BITMAP_FILE *create_BMP(const char *filename, unsigned int w, unsigned int h,
 	unsigned short bpp)
 {
 	BITMAP_FILE *bmp;
-	FILE *fp;
 	const int pixel_byte_size = h*w*bpp/8;
 	const int file_size = sizeof(BITMAP)+pixel_byte_size;
 
-	if ((fp = fopen(filename, "wb")) == NULL) {
-		fprintf(stderr, "Error open file for writing.\n");
-		return 1;
-	}
 	bmp = (BITMAP_FILE*)calloc(1, sizeof(BITMAP_FILE));
 	if (!bmp) {
-		fclose(fp);
-		return 2;
+		return NULL;
 	}
 	bmp->data = (unsigned char*)malloc(pixel_byte_size);
 	if (!bmp->data) {
 		destroy_BMP(bmp);
-		fclose(fp);
-		return 2;
+		return NULL;
 	}
 
+	/* setup filename for bmp */
 	mem_set(bmp->fname, 0, sizeof bmp->fname);
+	str_cpy(bmp->fname, filename);
 
 	/* setup bitmap file header */
 	bmp->header.file.header = 0x4D42;
@@ -297,28 +320,15 @@ static int create_BMP(const char *filename, unsigned int w, unsigned int h,
 	bmp->header.info.num_cols = 0;
 	bmp->header.info.num_imp = 0;
 
-	/* wipe pixel data */
-	fwrite(&bmp->header, 1, sizeof(BITMAP), fp);
-	mem_set(bmp->data, 0xFF, pixel_byte_size);
-	fwrite(bmp->data, 1, pixel_byte_size, fp);
-	fclose(fp);
-
-	destroy_BMP(bmp);
-	return 0;
+	return bmp;
 }
 
 /* make_BMP:  set data; overwriting file */
 static void make_BMP(BITMAP_FILE *bmp)
 {
-	FILE *fp;
 	int rowsize;
 	int x,y;
 
-	if ((fp = fopen(bmp->fname, "r+b")) == NULL) {
-		fprintf(stderr, "Cannot open file for writing.\n");
-		return;
-	}
-	fseek(fp, bmp->header.file.offset, SEEK_SET);
 	if (bmp->data) {
 		mem_set(bmp->data, 0xff, bmp->header.info.image_size);
 		rowsize = bmp->header.info.width*3;
@@ -329,9 +339,8 @@ static void make_BMP(BITMAP_FILE *bmp)
 				bmp->data[x+2+y*rowsize] = rand()%255;
 			}
 		}
-		fwrite(bmp->data, 1, bmp->header.info.image_size, fp);
+		write_BMP(bmp, 1);
 	}
-	fclose(fp);
 }
 
 #endif
