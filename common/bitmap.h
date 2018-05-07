@@ -279,8 +279,8 @@ static void BMP_to_count(BITMAP_FILE *bmp)
 }
 
 /* create_BMP:  make a blank BMP file; from given width/height/bitsperpixel */
-static BITMAP_FILE *create_BMP(const char *filename, unsigned int w, unsigned int h,
-	unsigned short bpp)
+static BITMAP_FILE *create_BMP(const char *filename, unsigned int w,
+	unsigned int h,	unsigned short bpp)
 {
 	BITMAP_FILE *bmp;
 	const int pixel_byte_size = h*w*bpp/8;
@@ -340,6 +340,47 @@ static void make_BMP(BITMAP_FILE *bmp)
 			}
 		}
 		write_BMP(bmp, 1);
+	}
+}
+
+/* put_pixel_BMP:  plot a pixel at given x and y with given r/g/b values */
+static void put_pixel_BMP(BITMAP_FILE *bmp, int x, int y,
+	unsigned char r, unsigned char g, unsigned char b)
+{
+	int rowsize;
+
+	if (bmp) {
+		rowsize = bmp->header.info.width*3;
+		bmp->data[x+y*rowsize] = b;
+		bmp->data[x+1+y*rowsize] = g;
+		bmp->data[x+2+y*rowsize] = r;
+	}
+}
+
+/* clear_BMP:  clear bitmap data to solid color */
+static void clear_BMP(BITMAP_FILE *bmp, unsigned char r,
+	unsigned char g, unsigned char b)
+{
+	int rowsize;
+	int x,y;
+
+	if (bmp) {
+		rowsize = bmp->header.info.width*3;
+		for (y=bmp->header.info.height-1; y >= 0; y--)
+			for (x=0; x < rowsize; x+=3)
+				put_pixel_BMP(bmp, x, y, r, g, b);
+	}
+}
+
+/* draw_line_BMP:  draw a line from x1,y1 to x2,y2 with r/g/b color */
+static void draw_line_BMP(BITMAP_FILE *bmp, int x1, int x2, int y,
+	unsigned char r, unsigned char g, unsigned char b)
+{
+	if (bmp) {
+		if ((x1 > 0) && (x1 < bmp->header.info.width)) {
+			for (x1=0; x1 <= x2; x1+=3)
+				put_pixel_BMP(bmp, x1+x2*3, y, r, g, b);
+		}
 	}
 }
 
