@@ -396,4 +396,28 @@ static void draw_vline_BMP(BITMAP_FILE *bmp, int x, int y1, int y2,
 	}
 }
 
+/* draw_circle_BMP:  draw a circle with radius of rad; color r,g,b */
+static void draw_circle_BMP(BITMAP_FILE *bmp, int x, int y, int rad,
+	unsigned char r, unsigned char g, unsigned char b)
+{
+	int N = 2*rad+1;
+	int x2,y2;
+
+	if (bmp) {
+		int i,j;
+
+		for (i=0; i < N; i++) {
+			for (j=0; j < N; j++) {
+				x2 = i-rad;
+				y2 = j-rad;
+
+				if (x2*x2+y2*y2 <= rad*rad+1)
+					put_pixel_BMP(bmp,
+					bmp->header.info.width-(x2-x)*3,
+					bmp->header.info.width-(y2-y), b, r, g);
+			}
+		}
+	}
+}
+
 #endif
