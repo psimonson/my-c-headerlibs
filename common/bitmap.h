@@ -377,8 +377,8 @@ static void draw_hline_BMP(BITMAP_FILE *bmp, int x1, int x2, int y,
 	unsigned char r, unsigned char g, unsigned char b)
 {
 	if (bmp) {
-		if ((x1 >= 0) && (x1 <= (bmp->header.info.width*3))) {
-			for (; x1 <= x2; x1++)
+		if ((x1 >= 0) && (x1 <= bmp->header.info.width)) {
+			for (; x1 < x2; x1++)
 				put_pixel_BMP(bmp, x1*3, y, r, g, b);
 		}
 	}
