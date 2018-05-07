@@ -373,13 +373,25 @@ static void clear_BMP(BITMAP_FILE *bmp, unsigned char r,
 }
 
 /* draw_line_BMP:  draw a line from x1,y1 to x2,y2 with r/g/b color */
-static void draw_line_BMP(BITMAP_FILE *bmp, int x1, int x2, int y,
+static void draw_hline_BMP(BITMAP_FILE *bmp, int x1, int x2, int y,
 	unsigned char r, unsigned char g, unsigned char b)
 {
 	if (bmp) {
 		if ((x1 >= 0) && (x1 <= (bmp->header.info.width*3))) {
 			for (x1=0; x1 <= x2; x1++)
 				put_pixel_BMP(bmp, x1*3, y, r, g, b);
+		}
+	}
+}
+
+/* draw_vline_BMP:  draws a vertical line from y1 to y2 */
+static void draw_vline_BMP(BITMAP_FILE *bmp, int x, int y1, int y2,
+	unsigned char r, unsigned char g, unsigned char b)
+{
+	if (bmp) {
+		if ((y1 >= 0) && (y2 <= bmp->header.info.height)) {
+			for (; y1 < y2; y1++)
+				put_pixel_BMP(bmp, x*3, y1, r, g, b);
 		}
 	}
 }
