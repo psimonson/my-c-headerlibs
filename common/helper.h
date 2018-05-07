@@ -101,7 +101,7 @@ static int trim(char *s)
 /* str_len:  get length of a null terminated string */
 static int str_len(const char *s)
 {
-	char *p = (char*)s;
+	const char *p = s;
 
 	while (*p != 0)
 		p++;
@@ -186,7 +186,7 @@ static char *str_dup(const char *s)
 		return NULL;
 
 	/* copy string into p */
-	while ((*p++ = *s++));
+	str_cpy(p, s);
 	return p;
 }
 

@@ -378,7 +378,7 @@ static void draw_hline_BMP(BITMAP_FILE *bmp, int x1, int x2, int y,
 {
 	if (bmp) {
 		if ((x1 >= 0) && (x1 <= bmp->header.info.width)) {
-			for (; x1 < x2; x1++)
+			for (; x1 <= x2; x1++)
 				put_pixel_BMP(bmp, x1*3, y, r, g, b);
 		}
 	}
@@ -417,6 +417,18 @@ static void draw_circle_BMP(BITMAP_FILE *bmp, int x, int y, int rad,
 					bmp->header.info.width-(y2-y), b, r, g);
 			}
 		}
+	}
+}
+
+/* draw_square_BMP:  draws square at (x,y) of (w,h); color (r/g/b) */
+void draw_square_BMP(BITMAP_FILE *bmp, int x, int y, int w, int h,
+	unsigned char r, unsigned char g, unsigned char b)
+{
+	if (bmp) {
+		draw_hline_BMP(bmp, x, w, y, r, g, b);
+		draw_vline_BMP(bmp, x, y, h, r, g, b);
+		draw_hline_BMP(bmp, x, w, h+y-x, r, g, b);
+		draw_vline_BMP(bmp, w+x-y, y, h, r, g, b);
 	}
 }
 
