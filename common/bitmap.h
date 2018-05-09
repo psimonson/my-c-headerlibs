@@ -15,7 +15,6 @@
 #ifndef PRS_HELPER_H
 #include "helper.h"
 #endif
-#include <stdlib.h>
 
 #ifndef MAX_PATH
 #define MAX_PATH 260
@@ -333,7 +332,7 @@ static void make_BMP(BITMAP_FILE *bmp)
 		mem_set(bmp->data, 0xff, bmp->header.info.image_size);
 		rowsize = bmp->header.info.width*3;
 		for (y=bmp->header.info.height-1; y >= 0; y--) {
-			for (x=0; x < rowsize; x++) {
+			for (x=0; x < rowsize; x+=3) {
 				bmp->data[x+y*rowsize] = rand()%255;
 				bmp->data[x+1+y*rowsize] = rand()%255;
 				bmp->data[x+2+y*rowsize] = rand()%255;
@@ -351,9 +350,9 @@ static void put_pixel_BMP(BITMAP_FILE *bmp, int x, int y,
 
 	if (bmp) {
 		rowsize = bmp->header.info.width*3;
-		bmp->data[x+y*rowsize] = b;
+		bmp->data[x+y*rowsize] = r;
 		bmp->data[x+1+y*rowsize] = g;
-		bmp->data[x+2+y*rowsize] = r;
+		bmp->data[x+2+y*rowsize] = b;
 	}
 }
 
@@ -403,7 +402,7 @@ static void draw_line_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
 				py += sdy;
 			}
 			px += sdx;
-			put_pixel_BMP(bmp, px*3, py, r, g, b);
+			put_pixel_BMP(bmp, px, py, r, g, b);
 		}
 	} else {	/* the line is more vertical */
 		for (i=0; i < dyabs; i++) {
@@ -413,7 +412,7 @@ static void draw_line_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
 				px += sdx;
 			}
 			py += sdy;
-			put_pixel_BMP(bmp, px*3, py, r, g, b);
+			put_pixel_BMP(bmp, px, py, r, g, b);
 		}
 	}
 }

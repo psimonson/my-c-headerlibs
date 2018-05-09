@@ -9,7 +9,7 @@ int main(void)
 		return 1;
 
 	clear_BMP(bmp, 255, 255, 255);
-	draw_line_BMP(bmp, 0, 0, 64, 64, 255, 0, 0);
+	draw_line_BMP(bmp, 32, 32, 64, 32, 255, 0, 0);
 	write_BMP(bmp, 0);
 	destroy_BMP(bmp);
 	return 0;
