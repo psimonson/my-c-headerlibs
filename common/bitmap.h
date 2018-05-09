@@ -466,4 +466,18 @@ static void draw_square_BMP(BITMAP_FILE *bmp, int x, int y, int size,
 	}
 }
 
+/* draw_star_BMP:  draws a star in given bitmap at (x,y) coords */
+static void draw_star_BMP(BITMAP_FILE *bmp, int x, int y, int size,
+	unsigned char r, unsigned char g, unsigned char b)
+{
+	if (bmp) {
+		draw_line_BMP(bmp, x, y, x+size, y+size, r, g, b);
+		draw_line_BMP(bmp, x, y, x+size-10, y+size+8, r, g, b);
+		draw_line_BMP(bmp, x, y+size, x+size, y+size, r, g, b);
+		draw_line_BMP(bmp, x, y+size, x+size, y, r, g, b);
+		draw_line_BMP(bmp, x+size-10, y+size+8, x+size, y,
+			r, g, b);
+	}
+}
+
 #endif
