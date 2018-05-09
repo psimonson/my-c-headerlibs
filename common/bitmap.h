@@ -371,6 +371,13 @@ static void clear_BMP(BITMAP_FILE *bmp, unsigned char r,
 	}
 }
 
+/* get_size_BMP:  returns total bytes of image data */
+static int get_size_BMP(BITMAP_FILE *bmp)
+{
+	if (bmp)
+		return bmp->header.info.image_size;
+}
+
 /* sgn:  signum function */
 static int sgn(int x)
 {
