@@ -93,12 +93,10 @@ static int trim(char *s)
 {
 	char *p = s;
 
-	while (*p != 0)
-		p++;
-
-	while (*p-- != 0)
+	while (*p++ != 0)
 		if (*p == '\r' || *p == '\n')
-			*p = 0;
+			break;
+	*p = 0;
 	return p-s;
 }
 
@@ -280,13 +278,13 @@ static int p_atoi(char *s)
 
 
 /* getstr:  gets a line of input from keyboard */
-static int getstr(char *s, int lim)
+static int getstr(char *s, int n)
 {
-	char *p;
+	char *p = s;
 
-	for (p = s; lim-- > 0 && (*p = getchar()) != EOF && *p != '\n'; p++);
-	*p = '\0';
-	return p-s;
+	while (n-- > 0 && (*s = getchar()) != EOF && *s++ != '\n');
+	*s = '\0';
+	return s-p;
 }
 
 /* get_input:  gets input with getstr; displays message first */

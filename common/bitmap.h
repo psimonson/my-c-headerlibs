@@ -480,4 +480,28 @@ static void draw_star_BMP(BITMAP_FILE *bmp, int x, int y, int size,
 	}
 }
 
+/* draw_hcircle_BMP:  draw hollow circle at (x,y) with radius; color r/g/b */
+static void draw_hcircle_BMP(BITMAP_FILE *bmp, int x, int y, int rad,
+	unsigned char r, unsigned char g, unsigned char b)
+{
+	int N = 2*rad;
+	int i,j,px,py;
+
+	if (bmp) {
+		for (i = 0; i < N; i++) {
+			for (j = 0; j < N; j++) {
+				px = j-rad;
+				py = i-rad;
+
+				if (px*px+py*py > rad*rad-(rad*2+5) &&
+					px*px+py*py <= rad*rad)
+					put_pixel_BMP(bmp,
+						bmp->header.info.width-(px+x)*3,
+						bmp->header.info.height-(py+y),
+						r, g, b);
+			}
+		}
+	}
+}
+
 #endif
