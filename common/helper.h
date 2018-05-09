@@ -33,12 +33,14 @@ enum escapes { BELL = '\a', BACKSPACE = '\b', TAB = '\t',
 
 
 typedef enum Boolean {
-	FALSE,
-	TRUE
+	false,
+	true
 } bool_t;
 
-#define true TRUE
-#define false FALSE
+#if !defined(TRUE) && !defined(FALSE)
+#define TRUE
+#define FALSE
+#endif
 
 
 /* ---------------------------- Memory Functions -------------------------- */

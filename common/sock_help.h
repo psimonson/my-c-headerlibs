@@ -55,6 +55,10 @@
 #define BAD_SOCKET	-1
 #endif
 
+#ifndef INET6_ADDRSTRLEN
+#define INET6_ADDRSTRLEN 46
+#endif
+
 /* set_nonblocking: set a socket to non-blocking IO */
 #ifdef _WIN32
 static int set_nonblocking(SOCKET sock)
