@@ -350,9 +350,9 @@ static void put_pixel_BMP(BITMAP_FILE *bmp, int x, int y,
 
 	if (bmp) {
 		rowsize = bmp->header.info.width*3;
-		bmp->data[x+y*rowsize] = r;
+		bmp->data[x+y*rowsize] = b;
 		bmp->data[x+1+y*rowsize] = g;
-		bmp->data[x+2+y*rowsize] = b;
+		bmp->data[x+2+y*rowsize] = r;
 	}
 }
 
@@ -376,6 +376,7 @@ static int get_size_BMP(BITMAP_FILE *bmp)
 {
 	if (bmp)
 		return bmp->header.info.image_size;
+	return -1;
 }
 
 /* sgn:  signum function */
@@ -409,7 +410,7 @@ static void draw_line_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
 				py += sdy;
 			}
 			px += sdx;
-			put_pixel_BMP(bmp, px, py, r, g, b);
+			put_pixel_BMP(bmp, px*3, py, r, g, b);
 		}
 	} else {	/* the line is more vertical */
 		for (i=0; i < dyabs; i++) {
@@ -419,7 +420,7 @@ static void draw_line_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
 				px += sdx;
 			}
 			py += sdy;
-			put_pixel_BMP(bmp, px, py, r, g, b);
+			put_pixel_BMP(bmp, px*3, py, r, g, b);
 		}
 	}
 }
@@ -449,12 +450,19 @@ static void draw_circle_BMP(BITMAP_FILE *bmp, int x, int y, int rad,
 	}
 }
 
-/* draw_square_BMP:  draws square at (x,y) of (w,h); color (r/g/b) */
-static void draw_square_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
+/* draw_square_BMP:  draw square at (x,y) with given size and r/g/b */
+static void draw_square_BMP(BITMAP_FILE *bmp, int x, int y, int size,
 	unsigned char r, unsigned char g, unsigned char b)
 {
+	if ((x < 0 || x+size > bmp->header.info.width) ||
+		(y < 0 || y+size > bmp->header.info.height))
+		return;
+
 	if (bmp) {
-		/* TODO: add code here to draw a square */
+		draw_line_BMP(bmp, x, y, x, y+size, r, g, b);
+		draw_line_BMP(bmp, x+size, y, x+size, y+size, r, g, b);
+		draw_line_BMP(bmp, x, y+size, x+size, y+size, r, g, b);
+		draw_line_BMP(bmp, x, y, x+size, y, r, g, b);
 	}
 }
 
