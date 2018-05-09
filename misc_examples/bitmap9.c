@@ -8,8 +8,8 @@ int main(void)
 	if (!bmp)
 		return 1;
 
-	clear_BMP(bmp, 255, 255, 255);
-	draw_line_BMP(bmp, 32, 32, 64, 32, 255, 0, 0);
+	clear_BMP(bmp, 0, 0, 0);
+	draw_square_BMP(bmp, 30, 30, 20, 255, 0, 0);
 	write_BMP(bmp, 0);
 	destroy_BMP(bmp);
 	return 0;

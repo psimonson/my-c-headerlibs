@@ -30,9 +30,9 @@ add_custom_command(TARGET copybitmaps
 )
 
 # cflags
-set(CMAKE_C_FLAGS "-std=c89 -Wall -Wno-unused-function")
-set(CMAKE_C_FLAGS_DEBUG "-std=c89 -Wall -Wno-unused-function")
-set(CMAKE_C_FLAGS_RELEASE "-std=c89 -Wall -Wno-unused-function")
+set(CMAKE_C_FLAGS "-std=c89 -g -Wall -Wno-unused-function")
+set(CMAKE_C_FLAGS_DEBUG "-std=c89 -g -Wall -Wno-unused-function")
+set(CMAKE_C_FLAGS_RELEASE "-std=c89 -g -Wall -Wno-unused-function")
 
 # misc folder
 add_executable(misc_examples/test1 misc_examples/test1.c)
@@ -129,8 +129,8 @@ add_executable(misc_examples/test15 misc_examples/test15.c)
 add_dependencies(misc_examples/test15 makedirs)
 add_executable(misc_examples/getint misc_examples/getint.c)
 add_dependencies(misc_examples/getint makedirs)
-add_executable(misc_examples/bitmap misc_examples/bitmap.c)
-add_dependencies(misc_examples/bitmap makedirs copybitmaps)
+add_executable(misc_examples/bitmap1 misc_examples/bitmap1.c)
+add_dependencies(misc_examples/bitmap1 makedirs copybitmaps)
 add_executable(misc_examples/bitmap2 misc_examples/bitmap2.c)
 add_dependencies(misc_examples/bitmap2 makedirs copybitmaps)
 add_executable(misc_examples/bitmap3 misc_examples/bitmap3.c)
@@ -143,6 +143,10 @@ add_executable(misc_examples/bitmap6 misc_examples/bitmap6.c)
 add_dependencies(misc_examples/bitmap6 makedirs copybitmaps)
 add_executable(misc_examples/bitmap7 misc_examples/bitmap7.c)
 add_dependencies(misc_examples/bitmap7 makedirs copybitmaps)
+add_executable(misc_examples/bitmap8 misc_examples/bitmap8.c)
+add_dependencies(misc_examples/bitmap8 makedirs copybitmaps)
+add_executable(misc_examples/bitmap9 misc_examples/bitmap9.c)
+add_dependencies(misc_examples/bitmap9 makedirs copybitmaps)
 
 # add cgi example targets
 add_executable(cgi_examples/test1 cgi_examples/test1.c)

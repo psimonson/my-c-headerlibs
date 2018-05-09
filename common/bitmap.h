@@ -15,7 +15,6 @@
 #ifndef PRS_HELPER_H
 #include "helper.h"
 #endif
-#include <stdlib.h>
 
 #ifndef MAX_PATH
 #define MAX_PATH 260
@@ -333,7 +332,7 @@ static void make_BMP(BITMAP_FILE *bmp)
 		mem_set(bmp->data, 0xff, bmp->header.info.image_size);
 		rowsize = bmp->header.info.width*3;
 		for (y=bmp->header.info.height-1; y >= 0; y--) {
-			for (x=0; x < rowsize; x++) {
+			for (x=0; x < rowsize; x+=3) {
 				bmp->data[x+y*rowsize] = rand()%255;
 				bmp->data[x+1+y*rowsize] = rand()%255;
 				bmp->data[x+2+y*rowsize] = rand()%255;
@@ -372,27 +371,98 @@ static void clear_BMP(BITMAP_FILE *bmp, unsigned char r,
 	}
 }
 
-/* draw_line_BMP:  draw a line from x1,y1 to x2,y2 with r/g/b color */
-static void draw_hline_BMP(BITMAP_FILE *bmp, int x1, int x2, int y,
+/* get_size_BMP:  returns total bytes of image data */
+static int get_size_BMP(BITMAP_FILE *bmp)
+{
+	if (bmp)
+		return bmp->header.info.image_size;
+	return -1;
+}
+
+/* sgn:  signum function */
+static int sgn(int x)
+{
+	return (x > 0) - (x < 0);
+}
+
+/* draw_line_BMP:  draws a line at (x1,y1) to (x2, y2); color r/g/b */
+static void draw_line_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
 	unsigned char r, unsigned char g, unsigned char b)
 {
-	if (bmp) {
-		if ((x1 >= 0) && (x1 <= (bmp->header.info.width*3))) {
-			for (; x1 <= x2; x1++)
-				put_pixel_BMP(bmp, x1*3, y, r, g, b);
+	int i,dx,dy,sdx,sdy,dxabs,dyabs,x,y,px,py;
+
+	dx = x2-x1;	/* horizontal distance */
+	dy = y2-y1;	/* vertical distance */
+	dxabs = abs(dx);
+	dyabs = abs(dy);
+	sdx = sgn(dx);
+	sdy = sgn(dy);
+	x = dyabs>>1;
+	y = dxabs>>1;
+	px = x1;
+	py = y1;
+
+	if (dxabs >= dyabs) { /* the line is more horizontal */
+		for (i=0; i < dxabs; i++) {
+			y += dyabs;
+			if (y >= dxabs) {
+				y -= dxabs;
+				py += sdy;
+			}
+			px += sdx;
+			put_pixel_BMP(bmp, px*3, py, r, g, b);
+		}
+	} else {	/* the line is more vertical */
+		for (i=0; i < dyabs; i++) {
+			x += dxabs;
+			if (x >= dyabs) {
+				x -= dyabs;
+				px += sdx;
+			}
+			py += sdy;
+			put_pixel_BMP(bmp, px*3, py, r, g, b);
 		}
 	}
 }
 
-/* draw_vline_BMP:  draws a vertical line from y1 to y2 */
-static void draw_vline_BMP(BITMAP_FILE *bmp, int x, int y1, int y2,
+/* draw_circle_BMP:  draw a circle with radius of rad; color r,g,b */
+static void draw_circle_BMP(BITMAP_FILE *bmp, int x, int y, int rad,
 	unsigned char r, unsigned char g, unsigned char b)
 {
+	int N = 2*rad+1;
+	int x2,y2;
+
 	if (bmp) {
-		if ((y1 >= 0) && (y2 <= bmp->header.info.height)) {
-			for (; y1 < y2; y1++)
-				put_pixel_BMP(bmp, x*3, y1, r, g, b);
+		int i,j;
+
+		for (i=0; i < N; i++) {
+			for (j=0; j < N; j++) {
+				x2 = i-rad;
+				y2 = j-rad;
+
+				if (x2*x2+y2*y2 <= rad*rad+1)
+					put_pixel_BMP(bmp,
+					bmp->header.info.width-(x2-x)*3,
+					bmp->header.info.height-(y2-y),
+					b, r, g);
+			}
 		}
+	}
+}
+
+/* draw_square_BMP:  draw square at (x,y) with given size and r/g/b */
+static void draw_square_BMP(BITMAP_FILE *bmp, int x, int y, int size,
+	unsigned char r, unsigned char g, unsigned char b)
+{
+	if ((x < 0 || x+size > bmp->header.info.width) ||
+		(y < 0 || y+size > bmp->header.info.height))
+		return;
+
+	if (bmp) {
+		draw_line_BMP(bmp, x, y, x, y+size, r, g, b);
+		draw_line_BMP(bmp, x+size, y, x+size, y+size, r, g, b);
+		draw_line_BMP(bmp, x, y+size, x+size, y+size, r, g, b);
+		draw_line_BMP(bmp, x, y, x+size, y, r, g, b);
 	}
 }
 
