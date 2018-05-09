@@ -91,8 +91,10 @@ static int trim(char *s)
 {
 	char *p = s;
 
-	while (*p++ != 0);
-	while ((p--)-s != 0)
+	while (*p != 0)
+		p++;
+
+	while (*p-- != 0)
 		if (*p == '\r' || *p == '\n')
 			*p = 0;
 	return p-s;
@@ -275,16 +277,12 @@ static int p_atoi(char *s)
 /* ----------------------- Miscellaneous Functions ----------------------- */
 
 
-/* getstr:  gets a string from standard input */
+/* getstr:  gets a line of input from keyboard */
 static int getstr(char *s, int lim)
 {
-	char c,*p;
+	char *p;
 
-	p = s;
-	while (--lim > 0 && (c = getchar()) != EOF && c != '\n')
-		*p++ = c;
-	if (c == '\n')
-		*p++ = c;
+	for (p = s; lim-- > 0 && (*p = getchar()) != EOF && *p != '\n'; p++);
 	*p = '\0';
 	return p-s;
 }
@@ -562,6 +560,5 @@ static void p_qsort(int v[], int left, int right)
 	p_qsort(v, left, last-1);
 	p_qsort(v, last+1, right);
 }
-
 
 #endif

@@ -8,10 +8,10 @@ int main()
 	printf("Send 'EOF' to quit. (Windows/Linux) [Ctrl+Z/Ctrl+D]\n");
 	do {
 		printf("Enter string: ");
-		len = getstr(msg, sizeof msg);
+		len = getstr(msg, sizeof(msg));
 		if (len > 1) {
 			len = trim(msg);
-			printf("Size: %d\nString: %s", len, msg);
+			printf("Size: %d\nString: %s\n", len, msg);
 		} else {
 			if (msg[0] != '\n')
 				putchar('\n');
