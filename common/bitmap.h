@@ -373,13 +373,13 @@ static void clear_BMP(BITMAP_FILE *bmp, unsigned char r,
 }
 
 /* sgn:  signum function */
-int sgn(int x)
+static int sgn(int x)
 {
 	return (x > 0) - (x < 0);
 }
 
 /* draw_line_BMP:  draws a line at (x1,y1) to (x2, y2); color r/g/b */
-void draw_line_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
+static void draw_line_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
 	unsigned char r, unsigned char g, unsigned char b)
 {
 	int i,dx,dy,sdx,sdy,dxabs,dyabs,x,y,px,py;
@@ -444,7 +444,7 @@ static void draw_circle_BMP(BITMAP_FILE *bmp, int x, int y, int rad,
 }
 
 /* draw_square_BMP:  draws square at (x,y) of (w,h); color (r/g/b) */
-void draw_square_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
+static void draw_square_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
 	unsigned char r, unsigned char g, unsigned char b)
 {
 	if (bmp) {
