@@ -3,21 +3,15 @@
 int main(void)
 {
 	BITMAP_FILE *bmp;
-	int i;
 
+	/* create a BMP file width/height (60x60x24bpp) */
 	bmp = create_BMP("test.bmp", 64, 64, 24);
 	if (!bmp)
 		return 1;
 
 	clear_BMP(bmp, 255, 255, 255);
-	for (i=1; i < 2; i++) {
-		draw_hline_BMP(bmp, 10, 44, i*10, 255, 0, 0);
-		draw_vline_BMP(bmp, i*10, 10, 44, 0, 0, 255);
-		draw_hline_BMP(bmp, 0, 10, i*42, 255, 0, 0);
-		draw_vline_BMP(bmp, i*42, 0, 10, 0, 0, 255);
-	}
+	draw_circle_BMP(bmp, 10, -25, 20, 255, 0, 0);
 	write_BMP(bmp, 0);
-	display_info_BMP(bmp);
 	destroy_BMP(bmp);
 	return 0;
 }

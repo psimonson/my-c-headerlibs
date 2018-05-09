@@ -372,26 +372,48 @@ static void clear_BMP(BITMAP_FILE *bmp, unsigned char r,
 	}
 }
 
-/* draw_line_BMP:  draw a line from x1,y1 to x2,y2 with r/g/b color */
-static void draw_hline_BMP(BITMAP_FILE *bmp, int x1, int x2, int y,
-	unsigned char r, unsigned char g, unsigned char b)
+/* sgn:  signum function */
+int sgn(int x)
 {
-	if (bmp) {
-		if ((x1 >= 0) && (x1 <= bmp->header.info.width)) {
-			for (; x1 <= x2; x1++)
-				put_pixel_BMP(bmp, x1*3, y, r, g, b);
-		}
-	}
+	return (x > 0) - (x < 0);
 }
 
-/* draw_vline_BMP:  draws a vertical line from y1 to y2 */
-static void draw_vline_BMP(BITMAP_FILE *bmp, int x, int y1, int y2,
+/* draw_line_BMP:  draws a line at (x1,y1) to (x2, y2); color r/g/b */
+void draw_line_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
 	unsigned char r, unsigned char g, unsigned char b)
 {
-	if (bmp) {
-		if ((y1 >= 0) && (y2 <= bmp->header.info.height)) {
-			for (; y1 < y2; y1++)
-				put_pixel_BMP(bmp, x*3, y1, r, g, b);
+	int i,dx,dy,sdx,sdy,dxabs,dyabs,x,y,px,py;
+
+	dx = x2-x1;	/* horizontal distance */
+	dy = y2-y1;	/* vertical distance */
+	dxabs = abs(dx);
+	dyabs = abs(dy);
+	sdx = sgn(dx);
+	sdy = sgn(dy);
+	x = dyabs>>1;
+	y = dxabs>>1;
+	px = x1;
+	py = y1;
+
+	if (dxabs >= dyabs) { /* the line is more horizontal */
+		for (i=0; i < dxabs; i++) {
+			y += dyabs;
+			if (y >= dxabs) {
+				y -= dxabs;
+				py += sdy;
+			}
+			px += sdx;
+			put_pixel_BMP(bmp, px*3, py, r, g, b);
+		}
+	} else {	/* the line is more vertical */
+		for (i=0; i < dyabs; i++) {
+			x += dxabs;
+			if (x >= dyabs) {
+				x -= dyabs;
+				px += sdx;
+			}
+			py += sdy;
+			put_pixel_BMP(bmp, px*3, py, r, g, b);
 		}
 	}
 }
@@ -414,21 +436,19 @@ static void draw_circle_BMP(BITMAP_FILE *bmp, int x, int y, int rad,
 				if (x2*x2+y2*y2 <= rad*rad+1)
 					put_pixel_BMP(bmp,
 					bmp->header.info.width-(x2-x)*3,
-					bmp->header.info.width-(y2-y), b, r, g);
+					bmp->header.info.height-(y2-y),
+					b, r, g);
 			}
 		}
 	}
 }
 
 /* draw_square_BMP:  draws square at (x,y) of (w,h); color (r/g/b) */
-void draw_square_BMP(BITMAP_FILE *bmp, int x, int y, int w, int h,
+void draw_square_BMP(BITMAP_FILE *bmp, int x1, int y1, int x2, int y2,
 	unsigned char r, unsigned char g, unsigned char b)
 {
 	if (bmp) {
-		draw_hline_BMP(bmp, x, w, y, r, g, b);
-		draw_vline_BMP(bmp, x, y, h, r, g, b);
-		draw_hline_BMP(bmp, x, w, h+y-x, r, g, b);
-		draw_vline_BMP(bmp, w+x-y, y, h, r, g, b);
+		/* TODO: add code here to draw a square */
 	}
 }
 
