@@ -281,10 +281,14 @@ static int p_atoi(char *s)
 static int getstr(char *s, int n)
 {
 	char *p = s;
+	int c;
 
-	while (n-- > 0 && (*s = getchar()) != EOF && *s++ != '\n');
-	*s = '\0';
-	return s-p;
+	while (n-- > 0 && (c = getchar()) != EOF && c != '\n')
+		*p++ = c;
+	if (c == '\n')
+		*p++ = c;
+	*p = '\0';
+	return (int)(p-s);
 }
 
 /* get_input:  gets input with getstr; displays message first */
