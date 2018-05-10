@@ -153,6 +153,8 @@ add_executable(misc_examples/bitmap11 misc_examples/bitmap11.c)
 add_dependencies(misc_examples/bitmap11 makedirs copybitmaps)
 add_executable(misc_examples/bitmap12 misc_examples/bitmap12.c)
 add_dependencies(misc_examples/bitmap12 makedirs copybitmaps)
+add_executable(misc_examples/bitmap13 misc_examples/bitmap13.c)
+add_dependencies(misc_examples/bitmap13 makedirs copybitmaps)
 
 # add cgi example targets
 add_executable(cgi_examples/test1 cgi_examples/test1.c)
