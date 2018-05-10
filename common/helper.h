@@ -88,18 +88,6 @@ static int mem_cmp(void *s, void *t, size_t n)
 /* ---------------------------- String Functions -------------------------- */
 
 
-/* trim:  trim off newlines from string */
-static int trim(char *s)
-{
-	char *p = s;
-
-	while (*p++ != 0)
-		if (*p == '\r' || *p == '\n')
-			break;
-	*p = 0;
-	return p-s;
-}
-
 /* str_len:  get length of a null terminated string */
 static int str_len(const char *s)
 {
@@ -190,6 +178,18 @@ static char *str_dup(const char *s)
 	/* copy string into p */
 	str_cpy(p, s);
 	return p;
+}
+
+/* trim:  trim off newlines from string */
+static int trim(char *s)
+{
+	char *p;
+
+	for (p=s+str_len(s); *p != 0; p--)
+		if (*p == '\r' || *p == '\n')
+			break;
+	*p = 0;
+	return p-s;
 }
 
 
