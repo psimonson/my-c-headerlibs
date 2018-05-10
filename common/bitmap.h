@@ -498,7 +498,7 @@ static void draw_hcircle_BMP(BITMAP_FILE *bmp, int x, int y, int rad,
 					put_pixel_BMP(bmp,
 						bmp->header.info.width-(px+x)*3,
 						bmp->header.info.height-(py+y),
-						r, g, b);
+						b, r, g);
 			}
 		}
 	}
