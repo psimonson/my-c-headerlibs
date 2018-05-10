@@ -46,6 +46,7 @@
 #else
 #define SERVER_INFO int sockfd, newfd
 #define CLIENT_INFO int sockfd
+#define SOCKET int
 #endif
 
 /* incase of bad socket */
