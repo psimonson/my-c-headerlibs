@@ -189,7 +189,7 @@ static int trim(char *s)
 		if (*p == '\r' || *p == '\n')
 			break;
 	*p = 0;
-	return p-s;
+	return (int)(p-s);
 }
 
 
