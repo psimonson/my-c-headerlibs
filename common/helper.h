@@ -185,7 +185,7 @@ static int trim(char *s)
 {
 	char *p;
 
-	for (p=s+str_len(s); *p != 0; p--)
+	for (p=s+str_len(s); p-s > 0; p--)
 		if (*p == '\r' || *p == '\n')
 			break;
 	*p = 0;
