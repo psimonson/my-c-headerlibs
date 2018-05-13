@@ -1,5 +1,9 @@
 #include "../common/bitmap.h"
+#if defined _WIN32 || defined _WIN64
+#include "../SDL2-2.0.8/include/SDL.h"
+#else
 #include <SDL2/SDL.h>
+#endif
 
 /* display_BMP:  display given bitmap object at (x,y) position */
 void display_BMP(BITMAP_FILE *bmp, int x, int y, SDL_Renderer *renderer)
@@ -9,7 +13,7 @@ void display_BMP(BITMAP_FILE *bmp, int x, int y, SDL_Renderer *renderer)
 
 	if (bmp) {
 		for (c=bmp->header.info.height-1; c > 0; c--) {
-			for (a=0; a < bmp->header.info.width; a++) {
+			for (a=0; a < bmp->header.info.width-1; a++) {
 				get_pixel_BMP(bmp, a*3, c, &r, &g, &b);
 				SDL_SetRenderDrawColor(renderer, r, g, b, 255);
 				SDL_RenderDrawPoint(renderer, a+x, c+y);

@@ -30,9 +30,23 @@ add_custom_command(TARGET copybitmaps
 )
 
 # cflags
-set(CMAKE_C_FLAGS "-std=c89 -g -Wall -Wno-unused-function")
-set(CMAKE_C_FLAGS_DEBUG "-std=c89 -g -Wall -Wno-unused-function")
-set(CMAKE_C_FLAGS_RELEASE "-std=c89 -g -Wall -Wno-unused-function")
+if (WIN32)
+	set(CMAKE_C_FLAGS "-std=c89 -Wall -Wno-unused-function -D_SDL_main_h")
+	set(CMAKE_C_FLAGS_DEBUG "-std=c89 -Wall -Wno-unused-function -D_SDL_main_h")
+	set(CMAKE_C_FLAGS_RELEASE "-std=c89 -Wall -Wno-unused-function -D_SDL_main_h")
+else()
+	set(CMAKE_C_FLAGS "-std=c89 -Wall -Wno-unused-function")
+	set(CMAKE_C_FLAGS_DEBUG "-std=c89 -Wall -Wno-unused-function")
+	set(CMAKE_C_FLAGS_RELEASE "-std=c89 -Wall -Wno-unused-function")
+endif()
+
+if (WIN32)
+	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+	set(SDL2_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/SDL2-2.0.8")
+endif()
+
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIR})
 
 # misc folder
 add_executable(misc_examples/test1 misc_examples/test1.c)
@@ -157,6 +171,13 @@ add_executable(misc_examples/bitmap13 misc_examples/bitmap13.c)
 add_dependencies(misc_examples/bitmap13 makedirs copybitmaps)
 add_executable(misc_examples/bitmap14 misc_examples/bitmap14.c)
 add_dependencies(misc_examples/bitmap14 makedirs copybitmaps)
+add_executable(misc_examples/bitmap15 misc_examples/bitmap15.c)
+add_dependencies(misc_examples/bitmap15 makedirs copybitmaps)
+if (WIN32)
+	target_link_libraries(misc_examples/bitmap15 ${SDL2_LIBRARIES})
+else()
+	target_link_libraries(misc_examples/bitmap15 SDL2 SDL2main)
+endif()
 
 # add cgi example targets
 add_executable(cgi_examples/test1 cgi_examples/test1.c)
