@@ -342,6 +342,20 @@ static void make_BMP(BITMAP_FILE *bmp)
 	}
 }
 
+/* get_pixel_BMP:  gets (r/g/b) values of pixel */
+static void get_pixel_BMP(BITMAP_FILE *bmp, int x, int y,
+	unsigned char *r, unsigned char *g, unsigned char *b)
+{
+	int rowsize;
+
+	if (bmp) {
+		rowsize = bmp->header.info.width*3;
+		*b = bmp->data[x+y*rowsize];
+		*g = bmp->data[x+1+y*rowsize];
+		*r = bmp->data[x+2+y*rowsize];
+	}
+}
+
 /* put_pixel_BMP:  plot a pixel at given x and y with given r/g/b values */
 static void put_pixel_BMP(BITMAP_FILE *bmp, int x, int y,
 	unsigned char r, unsigned char g, unsigned char b)
