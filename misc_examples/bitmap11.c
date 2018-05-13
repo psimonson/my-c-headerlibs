@@ -5,9 +5,8 @@ int main(void)
 	BITMAP_FILE *bmp;
 
 	bmp = create_BMP("test.bmp", 64, 64, 24);
-	if (!bmp)
+	if (check_BMP(bmp))
 		return 1;
-
 	clear_BMP(bmp, 0, 0, 0);
 	/* draw red star */
 	draw_star_BMP(bmp, 0, 0, 20, 255, 0, 0);
@@ -18,6 +17,8 @@ int main(void)
 	/* write the bitmap */
 	write_BMP(bmp, 0);
 	/* cleanup bitmap */
+	if (check_BMP(bmp))
+		return 1;
 	destroy_BMP(bmp);
 	return 0;
 }
