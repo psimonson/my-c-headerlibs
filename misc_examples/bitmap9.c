@@ -8,9 +8,13 @@ int main(void)
 	if (!bmp)
 		return 1;
 
+	if (check_BMP(bmp))
+		return 1;
 	clear_BMP(bmp, 0, 0, 0);
 	draw_square_BMP(bmp, 30, 30, 20, 255, 0, 0);
 	write_BMP(bmp, 0);
+	if (check_BMP(bmp))
+		return 1;
 	destroy_BMP(bmp);
 	return 0;
 }

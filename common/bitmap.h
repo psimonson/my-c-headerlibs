@@ -20,6 +20,12 @@
 #define MAX_PATH 260
 #endif
 
+#define BITMAP_NO_ERROR 0
+#define BITMAP_CREATE_ERROR 1
+#define BITMAP_OPEN_ERROR 2
+#define BITMAP_WRITE_ERROR 3
+#define BITMAP_UNKNOWN_ERROR 4
+
 #pragma pack(push, 1)
 typedef struct BITMAP_FILE_HEADER {
 	unsigned short header;
@@ -51,6 +57,7 @@ typedef struct BITMAP {
 
 typedef struct BITMAP_FILE {
 	BITMAP header;
+	unsigned char error;
 	char fname[MAX_PATH];
 	unsigned char *data;
 } BITMAP_FILE;
@@ -65,6 +72,45 @@ static void destroy_BMP(BITMAP_FILE *bmp)
 	}
 }
 
+/* check_BMP:  checks for error; reports if one found */
+static int check_BMP(BITMAP_FILE *bmp)
+{
+	if (bmp) {
+		switch (bmp->error) {
+			case BITMAP_NO_ERROR:
+#ifdef DEBUG
+				printf("Error: None\n");
+#endif
+				break;
+			case BITMAP_CREATE_ERROR:
+				printf("Error: Cannot create %s\n",
+					bmp->fname);
+				destroy_BMP(bmp);
+				break;
+			case BITMAP_OPEN_ERROR:
+				printf("Error: Cannot open file %s\n",
+					bmp->fname);
+				destroy_BMP(bmp);
+				break;
+			case BITMAP_WRITE_ERROR:
+				printf("Error: Cannot write file %s\n",
+					bmp->fname);
+				destroy_BMP(bmp);
+				break;
+			case BITMAP_UNKNOWN_ERROR:
+				printf("Error: Unknown error\n");
+				destroy_BMP(bmp);
+				break;
+			default:
+				printf("Not a valid error code.\n");
+				break;
+		}
+		return bmp->error;
+	}
+	printf("Error: BITMAP_FILE variable not set\n");
+	return -1;
+}
+
 /* load_BMP:  loads an image file into a bitmap data structure */
 static BITMAP_FILE *load_BMP(const char *filename)
 {
@@ -73,62 +119,65 @@ static BITMAP_FILE *load_BMP(const char *filename)
 	unsigned int file_size;
 	FILE *fp;
 
-	if ((fp = fopen(filename, "rb")) == NULL) {
-		fprintf(stderr, "Error opening BMP file.\n");
+	bmp = (BITMAP_FILE*)malloc(sizeof(BITMAP_FILE));
+	if (!bmp) {
 		return NULL;
 	}
-	bmp = (BITMAP_FILE*)malloc(sizeof(BITMAP_FILE));
-	if (bmp) {
-		/* set bitmap name */
-		mem_set(bmp->fname, 0, sizeof bmp->fname);
-		str_cpy(bmp->fname, filename);
 
-		/* BMP HEADER */
-		fread(&bmp->header.file.header, 2, 1, fp);
-		fread(&bmp->header.file.size, 4, 1, fp);
-		fread(&bmp->header.file.res1, 2, 1, fp);
-		fread(&bmp->header.file.res2, 2, 1, fp);
-		fread(&bmp->header.file.offset, 4, 1, fp);
-
-		/* BMP HEADER INFO */
-		fread(&bmp->header.info.size, 4, 1, fp);
-		fread(&bmp->header.info.width, 4, 1, fp);
-		fread(&bmp->header.info.height, 4, 1, fp);
-		fread(&bmp->header.info.col_planes, 2, 1, fp);
-		fread(&bmp->header.info.bpp, 2, 1, fp);
-		fread(&bmp->header.info.compression, 4, 1, fp);
-		fread(&bmp->header.info.image_size, 4, 1, fp);
-		fread(&bmp->header.info.h_res, 4, 1, fp);
-		fread(&bmp->header.info.v_res, 4, 1, fp);
-		fread(&bmp->header.info.num_cols, 4, 1, fp);
-		fread(&bmp->header.info.num_imp, 4, 1, fp);
-
-		image_size = bmp->header.info.image_size;
-		file_size = image_size+sizeof(BITMAP);
-
-		if (bmp->header.file.header == 0x4D42 &&
-				bmp->header.file.size == file_size) {
-			fseek(fp, bmp->header.file.offset, SEEK_SET);
-			bmp->data = malloc(sizeof(unsigned char)*image_size);
-			if (bmp->data) {
-				fread(bmp->data, 1, image_size, fp);
-				printf("Valid image loaded.\n");
-				fclose(fp);
-				return bmp;
-			} else {
-				printf("Cannot alloc for image data.\n");
-				fclose(fp);
-			}
-		} else {
-			printf("File Size: %u\nSize compared to: "
-					"%u\nImage is invalid.\n",
-					bmp->header.file.size,
-					file_size);
-			fclose(fp);
-		}
+	/* set bitmap name */
+	mem_set(bmp->fname, 0, sizeof bmp->fname);
+	str_cpy(bmp->fname, filename);
+	if ((fp = fopen(filename, "rb")) == NULL) {
+		bmp->error = BITMAP_OPEN_ERROR;
+		return bmp;
 	}
-	destroy_BMP(bmp);
-	return NULL;
+
+	/* BMP HEADER */
+	fread(&bmp->header.file.header, 2, 1, fp);
+	fread(&bmp->header.file.size, 4, 1, fp);
+	fread(&bmp->header.file.res1, 2, 1, fp);
+	fread(&bmp->header.file.res2, 2, 1, fp);
+	fread(&bmp->header.file.offset, 4, 1, fp);
+
+	/* BMP HEADER INFO */
+	fread(&bmp->header.info.size, 4, 1, fp);
+	fread(&bmp->header.info.width, 4, 1, fp);
+	fread(&bmp->header.info.height, 4, 1, fp);
+	fread(&bmp->header.info.col_planes, 2, 1, fp);
+	fread(&bmp->header.info.bpp, 2, 1, fp);
+	fread(&bmp->header.info.compression, 4, 1, fp);
+	fread(&bmp->header.info.image_size, 4, 1, fp);
+	fread(&bmp->header.info.h_res, 4, 1, fp);
+	fread(&bmp->header.info.v_res, 4, 1, fp);
+	fread(&bmp->header.info.num_cols, 4, 1, fp);
+	fread(&bmp->header.info.num_imp, 4, 1, fp);
+
+	image_size = bmp->header.info.image_size;
+	file_size = image_size+sizeof(BITMAP);
+
+	if (bmp->header.file.header == 0x4D42 &&
+			bmp->header.file.size == file_size) {
+		fseek(fp, bmp->header.file.offset, SEEK_SET);
+		bmp->data = malloc(sizeof(unsigned char)*image_size);
+		if (bmp->data) {
+			fread(bmp->data, 1, image_size, fp);
+			printf("Valid image loaded.\n");
+			fclose(fp);
+			bmp->error = BITMAP_NO_ERROR;
+		} else {
+			printf("Cannot alloc for image data.\n");
+			fclose(fp);
+			bmp->error = BITMAP_OPEN_ERROR;
+		}
+	} else {
+		printf("File Size: %u\nSize compared to: "
+				"%u\nImage is invalid.\n",
+				bmp->header.file.size,
+				file_size);
+		fclose(fp);
+		bmp->error = BITMAP_OPEN_ERROR;
+	}
+	return bmp;
 }
 
 /* write_BMP:  write BMP out to file */
@@ -139,13 +188,22 @@ static int write_BMP(BITMAP_FILE *bmp, unsigned char data_only)
 	if (bmp) {
 		if ((fp = fopen(bmp->fname, "wb")) == NULL) {
 			fprintf(stderr, "Cannot open file for writing.\n");
+			bmp->error = BITMAP_OPEN_ERROR;
 			return 1;
 		}
-		if (!data_only)
-			fwrite(&bmp->header, 1, sizeof(BITMAP), fp);
-		else
+		if (!data_only) {
+			if (fwrite(&bmp->header, 1, sizeof(BITMAP), fp) !=
+					sizeof(BITMAP)) {
+				bmp->error = BITMAP_WRITE_ERROR;
+				return 1;
+			}
+		} else
 			fseek(fp, bmp->header.file.offset, SEEK_SET);
-		fwrite(bmp->data, 1, bmp->header.info.image_size, fp);
+		if (fwrite(bmp->data, 1, bmp->header.info.image_size, fp) !=
+				bmp->header.info.image_size) {
+				bmp->error = BITMAP_WRITE_ERROR;
+				return 1;
+		}
 		fclose(fp);
 	}
 	return 0;
@@ -198,11 +256,8 @@ static void BMP_to_asciiart(BITMAP_FILE *bmp)
 		fp = stdin;
 	else {
 		if ((fp = fopen(filename, "wb")) == NULL) {
-			fprintf(stderr, "Failed to open %s for writing.\n"
-					"Cannot write ascii art into it.\n",
-					filename);
-			destroy_BMP(bmp);
-			exit(1);
+			bmp->error = BITMAP_OPEN_ERROR;
+			return;
 		}
 	}
 #endif
@@ -291,8 +346,8 @@ static BITMAP_FILE *create_BMP(const char *filename, unsigned int w,
 	}
 	bmp->data = (unsigned char*)malloc(pixel_byte_size);
 	if (!bmp->data) {
-		destroy_BMP(bmp);
-		return NULL;
+		bmp->error = BITMAP_CREATE_ERROR;
+		return bmp;
 	}
 
 	/* setup filename for bmp */
@@ -318,7 +373,6 @@ static BITMAP_FILE *create_BMP(const char *filename, unsigned int w,
 	bmp->header.info.v_res = 0x130B;
 	bmp->header.info.num_cols = 0;
 	bmp->header.info.num_imp = 0;
-
 	return bmp;
 }
 

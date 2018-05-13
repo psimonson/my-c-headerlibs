@@ -6,9 +6,8 @@ int main(void)
 
 	/* create bitmap 64x64x24 */
 	bmp = create_BMP("test.bmp", 64, 64, 24);
-	if (!bmp)
+	if (check_BMP(bmp))
 		return 1;
-
 	/* initialise bitmap to black background */
 	clear_BMP(bmp, 0, 0, 0);
 	/* draw blue circle */
@@ -22,6 +21,8 @@ int main(void)
 	/* draw pink square */
 	draw_square_BMP(bmp, 32, 10, 20, 255, 0, 255);
 	write_BMP(bmp, 0);
+	if (check_BMP(bmp))
+		return 1;
 	destroy_BMP(bmp);
 	return 0;
 }

@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	BITMAP_FILE *bmp;
 
 	bmp = load_BMP("test.bmp");
-	if (!bmp)
+	if (check_BMP(bmp))
 		return 1;
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)

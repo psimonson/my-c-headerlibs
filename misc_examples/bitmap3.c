@@ -15,9 +15,9 @@ int main(int argc, char **argv)
 		bmp = load_BMP(argv[1]);
 	else
 		bmp = load_BMP("test.bmp");
-	if (!bmp)		/* check for loading error */
-		return 1;
 
+	if (check_BMP(bmp))
+		return 1;
 	if (argc == 3) {
 		BMP_to_asciiart(bmp, argv[2]);
 	} else {
