@@ -25,7 +25,7 @@ void display_BMP(BITMAP_FILE *bmp, int x, int y, SDL_Renderer *renderer)
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	SDL_Event ev;
 	SDL_Renderer *renderer;

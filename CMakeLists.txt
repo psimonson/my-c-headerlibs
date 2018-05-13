@@ -31,20 +31,25 @@ add_custom_command(TARGET copybitmaps
 
 # cflags
 if (WIN32)
-	set(CMAKE_C_FLAGS "-std=c89 -Wall -Wno-unused-function -D_SDL_main_h")
-	set(CMAKE_C_FLAGS_DEBUG "-std=c89 -Wall -Wno-unused-function -D_SDL_main_h")
-	set(CMAKE_C_FLAGS_RELEASE "-std=c89 -Wall -Wno-unused-function -D_SDL_main_h")
-else()
+	if (MINGW)
+	set(CMAKE_C_FLAGS "-std=c89 -mwindows -Wall -Wno-unused-function")
+	set(CMAKE_C_FLAGS_DEBUG "-std=c89 -mwindows -Wall -Wno-unused-function")
+	set(CMAKE_C_FLAGS_RELEASE "-std=c89 -mwindows -Wall -Wno-unused-function")
+	else ()
 	set(CMAKE_C_FLAGS "-std=c89 -Wall -Wno-unused-function")
 	set(CMAKE_C_FLAGS_DEBUG "-std=c89 -Wall -Wno-unused-function")
 	set(CMAKE_C_FLAGS_RELEASE "-std=c89 -Wall -Wno-unused-function")
-endif()
+	endif ()
+else ()
+	set(CMAKE_C_FLAGS "-std=c89 -Wall -Wno-unused-function")
+	set(CMAKE_C_FLAGS_DEBUG "-std=c89 -Wall -Wno-unused-function")
+	set(CMAKE_C_FLAGS_RELEASE "-std=c89 -Wall -Wno-unused-function")
+endif ()
 
-if (WIN32)
-	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-	set(SDL2_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/SDL2-2.0.8")
-endif()
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(SDL2_LIBRARY_DIR "${CMAKE_SOURCE_DIR}/SDL2-2.0.8/lib")
 
+include(SDL2-2.0.8/sdl2-config.cmake)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
 
@@ -176,7 +181,7 @@ add_dependencies(misc_examples/bitmap15 makedirs copybitmaps)
 if (WIN32)
 	target_link_libraries(misc_examples/bitmap15 ${SDL2_LIBRARIES})
 else()
-	target_link_libraries(misc_examples/bitmap15 SDL2 SDL2main)
+	target_link_libraries(misc_examples/bitmap15 ${SDL2_LIBRARIES})
 endif()
 
 # add cgi example targets
