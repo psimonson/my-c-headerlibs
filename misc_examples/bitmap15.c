@@ -9,8 +9,8 @@ void display_BMP(BITMAP_FILE *bmp, int x, int y, SDL_Renderer *renderer)
 
 	if (bmp) {
 		for (c=bmp->header.info.height-1; c > 0; c--) {
-			for (a=0; a < bmp->header.info.width*3; a+=3) {
-				get_pixel_BMP(bmp, a, c, &r, &g, &b);
+			for (a=0; a < bmp->header.info.width; a++) {
+				get_pixel_BMP(bmp, a*3, c, &r, &g, &b);
 				SDL_SetRenderDrawColor(renderer, r, g, b, 255);
 				SDL_RenderDrawPoint(renderer, a+x, c+y);
 			}
@@ -32,10 +32,8 @@ int main(void)
 	if (!bmp)
 		return 1;
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		destroy_BMP(bmp);
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		return 1;
-	}
 	if (SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0,
 		&window, &renderer) < 0)
 		goto error;
