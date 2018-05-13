@@ -1,4 +1,5 @@
 #include "../common/bitmap.h"
+#include <time.h>
 
 #define MAXLINE 256
 
@@ -7,6 +8,8 @@ int main(void)
 	BITMAP_FILE *bmp;
 	char line[MAXLINE];
 	int i;
+
+	srand(time(0));
 
 	get_input("How many lines? ", line, MAXLINE);
 	bmp = create_BMP("test.bmp", 64, 64, 24);
