@@ -108,7 +108,7 @@ static int check_BMP(BITMAP_FILE *bmp)
 		return bmp->error;
 	}
 	printf("Error: BITMAP_FILE variable not set\n");
-	return -1;
+	return 6;
 }
 
 /* load_BMP:  loads an image file into a bitmap data structure */
