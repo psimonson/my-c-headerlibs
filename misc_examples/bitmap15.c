@@ -16,7 +16,9 @@ void display_BMP(BITMAP_FILE *bmp, int x, int y, SDL_Renderer *renderer)
 			for (a=0; a < bmp->header.info.width-1; a++) {
 				get_pixel_BMP(bmp, a*3, c, &r, &g, &b);
 				SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-				SDL_RenderDrawPoint(renderer, a+x, c+y);
+				SDL_RenderDrawPoint(renderer,
+					a+x,
+					bmp->header.info.height-c-y);
 			}
 		}
 	}
