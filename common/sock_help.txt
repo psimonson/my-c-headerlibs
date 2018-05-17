@@ -177,12 +177,15 @@ int main(void)
 //////////////////////////////////////////////////////////////////
 #include "common/sock_help.h"
 
+#define MAXLEN 256
+
 int main(void)
 {
-	ClIENT_INFO;
+	CLIENT_INFO;
+	char buf[MAXLEN];
 
 	/* nonblocking server */
-	sockfd = create_server(0, 5000, "127.0.0.1");
+	sockfd = create_client(0, 5000, "127.0.0.1");
 	if (sockfd == BAD_SOCKET)
 		return 1;
 
