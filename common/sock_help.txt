@@ -60,6 +60,55 @@ SOCKET create_client(int, int, const char *);
 int create_client(int, int, const char *);
 
 ##################################################################
+#  send_msg()                                                    #
+##################################################################
+# info: The parameters for this function are as follows...       #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. your message to send (Windows/Linux) (const char *)   #
+##################################################################
+# returns: (int) bytes sent to socket file descriptor.           #
+##################################################################
+
+# related to Windows - sending messages
+int send_msg(SOCKET, const char *);
+
+# related to Linux - sending messages
+int send_msg(int, const char *);
+
+##################################################################
+#  get_addr_info()                                               #
+##################################################################
+# info: The parameters for this function are as follows...       #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. address buffer         (Windows/Linux) (const char *) #
+#       3. pointer to port        (Windows/Linux) (int*)         #
+##################################################################
+# returns: void (nothing)                                        #
+##################################################################
+
+# related to Windows - get address and port; returning them
+void get_addr_info(SOCKET, char *, int *);
+
+# related to Linux - get address and port; returning them
+void get_addr_info(int, char *, int *);
+
+##################################################################
+#  accept_conn()                                                 #
+##################################################################
+# info: The only parameter for accept_conn() is, the socket file #
+#       descriptor. This function is for Windows and Linux.      #
+##################################################################
+# returns: socket file descriptor for new connection.            #
+#          (Windows/Linux) (SOCKET/int)                          #
+##################################################################
+
+# related to Windows - accepts a connection from client
+SOCKET accept_conn(SOCKET);
+
+# related to Linux - accepts a connection for client
+int accept_conn(int);
+
+##################################################################
 #  close_conn()                                                  #
 ##################################################################
 # info: The only parameter for close_conn() is, the socket file  #
@@ -68,11 +117,24 @@ int create_client(int, int, const char *);
 # returns: void (eg nothing)                                     #
 ##################################################################
 
-# related to Windows
-void close_conn(SOCKET)
+# related to Windows - closes a connection
+void close_conn(SOCKET);
 
-# related to Linux
-void close_conn(int)
+# related to Linux - closes a connection
+void close_conn(int);
+
+##################################################################
+#  check_conn()                                                  #
+##################################################################
+# info: The parameters of this function are as follows...        #
+#       1. address (const char *)                                #
+#       2. port    (int)                                         #
+##################################################################
+# returns: 0 if successful, otherwise -1 if failure (int)        #
+##################################################################
+
+# related to Windows and Linux - checks connection; if open
+int check_conn(const char *, int);
 
 ##################################################################
 #                      .:[ EXAMPLES BELOW ]:.                    #
