@@ -1,11 +1,18 @@
-************************************************
-* sock_help.h - Creates a socket application   *
-* using winsock (Windows) or <sys/socket.h>    *
-* (Linux). Helps you create a server or client *
-* in an easy manner.                           *
-************************************************
-* Created by Philip '5n4k3' Simonson           *
-************************************************
+##################################################################
+# sock_help.h - Network programming library                      #
+##################################################################
+# info: Creates a socket application using winsock (Windows) or  #
+# Socket API (Linux). Helps you create a server or client app-   #
+# lication in an easy way. This is just a wrapper, for socket    #
+# application initialization, also has a few special functions   #
+# to help with some repeditive stuff like sending quick messages #
+# and transfering of files. To accept connections to close       #
+# connections. More may be added later depending on if something #
+# should be needed later on. This is one of the many libraries,  #
+# that I have made for my S.A.B. project.                        #
+##################################################################
+# Created by Philip '5n4k3' Simonson             (2017)          #
+##################################################################
 
 In Windows SOCKET is defined as (unsigned int), you can check
 in my sock_help wrapper for a bad socket with BAD_SOCKET.
@@ -61,4 +68,6 @@ void close_conn(SOCKET)
 # related to Linux
 void close_conn(int)
 
->>> End Of Text <<<
+##################################################################
+#                       .:[ END OF FILE ]:.                      #
+##################################################################
