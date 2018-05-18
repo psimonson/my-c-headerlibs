@@ -241,12 +241,12 @@ int main(void)
 	CLIENT_INFO;
 	char buf[MAXLEN];
 
-	/* nonblocking server */
+	/* nonblocking client */
 	sockfd = create_client(0, 5000, "127.0.0.1");
 	if (sockfd == BAD_SOCKET)
 		return 1;
 
-	/* send message to client from server */
+	/* receive message from server */
 	while (recv(sockfd, buf, sizeof buf, 0) > 0) {
 		trim(buf);
 		puts(buf);
