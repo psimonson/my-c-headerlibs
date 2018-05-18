@@ -137,6 +137,63 @@ void close_conn(int);
 int check_conn(const char *, int);
 
 ##################################################################
+#  getln_remote()                                                #
+##################################################################
+# info: The parameters of this function are as follows...        #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. character buffer       (Windows/Linux) (char *)       #
+#       3. buffer size            (Windows/Linux) (int)          #
+##################################################################
+# returns: length of string from remote input (int)              #
+##################################################################
+
+# related to Windows - gets input from remote machine's keyboard
+int getln_remote(SOCKET, char *, int);
+
+# related to Linux - gets input from remote machine's keyboard
+int getln_remote(int, char *, int);
+
+##################################################################
+#  get_cmd()                                                     #
+##################################################################
+# info: The parameters of this function are as follows...        #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. character buffer       (Windows/Linux) (char *)       #
+#       3. buffer size            (Windows/Linux) (int)          #
+##################################################################
+# returns: length of string from remote command (int)            #
+##################################################################
+
+# related to Windows - like getln_remote; except strips EOL
+int get_cmd(SOCKET, char *, int);
+
+# related to Linux - like getln_remote; except strips off EOL
+int get_cmd(int, char *, int);
+
+##################################################################
+#  transfer()                                                    #
+##################################################################
+# info: The parameters of this function are as follows...        #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. remote address         (Windows/Linux) (const char *) #
+#       3. file name              (Windows/Linux) (const char *) #
+#       4. returns bytes          (Windows/Linux) (int *)        #
+#       5. sending                (Windows/Linux) (int)          #
+#                                                                #
+#       NOTE: sending = bool 1 true, 0 false.                    #
+##################################################################
+# returns: 0 if successful, anything else is failure (int)       #
+##################################################################
+
+# related to Windows - transfer files remotely
+int transfer(SOCKET, const char *, const char *, int *,
+      unsigned char);
+
+# related to Linux - transfer files remotely
+int transfer(int, const char *, const char *, int *,
+      unsigned char);
+
+##################################################################
 #                      .:[ EXAMPLES BELOW ]:.                    #
 ##################################################################
 
