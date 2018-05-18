@@ -1,44 +1,263 @@
-************************************************
-* sock_help.h - Creates a socket application   *
-* using winsock (Windows) or <sys/socket.h>    *
-* (Linux). Helps you create a server or client *
-* in an easy manner.                           *
-************************************************
-* Created by Philip '5n4k3' Simonson           *
-************************************************
+##################################################################
+# sock_help.h - Network programming library                      #
+##################################################################
+# info: Creates a socket application using winsock (Windows) or  #
+# Socket API (Linux). Helps you create a server or client app-   #
+# lication in an easy way. This is just a wrapper, for socket    #
+# application initialization, also has a few special functions   #
+# to help with some repeditive stuff like sending quick messages #
+# and transfering of files. To accept connections to close       #
+# connections. More may be added later depending on if something #
+# should be needed later on. This is one of the many libraries,  #
+# that I have made for my S.A.B. project.                        #
+##################################################################
+# Created by Philip '5n4k3' Simonson             (2017)          #
+##################################################################
 
-In Windows SOCKET is defined as
-	#define SOCKET (unsigned int)
+In Windows SOCKET is defined as (unsigned int), you can check
+in my sock_help wrapper for a bad socket with BAD_SOCKET. If
+you want you can use SERVER_INFO or CLIENT_INFO. Depending whether
+or not it's a server or client. To check for an invalid socket
+just type: if (sockfd == BAD_SOCKET) { ... }
 
-Windows
+NOTE: To use SERVER_INFO or CLIENT_INFO defines just do like in
+the examples at the end of this documentation.
+
+##################################################################
+#  create_server()                                               #
+##################################################################
+# info: The parameter for this function are...                   #
+#       1. (int) nonblocking = 0 or 1 (can be true or false)     #
+#       2. (int) port = 5000 (can be anything up to 65535)       #
+#       3. (const char *) address = "0.0.0.0" (all available)    #
+#              or "127.0.0.1" (local host loopback)              #
+##################################################################
+# returns: socket file descriptor                                #
+##################################################################
+
+# related to Windows
 SOCKET create_server(int, int, const char *);
-Linux
+
+# related Linux
 int create_server(int, int, const char *);
 
-create_server parameters starting left to right.
-1. (int) nonblocking = 0 or 1 (can be true or false)
-2. (int) port = 5000 (can be anything up to 65535)
-3. (const char *) address = "0.0.0.0" (all available)
-	or "127.0.0.1" (local host "loopback")
+##################################################################
+#  create_client()                                               #
+##################################################################
+# info: The parameter for this function are...                   #
+#       1. (int) nonblocking = 0 or 1 (can be true or false)     #
+#       2. (int) port = 5000 (can be anything up to 65535)       #
+#       3. (const char *) address = "0.0.0.0" (all available)    #
+#              or "127.0.0.1" (local host loopback)              #
+##################################################################
+# returns: socket file descriptor                                #
+##################################################################
 
-Windows
+# related to Windows - creating a client 
 SOCKET create_client(int, int, const char *);
-Linux
+
+# related to Linux - creating a client
 int create_client(int, int, const char *);
 
-create_client parameters starting left to right.
-1. (int) nonblocking = 0 or 1 (can be true or false)
-2. (int) port = 5000 (can be anything up to 65535)
-3. (const char *) address = "0.0.0.0" (all available)
-	or "127.0.0.1" (local host "loopback")
+##################################################################
+#  send_msg()                                                    #
+##################################################################
+# info: The parameters for this function are as follows...       #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. your message to send (Windows/Linux) (const char *)   #
+##################################################################
+# returns: (int) bytes sent to socket file descriptor.           #
+##################################################################
 
-Windows
-void close_conn(SOCKET)
-Linux
-void close_conn(int)
+# related to Windows - sending messages
+int send_msg(SOCKET, const char *);
 
-close_conn parameters.
-1. socket file descriptor you get from running
-   create_server() or create_client().
+# related to Linux - sending messages
+int send_msg(int, const char *);
 
-     >>> End Of Text <<<
+##################################################################
+#  get_addr_info()                                               #
+##################################################################
+# info: The parameters for this function are as follows...       #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. address buffer         (Windows/Linux) (const char *) #
+#       3. pointer to port        (Windows/Linux) (int*)         #
+##################################################################
+# returns: void (nothing)                                        #
+##################################################################
+
+# related to Windows - get address and port; returning them
+void get_addr_info(SOCKET, char *, int *);
+
+# related to Linux - get address and port; returning them
+void get_addr_info(int, char *, int *);
+
+##################################################################
+#  accept_conn()                                                 #
+##################################################################
+# info: The only parameter for accept_conn() is, the socket file #
+#       descriptor. This function is for Windows and Linux.      #
+##################################################################
+# returns: socket file descriptor for new connection.            #
+#          (Windows/Linux) (SOCKET/int)                          #
+##################################################################
+
+# related to Windows - accepts a connection from client
+SOCKET accept_conn(SOCKET);
+
+# related to Linux - accepts a connection for client
+int accept_conn(int);
+
+##################################################################
+#  close_conn()                                                  #
+##################################################################
+# info: The only parameter for close_conn() is, the socket file  #
+#       descriptor. This function is for Windows and Linux.      #
+##################################################################
+# returns: void (eg nothing)                                     #
+##################################################################
+
+# related to Windows - closes a connection
+void close_conn(SOCKET);
+
+# related to Linux - closes a connection
+void close_conn(int);
+
+##################################################################
+#  check_conn()                                                  #
+##################################################################
+# info: The parameters of this function are as follows...        #
+#       1. address (const char *)                                #
+#       2. port    (int)                                         #
+##################################################################
+# returns: 0 if successful, otherwise -1 if failure (int)        #
+##################################################################
+
+# related to Windows and Linux - checks connection; if open
+int check_conn(const char *, int);
+
+##################################################################
+#  getln_remote()                                                #
+##################################################################
+# info: The parameters of this function are as follows...        #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. character buffer       (Windows/Linux) (char *)       #
+#       3. buffer size            (Windows/Linux) (int)          #
+##################################################################
+# returns: length of string from remote input (int)              #
+##################################################################
+
+# related to Windows - gets input from remote machine's keyboard
+int getln_remote(SOCKET, char *, int);
+
+# related to Linux - gets input from remote machine's keyboard
+int getln_remote(int, char *, int);
+
+##################################################################
+#  get_cmd()                                                     #
+##################################################################
+# info: The parameters of this function are as follows...        #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. character buffer       (Windows/Linux) (char *)       #
+#       3. buffer size            (Windows/Linux) (int)          #
+##################################################################
+# returns: length of string from remote command (int)            #
+##################################################################
+
+# related to Windows - like getln_remote; except strips EOL
+int get_cmd(SOCKET, char *, int);
+
+# related to Linux - like getln_remote; except strips off EOL
+int get_cmd(int, char *, int);
+
+##################################################################
+#  transfer()                                                    #
+##################################################################
+# info: The parameters of this function are as follows...        #
+#       1. socket file descriptor (Windows/Linux) (SOCKET/int)   #
+#       2. remote address         (Windows/Linux) (const char *) #
+#       3. file name              (Windows/Linux) (const char *) #
+#       4. returns bytes          (Windows/Linux) (int *)        #
+#       5. sending                (Windows/Linux) (int)          #
+#                                                                #
+#       NOTE: sending = bool 1 true, 0 false.                    #
+##################################################################
+# returns: 0 if successful, anything else is failure (int)       #
+##################################################################
+
+# related to Windows - transfer files remotely
+int transfer(SOCKET, const char *, const char *, int *,
+      unsigned char);
+
+# related to Linux - transfer files remotely
+int transfer(int, const char *, const char *, int *,
+      unsigned char);
+
+##################################################################
+#                      .:[ EXAMPLES BELOW ]:.                    #
+##################################################################
+
+//////////////////////////////////////////////////////////////////
+//                      Simple Server Example                   //
+//////////////////////////////////////////////////////////////////
+#include "common/sock_help.h"
+
+int main(void)
+{
+	SERVER_INFO;
+
+	/* nonblocking server */
+	sockfd = create_server(0, 5000, "127.0.0.1");
+	if (sockfd == BAD_SOCKET)
+		return 1;
+
+	/* accept a connection */
+	newfd = accept_conn(sockfd);
+	if (newfd == BAD_SOCKET) {
+		printf("Error: Invalid socket.\n");
+		close_conn(sockfd); /* clean up server socket */
+		return 2;
+	}
+
+	/* send message to client from server */
+	send_msg(newfd, "Hello from a simple server program.\r\n");
+
+	/* don't forget cleaning up */
+	close_conn(newfd);
+	close_conn(sockfd);
+	return 0;
+}
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+//                      Simple Client Example                   //
+//////////////////////////////////////////////////////////////////
+#include "common/sock_help.h"
+
+#define MAXLEN 256
+
+int main(void)
+{
+	CLIENT_INFO;
+	char buf[MAXLEN];
+
+	/* nonblocking server */
+	sockfd = create_client(0, 5000, "127.0.0.1");
+	if (sockfd == BAD_SOCKET)
+		return 1;
+
+	/* send message to client from server */
+	while (recv(sockfd, buf, sizeof buf, 0) > 0) {
+		trim(buf);
+		puts(buf);
+	}
+
+	/* don't forget cleaning up */
+	close_conn(sockfd);
+	return 0;
+}
+//////////////////////////////////////////////////////////////////
+
+##################################################################
+#                       .:[ END OF FILE ]:.                      #
+##################################################################
