@@ -13,6 +13,12 @@
 #include <time.h>
 #include <errno.h>
 
+#ifdef _WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 /* ---------------- Temp File Vars ----------------- */
 
 
@@ -67,6 +73,7 @@ static void _tempfile_exit(void)
 	if (__tempfile != NULL) {
 		fclose(__tempfile);
 		__tempfile = NULL;
+		__tempfile_name = NULL;
 	}
 }
 
@@ -76,6 +83,11 @@ static FILE *tempfile(void)
 	__tempfile_name = generate_tempname();
 	fp = fopen(__tempfile_name, "a+b");
 	__tempfile = fp;
+#ifdef _WIN32
+	_unlink(__tempfile_name);
+#else
+	unlink(__tempfile_name);
+#endif
 	atexit(&_tempfile_exit);
 	return fp;
 }
