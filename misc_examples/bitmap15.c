@@ -46,12 +46,10 @@ int main(int argc, char *argv[])
 	if (SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0,
 		&window, &renderer) < 0)
 		goto error;
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-	SDL_RenderClear(renderer);
-	if (!bmp)
-		goto error;
 	texture = convert_BMP(renderer, bmp);
 	if (!texture) {
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
 		goto error;
 	}
 	destroy_BMP(bmp);
@@ -59,16 +57,27 @@ int main(int argc, char *argv[])
 	rect.y = 0;
 	rect.w = bmp->header.info.width;
 	rect.h = bmp->header.info.height;
-	SDL_RenderCopyEx(renderer, texture, NULL, &rect, 0, NULL, SDL_FLIP_VERTICAL);
-	SDL_RenderPresent(renderer);
 	while (1) {
 		if (SDL_PollEvent(&ev)) {
 			if (ev.type == SDL_QUIT)
 				break;
-			else if (ev.type == SDL_KEYDOWN)
+			else if (ev.type == SDL_KEYDOWN) {
 				if (ev.key.keysym.sym == SDLK_ESCAPE)
 					break;
+				else if (ev.key.keysym.sym == SDLK_LEFT)
+					rect.x -= 4;
+				else if (ev.key.keysym.sym == SDLK_RIGHT)
+					rect.x += 4;
+			}
 		}
+		if (rect.x > WINDOW_WIDTH-rect.w)
+			rect.x = WINDOW_WIDTH-rect.w;
+		else if (rect.x < 0)
+			rect.x = 0;
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+		SDL_RenderClear(renderer);
+		SDL_RenderCopyEx(renderer, texture, NULL, &rect, 0, NULL, SDL_FLIP_VERTICAL);
+		SDL_RenderPresent(renderer);
 	}
 	SDL_DestroyTexture(texture);
 	SDL_DestroyRenderer(renderer);
