@@ -72,9 +72,14 @@ int main(int argc, char *argv[])
 					rect.x += 4;
 			}
 		}
-		if (rect.x > WINDOW_WIDTH-rect.w)
+		if (rect.x+rect.w >= WINDOW_WIDTH) {
+			rect.x = WINDOW_WIDTH-rect.w;
 			rect.x *= -1;
-		rect.x++;
+		} else if (rect.x <= 0) {
+			rect.x = 0;
+			rect.x *= 1;
+		}
+		rect.x += 2;
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 		SDL_RenderClear(renderer);
 		SDL_RenderCopyEx(renderer, texture, NULL, &rect, 0, NULL, SDL_FLIP_VERTICAL);
