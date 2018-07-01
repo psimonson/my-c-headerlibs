@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 	SDL_Window *window;
 	SDL_Surface *image;
 	SDL_Texture *texture;
+	SDL_Rect rect;
 	BITMAP_FILE *bmp;
 
 	bmp = load_BMP("test.bmp");
@@ -40,7 +41,11 @@ int main(int argc, char *argv[])
 	}
 	SDL_FreeSurface(image);
 	destroy_BMP(bmp);
-	SDL_RenderCopy(renderer, texture, NULL, NULL);
+	rect.x = 0;
+	rect.y = 0;
+	rect.w = bmp->header.info.width;
+	rect.h = bmp->header.info.height;
+	SDL_RenderCopy(renderer, texture, NULL, &rect);
 	SDL_RenderPresent(renderer);
 	while (1) {
 		if (SDL_PollEvent(&ev)) {
