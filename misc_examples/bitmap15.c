@@ -5,25 +5,6 @@
 #include <SDL2/SDL.h>
 #endif
 
-/* display_BMP:  display given bitmap object at (x,y) position */
-void display_BMP(BITMAP_FILE *bmp, int x, int y, SDL_Renderer *renderer)
-{
-	unsigned char r,g,b;
-	int a,c;
-
-	if (bmp) {
-		for (c=bmp->header.info.height-1; c > 0; c--) {
-			for (a=0; a < bmp->header.info.width-1; a++) {
-				get_pixel_BMP(bmp, a*3, c, &r, &g, &b);
-				SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-				SDL_RenderDrawPoint(renderer,
-					a+x,
-					bmp->header.info.height-c-y);
-			}
-		}
-	}
-}
-
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
@@ -32,6 +13,8 @@ int main(int argc, char *argv[])
 	SDL_Event ev;
 	SDL_Renderer *renderer;
 	SDL_Window *window;
+	SDL_Surface *image;
+	SDL_Texture *texture;
 	BITMAP_FILE *bmp;
 
 	bmp = load_BMP("test.bmp");
@@ -45,7 +28,19 @@ int main(int argc, char *argv[])
 		goto error;
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
-	display_BMP(bmp, 0, 0, renderer);
+	if (!bmp)
+		goto error;
+	image = SDL_CreateRGBSurfaceFrom(bmp->data, bmp->header.info.width, bmp->header.info.height, bmp->header.info.bpp, 3*bmp->header.info.width, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00ffffff);
+	if (!image)
+		goto error;
+	texture = SDL_CreateTextureFromSurface(renderer, image);
+	if (!texture) {
+		SDL_FreeSurface(image);
+		goto error;
+	}
+	SDL_FreeSurface(image);
+	destroy_BMP(bmp);
+	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 	while (1) {
 		if (SDL_PollEvent(&ev)) {
@@ -56,7 +51,6 @@ int main(int argc, char *argv[])
 					break;
 		}
 	}
-	destroy_BMP(bmp);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
