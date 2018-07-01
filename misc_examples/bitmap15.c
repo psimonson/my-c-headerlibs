@@ -27,6 +27,7 @@ static SDL_Texture* convert_BMP(SDL_Renderer *renderer, BITMAP_FILE *bmp)
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+#define FRAMES_PER_SEC 60
 
 int main(int argc, char *argv[])
 {
@@ -58,6 +59,7 @@ int main(int argc, char *argv[])
 	rect.w = bmp->header.info.width;
 	rect.h = bmp->header.info.height;
 	while (1) {
+		int start = SDL_GetTicks();
 		if (SDL_PollEvent(&ev)) {
 			if (ev.type == SDL_QUIT)
 				break;
@@ -71,13 +73,14 @@ int main(int argc, char *argv[])
 			}
 		}
 		if (rect.x > WINDOW_WIDTH-rect.w)
-			rect.x = WINDOW_WIDTH-rect.w;
-		else if (rect.x < 0)
-			rect.x = 0;
+			rect.x *= -1;
+		rect.x++;
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 		SDL_RenderClear(renderer);
 		SDL_RenderCopyEx(renderer, texture, NULL, &rect, 0, NULL, SDL_FLIP_VERTICAL);
 		SDL_RenderPresent(renderer);
+		if (1000/FRAMES_PER_SEC > (SDL_GetTicks()-start))
+			SDL_Delay(1000/FRAMES_PER_SEC-(SDL_GetTicks()-start));
 	}
 	SDL_DestroyTexture(texture);
 	SDL_DestroyRenderer(renderer);
