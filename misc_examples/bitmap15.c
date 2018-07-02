@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
 	SDL_Texture *texture;
 	SDL_Rect rect;
 	BITMAP_FILE *bmp;
+	_Bool bounceX = true;
+	_Bool bounceY = true;
 
 	bmp = load_BMP("test.bmp");
 	if (check_BMP(bmp))
@@ -72,14 +74,33 @@ int main(int argc, char *argv[])
 					rect.x += 4;
 			}
 		}
-		if (rect.x+rect.w >= WINDOW_WIDTH) {
+		if (bounceX)
+			rect.x -= 2;
+		else
+			rect.x += 2;
+		if (rect.x >= WINDOW_WIDTH-rect.w) {
 			rect.x = WINDOW_WIDTH-rect.w;
-			rect.x *= -1;
+			if (rect.x == WINDOW_WIDTH-rect.w)
+				bounceX = true;
 		} else if (rect.x <= 0) {
 			rect.x = 0;
-			rect.x *= 1;
+			if (rect.x == 0)
+				bounceX = false;
 		}
-		rect.x += 2;
+		/* make image bounce around in Y axis */
+		if (bounceY)
+			rect.y -= 2;
+		else
+			rect.y += 2;
+		if (rect.y >= WINDOW_HEIGHT-rect.h) {
+			rect.y = WINDOW_HEIGHT-rect.h;
+			if (rect.y == WINDOW_HEIGHT-rect.h)
+				bounceY = true;
+		} else if (rect.y <= 0) {
+			rect.y = 0;
+			if (rect.y == 0)
+				bounceY = false;
+		}
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 		SDL_RenderClear(renderer);
 		SDL_RenderCopyEx(renderer, texture, NULL, &rect, 0, NULL, SDL_FLIP_VERTICAL);
