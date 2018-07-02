@@ -11,9 +11,9 @@
 #ifndef PRS_SPCSTR_H
 #define PRS_SPCSTR_H
 
-#ifndef PRS_STRING_H
-#include "helper.h"
-#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define DYN_START_SIZE 8
 
@@ -76,7 +76,7 @@ static int dyn_string(const char *string)
 	static int i = 0;
 	char *s;
 
-	s = str_dup(string);
+	s = strdup(string);
 	if (s == NULL)
 		return -1;
 

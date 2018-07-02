@@ -10,12 +10,11 @@
 #ifndef PRS_BITMAP_H
 #define PRS_BITMAP_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #define MAX_SHADES 10
-
-#ifndef PRS_HELPER_H
-#include "helper.h"
-#endif
-
 #ifndef MAX_PATH
 #define MAX_PATH 260
 #endif
@@ -125,8 +124,8 @@ static BITMAP_FILE *load_BMP(const char *filename)
 	}
 
 	/* set bitmap name */
-	mem_set(bmp->fname, 0, sizeof bmp->fname);
-	str_cpy(bmp->fname, filename);
+	memset(bmp->fname, 0, sizeof bmp->fname);
+	strcpy(bmp->fname, filename);
 	if ((fp = fopen(filename, "rb")) == NULL) {
 		bmp->error = BITMAP_OPEN_ERROR;
 		return bmp;
@@ -351,8 +350,8 @@ static BITMAP_FILE *create_BMP(const char *filename, unsigned int w,
 	}
 
 	/* setup filename for bmp */
-	mem_set(bmp->fname, 0, sizeof bmp->fname);
-	str_cpy(bmp->fname, filename);
+	memset(bmp->fname, 0, sizeof bmp->fname);
+	strcpy(bmp->fname, filename);
 
 	/* setup bitmap file header */
 	bmp->header.file.header = 0x4D42;
@@ -383,7 +382,7 @@ static void make_BMP(BITMAP_FILE *bmp)
 	int x,y;
 
 	if (bmp->data) {
-		mem_set(bmp->data, 0xff, bmp->header.info.image_size);
+		memset(bmp->data, 0xff, bmp->header.info.image_size);
 		rowsize = bmp->header.info.width*3;
 		for (y=bmp->header.info.height-1; y >= 0; y--) {
 			for (x=0; x < rowsize; x+=3) {

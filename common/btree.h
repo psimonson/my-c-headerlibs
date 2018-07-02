@@ -16,10 +16,9 @@
 #ifndef PRS_BTREE_H
 #define PRS_BTREE_H
 
-#ifndef PRS_HELPER_H
-#include "helper.h"
-#endif
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* options structure */
 #ifndef DATA_OPTIONS
@@ -94,7 +93,7 @@ static btree_t *init_tree(void)
 
 	/* initialize custom functions and data */
 	leaf->key_value = 0;
-	p_zero(&leaf->opts, sizeof(leaf->opts));
+	memset(&leaf->opts, 0, sizeof(leaf->opts));
 	/* initialize left and right leafs */
 	leaf->left = 0;
 	leaf->right = 0;
@@ -150,7 +149,7 @@ void setopt_tree(btree_t *leaf, int key, const char *text)
 		btree_t *branch;
 		branch = search_tree(key, leaf);
 		if (branch != 0) {
-			branch->opts.value = str_dup(text);
+			branch->opts.value = strdup(text);
 		}
 	}
 }

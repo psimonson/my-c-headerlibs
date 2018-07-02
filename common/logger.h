@@ -15,13 +15,11 @@
 #ifndef PRS_TEMPFILE_H
 #include "tempfile.h"
 #endif
-#ifndef PRS_HELPER_H
-#include "helper.h"
-#endif
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdarg.h>
-#include <errno.h>
 
 #define NAMESIZ 256
 
@@ -81,10 +79,10 @@ static int read_log(void)
 {
 	char buf[BUFSIZ];
 
-	mem_set(buf, 0, sizeof buf);
+	memset(buf, 0, sizeof buf);
 	while (fgets(buf, sizeof(buf)-1, __logfile) != NULL) {
 		fputs(buf, stdout);
-		mem_set(buf, 0, sizeof buf);
+		memset(buf, 0, sizeof buf);
 	}
 	close_log();
 	return 0;
@@ -106,7 +104,7 @@ static int crypt_log(void)
 	rewind(__logfile);
 	i = 0;
 	while ((c = fgetc(__logfile)) != EOF) {
-		c ^= key[i%str_len(key)] & 0xf0;
+		c ^= key[i%strlen(key)] & 0xf0;
 		fputc(c, tmp);
 		i++;
 	}
@@ -131,7 +129,7 @@ static int do_log(int (*func)(const char *, va_list args),
 	if (func == NULL)
 		return -1;
 	if (log_name != NULL)
-		__logname = str_dup(log_name);
+		__logname = strdup(log_name);
 	else
 		__logname = generate_tempname();
 	if (func == &append_log) {
@@ -160,13 +158,13 @@ static int do_log2(int (*func)(void),
 	if (func == NULL)
 		return -1;
 	if (log_name != NULL)
-		__logname = str_dup(log_name);
+		__logname = strdup(log_name);
 	else
 		__logname = generate_tempname();
 	if (func == &crypt_log) {
 		if (open_log(__logname, "rb") < 0)
 			return -1;
-		__cryptname = str_dup(__logname);
+		__cryptname = strdup(__logname);
 	} else if (func == &read_log) {
 		if (open_log(__logname, "r+b") < 0)
 			return -1;
@@ -179,4 +177,5 @@ static int do_log2(int (*func)(void),
 	close_log();
 	return 0;
 }
+
 #endif

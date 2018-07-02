@@ -51,7 +51,7 @@ void set(dlist_t *list, int id, const char *data)
 	if (list == 0)
 		return;
 	list->id = id;
-	list->data = str_dup(data);
+	list->data = strdup(data);
 }
 
 /* add:  add item to end of list */

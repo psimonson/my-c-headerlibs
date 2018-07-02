@@ -1,4 +1,5 @@
 #include "../common/bitmap.h"
+#include "../common/mybool.h"
 #if defined _WIN32 || defined _WIN64
 #include "../SDL2-2.0.8/include/SDL.h"
 #else

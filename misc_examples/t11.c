@@ -29,7 +29,7 @@ void setopts(int key, int value, const char *data, btree_t *leaf)
 		btree_t *branch;
 		branch = search_tree(key, leaf);
 		if (branch != 0) {
-			branch->opts.value = str_dup(data);
+			branch->opts.value = strdup(data);
 			branch->opts.test = value;
 		}
 	}

@@ -7,10 +7,9 @@
 #ifndef PRS_DLIST_H
 #define PRS_DLIST_H
 
-#ifndef PRS_HELPER_H
-#include "helper.h"
-#endif
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* used for id inside struct */
 static int id;
@@ -118,7 +117,7 @@ void dlist_cleanup(dlist_t *list)
 void set_dlist(dlist_t *list, const char *data)
 {
 	if (list != 0)
-		list->data = str_dup(data);
+		list->data = strdup(data);
 }
 
 /* dlist_add:  add item to end of list */

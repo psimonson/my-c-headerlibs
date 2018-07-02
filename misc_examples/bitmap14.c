@@ -1,4 +1,5 @@
 #include "../common/bitmap.h"
+#include "../common/helper.h"
 #include <time.h>
 
 #define MAXLINE 256
@@ -16,7 +17,7 @@ int main(void)
 	if (check_BMP(bmp))
 		return 1;
 	clear_BMP(bmp, 0, 0, 0);
-	for (i = 0; i < p_atoi(line); i++) {
+	for (i = 0; i < atoi(line); i++) {
 		int j = rand()%63;
 		int k = rand()%63;
 		int l = (j < 30) ? rand()%30+30 : rand()%30;
