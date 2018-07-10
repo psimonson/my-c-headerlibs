@@ -45,6 +45,7 @@ int find_directory(void)
 	DIR *d;
 
 	get_input("Enter a directory: ", buf, BUFSIZ);
+	trim(buf);
 	getcwd(dir, MAXDIR);
 	strncat(dir, "/", 1);
 	strncat(dir, buf, strlen(buf));
