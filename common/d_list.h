@@ -48,22 +48,6 @@ append_node_cb dlist_append_node = NULL;
 
 /* ------------ End of Definitions ----------------- */
 
-static void *_dlist_add_data(int num, const char *msg);
-static void _dlist_remove_data(void **dat);
-static void _dlist_prepend_node(void **root, int num, const char *msg);
-static void _dlist_append_node(void **root, int num, const char *msg);
-
-static void dlist_init(add_data_cb add_func,
-                    remove_data_cb remove_func,
-                    prepend_node_cb prepend_func,
-                    append_node_cb append_func)
-{
-    dlist_add_data = (add_func) ? add_func : _dlist_add_data;
-    dlist_remove_data = (remove_func) ? remove_func : _dlist_remove_data;
-    dlist_prepend_node = (prepend_func) ? prepend_func : _dlist_prepend_node;
-    dlist_append_node = (append_func) ? append_func : _dlist_append_node;
-}
-
 static void dlist_iterator_init(struct DLIST *root)
 {
     _dlist_last_node = (root) ? root : NULL;
@@ -104,7 +88,7 @@ static struct DLIST *dlist_iterator_last(void)
     return _dlist_last_saved;
 }
 
-void *_dlist_add_data(int num, const char *msg)
+static void *_dlist_add_data(int num, const char *msg)
 {
     struct DLIST_DATA *data;
     data = (struct DLIST_DATA *)malloc(sizeof(struct DLIST_DATA));
@@ -115,7 +99,7 @@ void *_dlist_add_data(int num, const char *msg)
     return (void*)data;
 }
 
-void _dlist_remove_data(void **dat)
+static void _dlist_remove_data(void **dat)
 {
     struct DLIST_DATA *data = (struct DLIST_DATA *)*dat;
     if (data->message)
@@ -124,9 +108,20 @@ void _dlist_remove_data(void **dat)
     *dat = NULL;
 }
 
-static struct DLIST *dlist_create_list(int value, const char *message)
+static void _dlist_prepend_node(void **root, int num, const char *msg);
+static void _dlist_append_node(void **root, int num, const char *msg);
+
+static struct DLIST *dlist_create_list(add_data_cb add_func,
+                    remove_data_cb remove_func,
+                    prepend_node_cb prepend_func,
+                    append_node_cb append_func,
+                    int value, const char *message)
 {
     struct DLIST *list;
+    dlist_add_data = (add_func) ? add_func : _dlist_add_data;
+    dlist_remove_data = (remove_func) ? remove_func : _dlist_remove_data;
+    dlist_prepend_node = (prepend_func) ? prepend_func : _dlist_prepend_node;
+    dlist_append_node = (append_func) ? append_func : _dlist_append_node;
     list = (struct DLIST *)malloc(sizeof(struct DLIST));
     if (!list)
         return NULL;

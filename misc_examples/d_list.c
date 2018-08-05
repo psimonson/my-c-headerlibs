@@ -4,8 +4,7 @@
 int main()
 {
 	struct DLIST *list, *tmp;
-	dlist_init(NULL, NULL, NULL, NULL);
-	list = dlist_create_list(1, "Philip");
+	list = dlist_create_list(NULL, NULL, NULL, NULL, 1, "Philip");
 	dlist_append_node(&list, 2, "Mark");
 	dlist_append_node(&list, 3, "Bob");
 	dlist_iterator_init(list);
