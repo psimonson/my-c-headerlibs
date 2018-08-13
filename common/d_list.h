@@ -111,57 +111,64 @@ static void _dlist_remove_data(void **dat)
 static void _dlist_prepend_node(void **root, int num, const char *msg);
 static void _dlist_append_node(void **root, int num, const char *msg);
 
-static struct DLIST *dlist_create_list(add_data_cb add_func,
+static struct DLIST *dlist_init(add_data_cb add_func,
                     remove_data_cb remove_func,
                     prepend_node_cb prepend_func,
-                    append_node_cb append_func,
-                    int value, const char *message)
+                    append_node_cb append_func)
 {
-    struct DLIST *list;
-    dlist_add_data = (add_func) ? add_func : _dlist_add_data;
-    dlist_remove_data = (remove_func) ? remove_func : _dlist_remove_data;
-    dlist_prepend_node = (prepend_func) ? prepend_func : _dlist_prepend_node;
-    dlist_append_node = (append_func) ? append_func : _dlist_append_node;
-    list = (struct DLIST *)malloc(sizeof(struct DLIST));
-    if (!list)
-        return NULL;
-    list->count = 1;
-    list->data = dlist_add_data(value, message);
-    list->next = NULL;
-    if (!list->data) {
-        free(list);
-        return NULL;
-    }
-    return list;
+	dlist_add_data = (add_func) ? add_func : _dlist_add_data;
+	dlist_remove_data = (remove_func) ? remove_func : _dlist_remove_data;
+	dlist_prepend_node = (prepend_func) ? prepend_func : _dlist_prepend_node;
+	dlist_append_node = (append_func) ? append_func : _dlist_append_node;
+	if (!dlist_add_data || !dlist_remove_data ||
+		!dlist_prepend_node || !dlist_append_node) {
+		error_print("Cannot initialize functions.");
+		exit(1);
+	}
+	return NULL;
 }
 
 void _dlist_prepend_node(void **root, int num, const char *msg)
 {
-    struct DLIST *node, *tmp;
-    node = (struct DLIST *)malloc(sizeof(struct DLIST));
-    if (!node)
-        return;
-    ((struct DLIST *)*root)->count++;
-    tmp = (*root);
-    node->count = ((struct DLIST *)*root)->count;
-    node->data = dlist_add_data(num, msg);
-    node->next = tmp;
-    (*root) = node;
+	struct DLIST *node, *tmp;
+	node = (struct DLIST *)malloc(sizeof(struct DLIST));
+	if (!node)
+		return;
+	if (!(*root)) {
+		node->count = 1;
+		node->data = dlist_add_data(num, msg);
+		node->next = NULL;
+		(*root) = node;
+	} else {
+		((struct DLIST *)*root)->count++;
+		tmp = (*root);
+		node->count = ((struct DLIST *)*root)->count;
+		node->data = dlist_add_data(num, msg);
+		node->next = tmp;
+		(*root) = node;
+	}
 }
 
 void _dlist_append_node(void **root, int num, const char *msg)
 {
-    struct DLIST *node;
-    node = (struct DLIST *)malloc(sizeof(struct DLIST));
-    if (!node)
-        return;
-    dlist_iterator_init(*root);
-    while (dlist_iterator_next() != NULL);
-    ((struct DLIST *)*root)->count++;
-    node->count = ((struct DLIST *)*root)->count;
-    node->data = dlist_add_data(num, msg);
-    node->next = NULL;
-    dlist_iterator_last()->next = node;
+	struct DLIST *node;
+	node = (struct DLIST *)malloc(sizeof(struct DLIST));
+	if (!node)
+		return;
+	if (!(*root)) {
+		node->count = 1;
+		node->data = dlist_add_data(num, msg);
+		node->next = NULL;
+		(*root) = node;
+	} else {
+		dlist_iterator_init(*root);
+		while (dlist_iterator_next() != NULL);
+		((struct DLIST *)*root)->count++;
+		node->count = ((struct DLIST *)*root)->count;
+		node->data = dlist_add_data(num, msg);
+		node->next = NULL;
+		dlist_iterator_last()->next = node;
+	}
 }
 
 static void dlist_destroy(struct DLIST **root)

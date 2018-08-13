@@ -1,10 +1,12 @@
+#include "../common/debug.h"
 #include "../common/d_list.h"
 #include <stdio.h>
 
 int main()
 {
 	struct DLIST *list, *tmp;
-	list = dlist_create_list(NULL, NULL, NULL, NULL, 1, "Philip");
+	list = dlist_init(NULL, NULL, NULL, NULL);
+	dlist_append_node(&list, 1, "Philip");
 	dlist_append_node(&list, 2, "Mark");
 	dlist_append_node(&list, 3, "Bob");
 	dlist_iterator_init(list);
