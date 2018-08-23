@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <string.h>
 
-void debug_print(const char *format, ...)
+static void debug_print(const char *format, ...)
 {
 	char msg[512];
 	va_list ap;
@@ -19,12 +19,12 @@ void debug_print(const char *format, ...)
 	va_end(ap);
 }
 
-int error_print(const char *format, ...)
+static int error_print(const char *format, ...)
 {
 	char msg[512];
 	va_list ap;
 	va_start(ap, format);
-	strcpy(msg, "[DEBUG]: ");
+	strcpy(msg, "[ERROR]: ");
 	strcat(msg, format);
 	strcat(msg, "\n");
 	vfprintf(stderr, msg, ap);
@@ -34,7 +34,7 @@ int error_print(const char *format, ...)
 	return errno;
 }
 
-int check_mem(void *mem)
+static int check_mem(void *mem)
 {
 #ifndef NDEBUG
 	if (mem != NULL)
@@ -43,7 +43,7 @@ int check_mem(void *mem)
 	return (mem != NULL);
 }
 
-int free_mem(void *mem)
+static int free_mem(void *mem)
 {
 	if (mem != NULL) {
 		free(mem);
