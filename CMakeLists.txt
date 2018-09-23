@@ -183,6 +183,8 @@ add_dependencies(misc_examples/bitmap14 makedirs copybitmaps)
 add_executable(misc_examples/bitmap15 misc_examples/bitmap15.c)
 add_dependencies(misc_examples/bitmap15 makedirs copybitmaps)
 target_link_libraries(misc_examples/bitmap15 ${SDL2_LIBRARIES})
+add_executable(misc_examples/bitmap16 misc_examples/bitmap16.c)
+add_dependencies(misc_examples/bitmap16 makedirs copybitmaps)
 
 # add cgi example targets
 add_executable(cgi_examples/test1 cgi_examples/test1.c)
