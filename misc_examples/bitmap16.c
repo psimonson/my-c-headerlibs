@@ -5,7 +5,7 @@
  */
 
 #define BMP_PUT_TO_FILE
-#include "bitmap.h"
+#include "../common/bitmap.h"
 #include <stdio.h>
 
 int main(int argc, char **argv)
