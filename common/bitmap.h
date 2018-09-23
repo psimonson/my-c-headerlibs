@@ -19,11 +19,13 @@
 #define MAX_PATH 260
 #endif
 
-#define BITMAP_NO_ERROR 0
-#define BITMAP_CREATE_ERROR 1
-#define BITMAP_OPEN_ERROR 2
-#define BITMAP_WRITE_ERROR 3
-#define BITMAP_UNKNOWN_ERROR 4
+enum {
+	BITMAP_NO_ERROR,
+	BITMAP_CREATE_ERROR,
+	BITMAP_OPEN_ERROR,
+	BITMAP_WRITE_ERROR,
+	BITMAP_UNKNOWN_ERROR
+};
 
 #pragma pack(push, 1)
 typedef struct BITMAP_FILE_HEADER {
@@ -173,6 +175,30 @@ static BITMAP_FILE *load_BMP(const char *filename)
 				"%u\nImage is invalid.\n",
 				bmp->header.file.size,
 				file_size);
+		fclose(fp);
+		bmp->error = BITMAP_OPEN_ERROR;
+	}
+	/* bitmap v4 header */
+	printf("Trying V5 header...\n");
+	if (bmp->header.file.header == 0x4D42 &&
+			bmp->header.file.size == file_size+68) {
+		fseek(fp, bmp->header.file.offset, SEEK_SET);
+		bmp->data = malloc(sizeof(unsigned char)*image_size);
+		if (bmp->data) {
+			fread(bmp->data, 1, image_size, fp);
+			printf("Valid image loaded.\n");
+			fclose(fp);
+			bmp->error = BITMAP_NO_ERROR;
+		} else {
+			printf("Cannot alloc for image data.\n");
+			fclose(fp);
+			bmp->error = BITMAP_OPEN_ERROR;
+		}
+	} else {
+		printf("File Size: %u\nSize compared to: "
+			"%u\nImage is invalid.\n",
+			bmp->header.file.size,
+			file_size+68);
 		fclose(fp);
 		bmp->error = BITMAP_OPEN_ERROR;
 	}
