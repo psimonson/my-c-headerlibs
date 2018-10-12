@@ -1,9 +1,13 @@
 #ifndef _PRS_MYBOOL_H_
 #define _PRS_MYBOOL_H_
 
-typedef enum Boolean { false, true } bool;
+typedef char bool;
 
-#define FALSE 0
-#define TRUE 1
+#ifndef _WIN32
+enum Boolean { FALSE, TRUE };
+#endif
+
+#define false 0
+#define true 1
 
 #endif
