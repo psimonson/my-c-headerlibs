@@ -129,7 +129,7 @@ static int create_server(int nonblocking, int port, const char *address)
 		perror("socket");
 		return -1;
 	}
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == BAD_SOCKET) {
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0) {
 		perror("setsockopt");
 		return -1;
 	}
@@ -137,14 +137,14 @@ static int create_server(int nonblocking, int port, const char *address)
 
 	if (nonblocking)
 		set_nonblocking(sock);
-	if (bind(sock, (struct sockaddr*)&server, sizeof(server)) == BAD_SOCKET) {
+	if (bind(sock, (struct sockaddr*)&server, sizeof(server)) < 0) {
 		perror("bind");
 		return -1;
 	}
 	printf("%s bound to port %d.\nWaiting for incoming connections...\n",
 			inet_ntoa(server.sin_addr), port);
 
-	if (listen(sock, MAX_CLIENTS) == BAD_SOCKET) {
+	if (listen(sock, MAX_CLIENTS) < 0) {
 		perror("listen");
 		return -1;
 	}
@@ -190,7 +190,7 @@ static int create_client(int nonblocking, int port, const char *address)
 	if (nonblocking)
 		set_nonblocking(sock);
 
-	if (connect(sock, (struct sockaddr*)&server, sizeof(server)) == BAD_SOCKET) {
+	if (connect(sock, (struct sockaddr*)&server, sizeof(server)) < 0) {
 		fprintf(stderr, "Error: Cannot connect to %s.\n",
 				inet_ntoa(server.sin_addr));
 		return -1;
