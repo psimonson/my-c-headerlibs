@@ -21,9 +21,9 @@
 #include <fcntl.h>
 #endif
 
-#ifndef PRS_HELPER_H
-#include "helper.h"
-#endif
+#include "unused.h"
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -59,6 +59,19 @@
 #ifndef INET6_ADDRSTRLEN
 #define INET6_ADDRSTRLEN 46
 #endif
+
+/* trim:  trim off newline characters */
+static int trim(char *s)
+{
+	char *p = s;
+	while (*s) {
+		if (*s == '\r' || *s == '\n')
+			break;
+		s++;
+	}
+	*s = '\0';
+	return (s-p);
+}
 
 /* set_nonblocking: set a socket to non-blocking IO */
 #ifdef _WIN32
@@ -102,7 +115,7 @@ static int create_server(int nonblocking, int port, const char *address)
 		return -1;
 	}
 	if ((sock = WSASocket(AF_INET, SOCK_STREAM,
-		IPPROTO_TCP, NULL, 0, 0)) == INVALID_SOCKET) {
+		IPPROTO_TCP, NULL, 0, 0)) == BAD_SOCKET) {
 		puts("Error: Could not create socket.");
 		return -1;
 	}
@@ -112,11 +125,11 @@ static int create_server(int nonblocking, int port, const char *address)
 		return -1;
 	}
 #else
-	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == BAD_SOCKET) {
 		perror("socket");
 		return -1;
 	}
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) < 0) {
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == BAD_SOCKET) {
 		perror("setsockopt");
 		return -1;
 	}
@@ -124,14 +137,14 @@ static int create_server(int nonblocking, int port, const char *address)
 
 	if (nonblocking)
 		set_nonblocking(sock);
-	if (bind(sock, (struct sockaddr*)&server, sizeof(server)) < 0) {
+	if (bind(sock, (struct sockaddr*)&server, sizeof(server)) == BAD_SOCKET) {
 		perror("bind");
 		return -1;
 	}
 	printf("%s bound to port %d.\nWaiting for incoming connections...\n",
 			inet_ntoa(server.sin_addr), port);
 
-	if (listen(sock, MAX_CLIENTS) < 0) {
+	if (listen(sock, MAX_CLIENTS) == BAD_SOCKET) {
 		perror("listen");
 		return -1;
 	}
@@ -164,12 +177,12 @@ static int create_client(int nonblocking, int port, const char *address)
 		return -1;
 	}
 	if ((sock = WSASocket(AF_INET, SOCK_STREAM,
-		IPPROTO_TCP, NULL, 0, 0)) == INVALID_SOCKET) {
+		IPPROTO_TCP, NULL, 0, 0)) == BAD_SOCKET) {
 		fprintf(stderr, "Error: Cannot create the client socket.\n");
 		return -1;
 	}
 #else
-	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == BAD_SOCKET) {
 		perror("socket");
 		return -1;
 	}
@@ -177,7 +190,7 @@ static int create_client(int nonblocking, int port, const char *address)
 	if (nonblocking)
 		set_nonblocking(sock);
 
-	if (connect(sock, (struct sockaddr*)&server, sizeof(server)) < 0) {
+	if (connect(sock, (struct sockaddr*)&server, sizeof(server)) == BAD_SOCKET) {
 		fprintf(stderr, "Error: Cannot connect to %s.\n",
 				inet_ntoa(server.sin_addr));
 		return -1;
@@ -193,9 +206,9 @@ static int send_msg(int sock, const char *msg)
 #endif
 {
 	int bytes;
-	if ((bytes = send(sock, msg, strlen(msg), 0)) != strlen(msg)) {
+	if ((bytes = send(sock, msg, strlen(msg), 0)) != (int)strlen(msg)) {
 		puts("Error: Sending message failed.");
-		return bytes;
+		return -1;
 	}
 	return bytes;
 }
@@ -220,10 +233,12 @@ static void get_addr_info(int sock, char *address, int *port)
 #endif
 	if (res == 0) {
 		strcpy(address, inet_ntoa(addr.sin_addr));
-		*port = htons(addr.sin_port);
+		if (port)
+			*port = htons(addr.sin_port);
 	} else {
 		strcpy(address, "");
-		*port = -1;
+		if (port)
+			*port = -1;
 	}
 }
 
@@ -270,7 +285,7 @@ static int check_conn(const char *addr, int port)
 	int sock;
 #endif
 	sock = create_client(0, port, addr);
-	if (sock < 0)
+	if (sock == BAD_SOCKET)
 		return -1;
 	close_conn(sock);
 	return 0;
@@ -290,7 +305,7 @@ static int getln_remote(int sock, char *s, int size)
 	chars_remain = 1;
 	while (chars_remain) {
 		recv(sock, &ch, 1, 0);
-		if (ch == '\n' || ch == EOF)
+		if (ch == '\n' || ch == '\r')
 			chars_remain = 0;
 		else if (i < size-1) {
 			if (ch == '\b') {
@@ -324,13 +339,11 @@ static int get_cmd(int sock, char *buf, int size)
 /* pstrcmp:  compare string s1 with s2 */
 static int pstrcmp(const char *p1, const char *p2)
 {
-	register const unsigned char *s1 = (const unsigned char *)p1;
-	register const unsigned char *s2 = (const unsigned char *)p2;
 	unsigned char c1, c2;
 
 	do {
-		c1 = (unsigned char)*s1++;
-		c2 = (unsigned char)*s2++;
+		c1 = (unsigned char)*p1++;
+		c2 = (unsigned char)*p2++;
 		if (c1 == '\0')
 			return c1-c2;
 	} while (c1 == c2);
@@ -341,13 +354,11 @@ static int pstrcmp(const char *p1, const char *p2)
 /* pstricmp:  *nix doesn't have stricmp like windows */
 static int pstricmp(const char *p1, const char *p2)
 {
-	register const unsigned char *s1 = (const unsigned char *)p1;
-	register const unsigned char *s2 = (const unsigned char *)p2;
 	unsigned char c1, c2;
 
 	do {
-		c1 = (unsigned char)*s1++;
-		c2 = (unsigned char)*s2++;
+		c1 = (unsigned char)*p1++;
+		c2 = (unsigned char)*p2++;
 		if (c1 == '\0')
 			return tolower(c1)-tolower(c2);
 	} while (tolower(c1) == tolower(c2));
@@ -357,10 +368,10 @@ static int pstricmp(const char *p1, const char *p2)
 
 /* transfer:  upload/download files from remote machine */
 #ifdef _WIN32
-static int transfer(SOCKET sock, const char *address, const char *fname,
+static int transfer(SOCKET sock, const char *UNUSED(address), const char *fname,
 		int *bytes, unsigned char sending)
 #else
-static int transfer(int sock, const char *address, const char *fname,
+static int transfer(int sock, const char *UNUSED(address), const char *fname,
 		int *bytes, unsigned char sending)
 #endif
 {

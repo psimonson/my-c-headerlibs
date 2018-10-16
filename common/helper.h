@@ -29,20 +29,6 @@ enum escapes { BELL = '\a', BACKSPACE = '\b', TAB = '\t',
 		NEWLINE = '\n', VTAB = '\v', RETURN = '\r' };
 
 
-/* --------------------------- Boolean Declaration ------------------------ */
-
-
-typedef enum Boolean {
-	false,
-	true
-} bool_t;
-
-#if !defined(TRUE) && !defined(FALSE)
-#define TRUE
-#define FALSE
-#endif
-
-
 /* ---------------------------- Memory Functions -------------------------- */
 
 
