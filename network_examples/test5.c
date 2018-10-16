@@ -23,13 +23,13 @@ int main(int argc, char *argv[])
 	sprintf(msg, "Connected to %s on port %d.", address, port);
 	puts(msg);
 
-	mem_set(msg, 0, sizeof msg);
+	memset(msg, 0, sizeof msg);
 	/* recv message from server */
 	while ((bytes = recv(sockfd, msg, sizeof msg, 0)) > 0) {
 		printf("%s", msg);
-		mem_set(msg, 0, sizeof msg);
+		memset(msg, 0, sizeof msg);
 	}
-	mem_set(msg, 0, sizeof msg);
+	memset(msg, 0, sizeof msg);
 	if (bytes == 0)
 		printf("Disconnected from %s\n", address);
 	else
